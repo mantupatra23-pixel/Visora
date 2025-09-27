@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>AI Video App - User Section</title>
+  <style>
+    body {font-family: Inter, Arial, sans-serif; margin: 0; background: #14151B; color: #fff;}
+    .app-bar {display: flex; align-items: center; padding: 1rem; background: #18191F; justify-content: space-between;}
+    .user-photo {width: 44px; height: 44px; border-radius: 22px; background: #3b3c44;}
+    .credits {color: #00e439; margin-left: 6px;}
+    .upgrade-btn {background: #ffe08c; color: #000; border-radius: 10px; padding: 10px 22px; font-weight: 600;}
+    .drawer {width: 84vw; max-width: 370px; background: #18191F; height: 100vh; position: fixed; top: 0; left: 0; z-index: 100;}
+    .drawer .profile {padding: 1.1rem 1.2rem 0.5rem;}
+    .drawer .menu {padding: 0 1.2rem;}
+    .drawer .menu-item {padding: 1rem 0.2rem; border-bottom: 1px solid #24242c; font-size: 1.05em; display: flex; align-items: center; justify-content: space-between;}
+    .drawer .menu-item:last-child {border: none;}
+    .signout {color: #ff4343;}
+    .banner {background: #21222A; color: #ffe08c; margin: 1rem; border-radius: 8px; padding: 10px 18px;}
+    .main-cards {display: flex; gap: 1.1rem; padding: 1.4rem;}
+    .main-card-btn {flex:1; background: #222227; padding: 1.2rem; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: box-shadow .15s;}
+    .main-card-btn:active {box-shadow: 0 0 0 2px #ffe08c;}
+    .main-card-btn img {width: 44px; margin-bottom: 0.7rem;}
+    .section-title {font-weight: 600; font-size: 1.15em; margin: 1.5rem 1.4rem 0.6rem;}
+    .effects-list {display: flex; gap: 0.7rem; padding: 0 1.4rem;}
+    .effect {background: #21222A; border-radius: 10px; padding: 0.6rem 0.85rem; text-align: center;}
+    .bottom-nav {position: fixed; left: 0; right: 0; bottom: 0; background: #191A22; display: flex; justify-content: space-around; align-items: center; height: 65px; border-top: 1.2px solid #222;}
+    .bottom-nav .nav-btn {color: #aaa; font-size: 1.05em; flex:1; text-align:center;}
+    .bottom-nav .nav-btn.active {color: #ffe08c;}
+    .fab-menu {position:fixed; bottom:74px; left:50%; transform:translateX(-50%); background:#23232C; padding:22px 38px; border-radius:32px; display:flex; gap:20px; z-index:300;}
+    .fab-btn {background:#ffe08c; color:#222; border:none; border-radius:22px; padding:8px 15px; font-weight:600;}
+    /* Responsive Adjustments */
+    @media (max-width: 599px) {.main-cards{flex-direction:column;}}
+  </style>
+</head>
+<body>
+
+  <!-- App Bar -->
+  <div class="app-bar">
+    <div class="user-photo"></div>
+    <button class="upgrade-btn">Upgrade your plan</button>
+  </div>
+
+  <!-- Credit & Banner -->
+  <div class="banner">💎 Referral Bonus &nbsp; | &nbsp; More Credits & Premium Features</div>
+
+  <!-- Quick Action Main Cards -->
+  <div class="main-cards">
+    <button class="main-card-btn">
+      <img src="image_icon.png" alt="Image Gen">
+      Image Generation
+    </button>
+    <button class="main-card-btn">
+      <img src="video_icon.png" alt="Video Gen">
+      Video Generation
+    </button>
+  </div>
+
+  <!-- Effects List -->
+  <div class="section-title">Effects</div>
+  <div class="effects-list">
+    <div class="effect">Pet Vlogger</div>
+    <div class="effect">Guardian Spirit</div>
+    <div class="effect">Earth Zoom In</div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-btn active">Home</div>
+    <div class="nav-btn">Explore</div>
+    <div class="nav-btn">+</div>
+    <div class="nav-btn">Assets</div>
+    <div class="nav-btn">My Space</div>
+  </nav>
+
+  <!-- Floating Quick Menu (show on +) -->
+  <!--
+  <div class="fab-menu">
+    <button class="fab-btn">Text to Video</button>
+    <button class="fab-btn">Image to Video</button>
+    <button class="fab-btn">AI Images</button>
+    <button class="fab-btn">Effects</button>
+    <button class="fab-btn">Lip Sync</button>
+    <button class="fab-btn">Cinema Mode</button>
+    <button class="fab-btn">Video Upload</button>
+  </div>
+  -->
+
+</body>
+</html>
