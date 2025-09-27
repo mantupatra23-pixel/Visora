@@ -253,7 +253,128 @@ def uploaded_file(filename):
 @app.route("/outputs/<path:filename>")
 def output_file(filename):
     return send_from_directory(app.config["OUTPUT_FOLDER"], filename)
+# ---------------- Video Edit Endpoint ----------------
+@app.route("/video/edit/<int:video_id>", methods=["POST"])
+def edit_video(video_id):
+    """
+    Edit existing video:
+    - change_bg_music_file (optional)
+    - replace_voice_files[] (optional, aligned order)
+    - apply_cinematic (bool)
+    - apply_subtitles (bool)
+    """
+    video = UserVideo.query.get(video_id)
+    if not video:
+        return jsonify({"error": "video not found"}), 404
 
+    try:
+        # load existing file
+        old_path = _abs_path(video.file_path)
+        if not os.path.exists(old_path):
+            return jsonify({"error": "original file missing"}), 400
+
+        # prepare output path
+        out_name = f"edited_{uuid.uuid4().hex}.mp4"
+        out_path = Path(app.config["OUTPUT_FOLDER"]) / out_name
+
+        # collect inputs
+        bg_rel = None
+        if "change_bg_music_file" in request.files:
+            bg_rel = save_upload(request.files["change_bg_music_file"], "audio")
+
+        replace_voice_paths = []
+        if "replace_voice_files" in request.files:
+            files = request.files.getlist("replace_voice_files")
+            for f in files:
+                if f and allowed_file(f.filename, ALLOWED_AUDIO_EXT):
+                    replace_voice_paths.append(save_upload(f, "audio"))
+
+        apply_cinematic = request.form.get("apply_cinematic") == "true"
+        apply_subtitles = request.form.get("apply_subtitles") == "true"
+
+        # Naive edit: reload original video into MoviePy and reapply audio/bg
+        from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
+        clip = VideoFileClip(old_path)
+
+        # replace voices if provided (very basic replace, first one only)
+        if replace_voice_paths:
+            try:
+                aud_clip = AudioFileClip(_abs_path(replace_voice_paths[0]))
+                clip = clip.set_audio(aud_clip)
+            except Exception as e:
+                log.warning("replace voice failed: %s", e)
+
+        # add background music if provided
+        if bg_rel:
+            try:
+                bg_clip = AudioFileClip(_abs_path(bg_rel)).volumex(0.12)
+                final_audio = CompositeAudioClip([clip.audio, bg_clip])
+                clip = clip.set_audio(final_audio)
+            except Exception as e:
+                log.warning("bg replace failed: %s", e)
+
+        # apply cinematic effect (just darken)
+        if apply_cinematic:
+            from moviepy.video.fx.all import lum_contrast
+            clip = clip.fx(lum_contrast, 0, 0.8, 128)
+
+        # apply subtitles (placeholder)
+        if apply_subtitles:
+            log.info("Subtitles flag set — implement OCR/TTS overlay later")
+
+        clip.write_videofile(str(out_path), codec="libx264", audio_codec="aac")
+        clip.close()
+
+        video.file_path = str(out_path.relative_to(BASE_DIR))
+        video.status = "edited"
+        db.session.commit()
+
+        return jsonify({"status": "ok", "video_id": video.id, "download_url": url_for("output_file", filename=out_name, _external=True)})
+
+    except Exception as e:
+        log.exception("edit_video failed")
+        return jsonify({"error": "edit failed", "details": str(e)}), 500
+
+
+# ---------------- Save Character & Voice ----------------
+@app.route("/save_character", methods=["POST"])
+def save_character():
+    """
+    Save user character & voice for reuse
+    - user_email
+    - name
+    - character_image (file)
+    - character_voice (file optional)
+    """
+    email = request.form.get("user_email")
+    name = request.form.get("name", "Character")
+    if not email:
+        return jsonify({"error": "user_email required"}), 400
+
+    img_rel = None
+    if "character_image" in request.files:
+        img_rel = save_upload(request.files["character_image"], "characters")
+
+    voice_rel = None
+    if "character_voice" in request.files:
+        voice_rel = save_upload(request.files["character_voice"], "audio")
+
+    char = UserCharacter(user_email=email, name=name, photo_path=img_rel, voice_path=voice_rel, is_locked=False)
+    db.session.add(char)
+    db.session.commit()
+
+    return jsonify({
+        "status": "ok",
+        "id": char.id,
+        "name": char.name,
+        "photo": char.photo_path,
+        "voice": char.voice_path
+    })
+
+@app.route("/characters/<string:email>", methods=["GET"])
+def get_characters(email):
+    chars = UserCharacter.query.filter_by(user_email=email).all()
+    return jsonify([{"id":c.id,"name":c.name,"photo":c.photo_path,"voice":c.voice_path} for c in chars])
 # (बाकी profile, upload, preview_voice, assistant, payments, generate_video endpoints वैसे ही रहेंगे जैसा पहले दिया था)
 # पूरा system Visora नाम से ready है
 if __name__ == "__main__":
