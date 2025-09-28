@@ -1,606 +1,181 @@
-<!doctype html>
-<html lang="hi">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Visora — Quick Web Frontend</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visora – All in One</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* --- Simple polished dark theme UI --- */
-    :root{
-      --bg:#0f1115; --card:#16171b; --muted:#9aa0a6; --accent:#f5b400; --accent-strong:#ffb703;
-      --glass: rgba(255,255,255,0.02);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#070709);color:#e6e7e8;}
-    .wrap{max-width:980px;margin:18px auto;padding:20px;}
-    h1{margin:0 0 12px;font-size:22px;}
-    .row{display:flex;gap:14px;flex-wrap:wrap;}
-    .col{flex:1;min-width:280px;}
-    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.02);}
-    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;font-size:14px;}
-    textarea{min-height:100px;resize:vertical;}
-    button{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#111;font-weight:600;cursor:pointer;}
-    button:disabled{opacity:0.6;cursor:default}
-    .muted{color:var(--muted);font-size:13px;}
-    .small{font-size:13px;color:var(--muted)}
-    .inline{display:inline-flex;gap:8px;align-items:center;}
-    .file-list{margin-top:8px;font-size:13px;color:var(--muted)}
-    .toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .badge{background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;font-size:13px}
-    .preview-audio{margin-top:8px}
-    .gallery-item{display:flex;gap:12px;align-items:center;padding:8px;border-radius:8px;background:var(--glass);margin-bottom:8px}
-    .thumbnail{width:96px;height:62px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}
-    .right{display:flex;flex-direction:column;gap:6px;flex:1}
-    .notice{padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(255,179,0,0.08), transparent);border:1px solid rgba(255,179,0,0.06);color:var(--accent-strong);font-weight:600}
-    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-    .flex-row{display:flex;gap:8px;align-items:center}
-    .tiny{font-size:12px;color:var(--muted)}
-    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .tabbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tab{padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
-    .tab.active{background:linear-gradient(90deg, rgba(255,179,0,0.12), rgba(255,179,0,0.06));border-color:rgba(255,179,0,0.12);color:var(--accent-strong)}
-    pre{background:#0b0b0b;padding:8px;border-radius:8px;overflow:auto;font-size:12px;color:var(--muted)}
-    .split{display:flex;gap:14px;align-items:flex-start}
-    @media (max-width:720px){ .split{flex-direction:column} .thumbnail{width:88px;height:56px} }
+    body { background:#111; color:#eee; }
+    .navbar { background:#222; }
+    .card { background:#1c1c1c; border:none; border-radius:12px; }
+    .btn-main { background:#f9a825; color:black; font-weight:bold; }
+    .btn-main:hover { background:#ffca28; }
+    .section-title { margin:25px 0 15px; font-size:1.3rem; font-weight:bold; }
+    video { width:100%; border-radius:10px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div>
-        <h1>Visora — Quick Web Frontend</h1>
-        <div class="small">Demo user: <strong id="demo-email">demo@visora.com</strong></div>
-      </div>
-      <div class="inline">
-        <div class="badge" title="Backend base URL">BASE: <span id="base-show" style="margin-left:8px;font-weight:700">https://aivideoapp-kzp6.onrender.com</span></div>
-        <button id="btn-health" title="Check server health">Health</button>
-      </div>
-    </div>
 
-    <div class="tabbar">
-      <div class="tab active" data-tab="create">Create Video</div>
-      <div class="tab" data-tab="gallery">Gallery</div>
-      <div class="tab" data-tab="characters">Characters / Voices</div>
-      <div class="tab" data-tab="assistant">Assistant</div>
-      <div class="tab" data-tab="settings">Settings</div>
-    </div>
+<nav class="navbar navbar-dark px-3">
+  <a class="navbar-brand" href="#">Visora</a>
+  <span id="user-credits">Credits: --</span>
+</nav>
 
-    <div id="main">
+<div class="container my-3">
 
-      <!-- CREATE -->
-      <div id="create" class="card" style="display:block">
-        <div class="toolbar">
-          <div class="inline">
-            <div class="small">Credits: <strong id="credits-count">—</strong></div>
-            <div class="tiny">•</div>
-            <div class="small">Make video from images + voices</div>
-          </div>
-          <div class="flex-row">
-            <input id="base-url" placeholder="Backend BASE_URL" style="padding:8px;border-radius:8px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.03);color:inherit" value="https://aivideoapp-kzp6.onrender.com">
-            <button id="btn-refresh">Refresh</button>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <label>Title</label>
-            <input id="title" placeholder="Video title">
-            <label style="margin-top:10px">Script</label>
-            <textarea id="script" placeholder="Type your script..."></textarea>
-
-            <div class="split" style="margin-top:10px">
-              <div style="flex:1">
-                <label>Template</label>
-                <select id="template"></select>
-              </div>
-              <div style="width:120px">
-                <label>Quality</label>
-                <select id="quality"><option>HD</option><option>FULLHD</option><option>4K</option></select>
-              </div>
-            </div>
-
-            <div class="split" style="margin-top:10px">
-              <div style="flex:1">
-                <label>Language</label>
-                <select id="language"><option value="hi">hi</option><option value="en">en</option><option value="bn">bn</option><option value="ta">ta</option></select>
-              </div>
-              <div style="width:140px">
-                <label>Video length</label>
-                <select id="length"><option value="short">short</option><option value="long">long</option></select>
-              </div>
-            </div>
-
-            <label style="margin-top:12px">Upload character images (multiple)</label>
-            <input id="image-files" type="file" accept="image/*" multiple>
-            <div class="file-list" id="images-list">No images selected</div>
-
-            <label style="margin-top:10px">Upload voice files (mp3/wav) — optional</label>
-            <input id="voice-files" type="file" accept="audio/*" multiple>
-            <div class="file-list" id="voices-list">No voice files selected</div>
-
-            <label style="margin-top:10px">Background music (optional)</label>
-            <input id="bg-file" type="file" accept="audio/*">
-            <div class="file-list" id="bg-list">No background selected</div>
-
-            <div style="margin-top:12px;text-align:center">
-              <button id="btn-render">Render</button>
-            </div>
-
-            <div id="render-status" class="small muted" style="margin-top:8px">Ready</div>
-          </div>
-
-          <div class="col">
-            <div class="card" style="padding:12px;margin-bottom:12px">
-              <div class="notice">Quick actions</div>
-              <div style="margin-top:12px" class="small">
-                - Use multiple images for characters. <br>
-                - If you don't provide voice files, backend will attempt TTS. <br>
-                - After rendering, check Gallery for outputs.
-              </div>
-            </div>
-
-            <div class="card" id="preview-panel" style="padding:12px">
-              <div style="font-weight:700">Preview / Voice</div>
-              <div class="small" style="margin-top:8px">Type text and preview gTTS audio (if backend supports gTTS)</div>
-              <textarea id="preview-text" placeholder="Type a preview text...">Hello from Visora!</textarea>
-              <div style="margin-top:8px">
-                <label>Lang</label>
-                <select id="preview-lang"><option value="hi">hi</option><option value="en">en</option></select>
-              </div>
-              <div style="margin-top:8px">
-                <button id="btn-preview">Preview Voice</button>
-              </div>
-              <div id="preview-audio" class="preview-audio"></div>
-            </div>
-
-            <div class="card" style="margin-top:12px;padding:12px">
-              <div style="font-weight:700">Health</div>
-              <div id="health-box" class="small muted" style="margin-top:8px">No check yet</div>
-              <pre id="health-pre" style="display:none"></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- GALLERY -->
-      <div id="gallery" class="card" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700">Gallery</div>
-          <div><button id="btn-refresh-gallery">Refresh Gallery</button></div>
-        </div>
-        <div id="gallery-list">
-          <div class="small muted">No videos yet</div>
-        </div>
-      </div>
-
-      <!-- CHARACTERS / VOICES -->
-      <div id="characters" class="card" style="display:none">
-        <div style="font-weight:700;margin-bottom:8px">Characters</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div style="flex:1;min-width:280px">
-            <label>Name</label>
-            <input id="char-name" placeholder="Character name">
-            <label style="margin-top:8px">Photo (image)</label>
-            <input id="char-photo" type="file" accept="image/*">
-            <label style="margin-top:8px">Voice (audio optional)</label>
-            <input id="char-voice" type="file" accept="audio/*">
-            <div style="margin-top:8px">
-              <button id="btn-upload-char">Upload character</button>
-            </div>
-            <div id="char-result" class="small muted" style="margin-top:8px"></div>
-          </div>
-
-          <div style="flex:1;min-width:280px">
-            <div style="font-weight:700">Existing Characters & Voices</div>
-            <div id="chars-list" style="margin-top:8px"></div>
-            <div style="margin-top:12px;font-weight:700">Upload voice (raw file)</div>
-            <input id="raw-voice-file" type="file" accept="audio/*">
-            <div style="margin-top:8px"><button id="btn-upload-voice">Upload Voice File</button></div>
-            <div id="voice-upload-result" class="small muted" style="margin-top:8px"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ASSISTANT -->
-      <div id="assistant" class="card" style="display:none">
-        <div style="font-weight:700">Assistant</div>
-        <div class="small muted" style="margin-top:8px">Ask for suggestions, tone, and get a TTS reply (if supported)</div>
-        <div style="margin-top:8px">
-          <textarea id="assistant-q" placeholder="Ask for title/lines...">Make a short punchy opening line for a motivational video</textarea>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <select id="assistant-tone"><option value="helpful">helpful</option><option value="friendly">friendly</option><option value="funny">funny</option></select>
-          <select id="assistant-lang"><option value="hi">hi</option><option value="en">en</option></select>
-          <button id="btn-assistant">Ask Assistant</button>
-        </div>
-        <div id="assistant-output" style="margin-top:10px"></div>
-      </div>
-
-      <!-- SETTINGS (profile/health) -->
-      <div id="settings" class="card" style="display:none">
-        <div class="split">
-          <div style="flex:1">
-            <div style="font-weight:700">Profile</div>
-            <label style="margin-top:8px">Email</label>
-            <input id="profile-email" placeholder="demo@visora.com" value="demo@visora.com">
-            <label style="margin-top:8px">Name</label>
-            <input id="profile-name" placeholder="Demo User">
-            <label style="margin-top:8px">Country</label>
-            <input id="profile-country" placeholder="India">
-            <div style="margin-top:8px">
-              <button id="btn-save-profile">Save Profile</button>
-              <button id="btn-load-profile" style="margin-left:8px">Load</button>
-            </div>
-            <div id="profile-msg" class="small muted" style="margin-top:8px"></div>
-          </div>
-
-          <div style="width:300px">
-            <div style="font-weight:700">Server / Health</div>
-            <div class="small muted" style="margin-top:8px">Use health to verify backend features (moviepy/gtts)</div>
-            <div style="margin-top:8px"><button id="btn-health2">Health check</button></div>
-            <pre id="health-json" style="margin-top:8px;max-height:260px;overflow:auto"></pre>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <footer>Visora quick web frontend • Uses your backend BASE_URL</footer>
+  <!-- Profile -->
+  <div class="card p-3 mb-3">
+    <h4>👤 Profile</h4>
+    <div id="profileBox">Loading...</div>
   </div>
 
+  <!-- Create Character -->
+  <div class="card p-3 mb-3">
+    <h4>🧑‍🎤 Create Character</h4>
+    <form id="charForm">
+      <input class="form-control mb-2" name="name" placeholder="Character name" required>
+      <input type="file" name="photo" class="form-control mb-2" accept="image/*">
+      <input type="file" name="voice" class="form-control mb-2" accept="audio/*">
+      <button class="btn btn-main w-100">Save Character</button>
+    </form>
+    <div id="charList" class="mt-2"></div>
+  </div>
+
+  <!-- Voices -->
+  <div class="card p-3 mb-3">
+    <h4>🎙 Voices</h4>
+    <form id="voiceForm">
+      <input type="file" name="file" class="form-control mb-2" accept="audio/*">
+      <button class="btn btn-main w-100">Upload Voice</button>
+    </form>
+    <div id="voiceList" class="mt-2"></div>
+  </div>
+
+  <!-- Create Video -->
+  <div class="card p-3 mb-3">
+    <h4>🎬 Create Video</h4>
+    <form id="videoForm">
+      <input class="form-control mb-2" name="title" placeholder="Video Title">
+      <textarea class="form-control mb-2" name="script" placeholder="Script"></textarea>
+      <select class="form-select mb-2" name="template" id="templateSelect"></select>
+      <select class="form-select mb-2" name="quality">
+        <option>HD</option><option>FullHD</option><option>4K</option>
+      </select>
+      <select class="form-select mb-2" name="length_type">
+        <option value="short">Short</option><option value="long">Long</option>
+      </select>
+      <input type="file" class="form-control mb-2" name="images" multiple>
+      <input type="file" class="form-control mb-2" name="voices" multiple>
+      <input type="file" class="form-control mb-2" name="bg_music">
+      <button class="btn btn-main w-100">Render</button>
+    </form>
+    <div id="renderStatus" class="mt-2 text-warning"></div>
+  </div>
+
+  <!-- Gallery -->
+  <h4 class="section-title">📂 Gallery</h4>
+  <div id="galleryRow" class="row"></div>
+
+  <!-- Templates -->
+  <h4 class="section-title">🔥 Trending Templates</h4>
+  <div id="trendingRow" class="row"></div>
+
+  <!-- Assistant -->
+  <div class="card p-3 mb-3">
+    <h4>🤖 Assistant</h4>
+    <textarea id="assistantQuery" class="form-control mb-2" placeholder="Ask for help..."></textarea>
+    <select id="toneSelect" class="form-select mb-2">
+      <option value="helpful">Helpful</option>
+      <option value="friendly">Friendly</option>
+      <option value="funny">Funny</option>
+    </select>
+    <button class="btn btn-main w-100" onclick="askAssistant()">Ask</button>
+    <div id="assistantReply" class="mt-2"></div>
+  </div>
+
+  <!-- Payments -->
+  <div class="card p-3 mb-3">
+    <h4>💳 Upgrade Plan</h4>
+    <button class="btn btn-main w-100" onclick="alert('Use Razorpay/PayPal integration on backend!')">Upgrade</button>
+  </div>
+
+</div>
+
 <script>
-/*
-  Single-file frontend JS
-  - Edit BASE_URL input to point to your backend
-  - Uses Fetch with FormData for uploads
-  - Friendly messages in Hindi/English
-*/
+const BASE_URL = "https://visora-backend.onrender.com"; // <-- अपना backend URL डालना
 
-// ---------- Config ----------
-const baseUrlInput = document.getElementById('base-url');
-const baseShow = document.getElementById('base-show');
-function BASE(){ return (baseUrlInput.value||'').replace(/\/+$/,''); }
-baseUrlInput.addEventListener('change', ()=> baseShow.textContent = BASE() || '—');
-
-// Basic helpers
-function qs(id){ return document.getElementById(id); }
-function showMsg(el, msg, timeout=3000){ el.textContent = msg; if(timeout) setTimeout(()=>{ if(el.textContent===msg) el.textContent=''; }, timeout); }
-function fmtErr(e){ return (e && e.message) ? e.message : (''+e); }
-function toJSONSafe(x){ try{return JSON.stringify(x,null,2)}catch(e){return ''+x} }
-
-// Tabs
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click', e=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    const tab = t.dataset.tab;
-    document.querySelectorAll('#main > div.card').forEach(c=> c.style.display = (c.id===tab ? 'block' : 'none'));
-  })
+// Load profile
+fetch(BASE_URL+"/profile/demo@visora.com").then(r=>r.json()).then(u=>{
+  document.getElementById("profileBox").innerHTML =
+    `Email: ${u.email}<br>Name: ${u.name}<br>Plan: ${u.plan}<br>Credits: ${u.credits}`;
+  document.getElementById("user-credits").innerText = "Credits: "+u.credits;
 });
 
-// ---------- Load templates / initial ----------
-async function fetchTemplates(){
-  try{
-    const res = await fetch(BASE()+"/templates");
-    if(!res.ok) throw await res.text();
-    const arr = await res.json();
-    const sel = qs('template'); sel.innerHTML='';
-    arr.forEach(t => {
-      const opt = document.createElement('option'); opt.value = t.name; opt.textContent = t.name;
-      sel.appendChild(opt);
-    });
-  }catch(e){ console.warn("templates", e); }
+// Characters
+function loadCharacters(){
+  fetch(BASE_URL+"/characters?user_email=demo@visora.com").then(r=>r.json()).then(cs=>{
+    document.getElementById("charList").innerHTML = cs.map(c=>`<div>${c.name} (${c.ai_style})</div>`).join("");
+  });
 }
+document.getElementById("charForm").onsubmit = async e=>{
+  e.preventDefault(); let fd=new FormData(e.target);
+  await fetch(BASE_URL+"/character",{method:"POST",body:fd});
+  loadCharacters();
+};
+loadCharacters();
 
-// ---------- Profile ----------
-async function loadProfile(){
-  try{
-    const email = qs('profile-email').value.trim() || 'demo@visora.com';
-    const res = await fetch(BASE()+"/profile/"+encodeURIComponent(email));
-    if(!res.ok){ qs('profile-msg').textContent = 'Profile not found'; return; }
-    const data = await res.json();
-    qs('profile-name').value = data.name || '';
-    qs('profile-country').value = data.country || '';
-    qs('credits-count').textContent = data.credits ?? '—';
-    qs('demo-email').textContent = data.email || email;
-  }catch(e){ console.warn(e); qs('profile-msg').textContent = 'Profile load failed'; }
+// Voices
+function loadVoices(){
+  fetch(BASE_URL+"/voices?user_email=demo@visora.com").then(r=>r.json()).then(vs=>{
+    document.getElementById("voiceList").innerHTML = vs.map(v=>`<div>${v.name}</div>`).join("");
+  });
 }
-qs('btn-load-profile').addEventListener('click', loadProfile);
+document.getElementById("voiceForm").onsubmit = async e=>{
+  e.preventDefault(); let fd=new FormData(e.target);
+  await fetch(BASE_URL+"/voice",{method:"POST",body:fd}); loadVoices();
+};
+loadVoices();
 
-qs('btn-save-profile').addEventListener('click', async ()=>{
-  const email = qs('profile-email').value.trim();
-  if(!email){ qs('profile-msg').textContent = 'Email zaroori hai'; return; }
-  const body = { email, name: qs('profile-name').value.trim(), country: qs('profile-country').value.trim() };
-  try{
-    const res = await fetch(BASE()+"/profile", {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
-    if(!res.ok) { const t = await res.text(); qs('profile-msg').textContent = 'Save failed: '+t; return; }
-    const j = await res.json();
-    qs('profile-msg').textContent = 'Profile saved';
-    await loadProfile();
-  }catch(e){ qs('profile-msg').textContent = 'Save error: '+fmtErr(e); }
+// Templates
+fetch(BASE_URL+"/templates/trending").then(r=>r.json()).then(ts=>{
+  let row=document.getElementById("trendingRow");
+  row.innerHTML=ts.map(t=>`<div class="col-6 col-md-3 mb-2"><div class="card p-2 text-center">${t.name}</div></div>`).join("");
+  document.getElementById("templateSelect").innerHTML=ts.map(t=>`<option>${t.name}</option>`).join("");
 });
 
-// ---------- Characters / Voices ----------
-async function refreshCharacters(){
-  try{
-    const res = await fetch(BASE()+"/characters?user_email="+encodeURIComponent(qs('profile-email').value||'demo@visora.com'));
-    if(!res.ok) throw await res.text();
-    const arr = await res.json();
-    const out = qs('chars-list'); out.innerHTML='';
-    if(arr.length===0) out.innerHTML = '<div class="small muted">Koi character nahi</div>';
-    arr.forEach(c=>{
-      const div = document.createElement('div'); div.className='gallery-item';
-      const thumb = document.createElement('div'); thumb.className='thumbnail';
-      thumb.innerHTML = c.photo ? `<img src="${BASE()+"/uploads/"+c.photo.split('/').pop()}" style="width:100%;height:100%;object-fit:cover"/>` : 'No photo';
-      const right = document.createElement('div'); right.className='right';
-      right.innerHTML = `<div style="font-weight:700">${c.name}</div><div class="small">${c.ai_style||''} • ${c.mood||''}</div>
-        <div style="display:flex;gap:8px"><button data-id="${c.id}" class="btn-play">Play voice</button><button data-id="${c.id}" class="btn-delete">Delete</button></div>`;
-      div.appendChild(thumb); div.appendChild(right);
-      out.appendChild(div);
-      // events
-      const playBtn = right.querySelector('.btn-play');
-      playBtn.addEventListener('click', ()=> {
-        if(!c.voice) { alert('No voice uploaded for this character'); return; }
-        const audioUrl = BASE()+"/uploads/"+c.voice.split('/').pop();
-        const a = new Audio(audioUrl); a.play();
-      });
-      // delete (simple)
-      right.querySelector('.btn-delete').addEventListener('click', async ()=>{
-        if(!confirm('Remove character from DB?')) return;
-        // There is no delete endpoint in server stub — you can add server-side deletion if needed.
-        alert('Server delete not implemented in this frontend — add backend endpoint /character/delete if needed.');
-      });
-    });
-  }catch(e){ qs('chars-list').innerHTML = '<div class="small muted">Load error</div>'; console.warn(e); }
+// Gallery
+function loadGallery(){
+  fetch(BASE_URL+"/gallery?user_email=demo@visora.com").then(r=>r.json()).then(vs=>{
+    let row=document.getElementById("galleryRow");
+    row.innerHTML=vs.map(v=>`
+      <div class="col-6 col-md-4 mb-2">
+        <div class="card p-2">
+          <video src="${BASE_URL}/outputs/${v.file}" controls></video>
+          <small>${v.title} - ${v.status}</small>
+        </div>
+      </div>`).join("");
+  });
 }
+loadGallery();
 
-qs('btn-upload-char').addEventListener('click', async ()=>{
-  const name = qs('char-name').value.trim() || 'My Character';
-  const photoEl = qs('char-photo'); const voiceEl = qs('char-voice');
-  if(!photoEl.files || photoEl.files.length===0){ showMsg(qs('char-result'),'Upload image zaroori'); return; }
-  const fd = new FormData(); fd.append('user_email', qs('profile-email').value||'demo@visora.com');
-  fd.append('name', name);
-  fd.append('photo', photoEl.files[0]);
-  if(voiceEl.files && voiceEl.files.length) fd.append('voice', voiceEl.files[0]);
-  try{
-    qs('char-result').textContent = 'Uploading...';
-    const res = await fetch(BASE()+"/character", {method:'POST', body: fd});
-    const j = await res.json();
-    if(!res.ok) { showMsg(qs('char-result'),'Error: '+JSON.stringify(j)); return; }
-    showMsg(qs('char-result'),'Uploaded');
-    photoEl.value=''; voiceEl.value='';
-    await refreshCharacters();
-  }catch(e){ showMsg(qs('char-result'),'Err: '+fmtErr(e)); console.warn(e) }
-});
+// Video render
+document.getElementById("videoForm").onsubmit=async e=>{
+  e.preventDefault(); let fd=new FormData(e.target);
+  document.getElementById("renderStatus").innerText="Submitting...";
+  let r=await fetch(BASE_URL+"/generate_video",{method:"POST",body:fd});
+  let d=await r.json(); document.getElementById("renderStatus").innerText=JSON.stringify(d);
+  setTimeout(loadGallery,3000);
+};
 
-// Upload raw voice
-qs('btn-upload-voice').addEventListener('click', async ()=>{
-  const f = qs('raw-voice-file').files[0];
-  if(!f) { showMsg(qs('voice-upload-result'),'Choose a file'); return; }
-  const fd = new FormData(); fd.append('file', f); fd.append('user_email', qs('profile-email').value||'demo@visora.com');
-  try{
-    qs('voice-upload-result').textContent = 'Uploading...';
-    const res = await fetch(BASE()+"/voice", {method:'POST', body: fd});
-    const j = await res.json();
-    if(!res.ok) { showMsg(qs('voice-upload-result'),'Upload failed'); console.warn(j); return; }
-    showMsg(qs('voice-upload-result'),'Voice saved');
-    qs('raw-voice-file').value='';
-    await refreshVoices();
-  }catch(e){ showMsg(qs('voice-upload-result'),'Err: '+fmtErr(e)) }
-});
-
-async function refreshVoices(){
-  try{
-    const res = await fetch(BASE()+"/voices?user_email="+encodeURIComponent(qs('profile-email').value||'demo@visora.com'));
-    if(!res.ok) throw await res.text();
-    const arr = await res.json();
-    const parent = document.getElementById('chars-list');
-    // also show voice files list separately below chars area
-    const voiceList = arr.filter(x=>x.source==='file' || x.source==='character').map(v=>{
-      const p = v.path || v.file;
-      const name = p.split('/').pop();
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><div class="small">${v.name||name}</div>
-        <div><button class="btn-play-file" data-path="${p}">Play</button></div></div>`;
-    }).join('');
-    if(voiceList) {
-      const container = document.createElement('div'); container.innerHTML = '<div style="margin-top:10px;font-weight:700">Available voices</div>'+voiceList;
-      // append below chars-list
-      const exist = document.querySelector('#chars-list + .voices');
-      if(exist) exist.remove();
-      const wrapper = document.createElement('div'); wrapper.className='voices'; wrapper.style.marginTop='8px';
-      wrapper.appendChild(container);
-      document.getElementById('chars-list').appendChild(wrapper);
-      wrapper.querySelectorAll('.btn-play-file').forEach(b=>{
-        b.addEventListener('click', ()=> {
-          const p = b.dataset.path;
-          const url = BASE()+"/uploads/"+p.split('/').pop();
-          new Audio(url).play();
-        });
-      });
-    }
-  }catch(e){ console.warn('voices', e) }
+// Assistant
+async function askAssistant(){
+  let q=document.getElementById("assistantQuery").value;
+  let tone=document.getElementById("toneSelect").value;
+  let r=await fetch(BASE_URL+"/assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q,tone})});
+  let d=await r.json(); document.getElementById("assistantReply").innerText=d.reply;
 }
-
-// ---------- Preview voice (gTTS) ----------
-qs('btn-preview').addEventListener('click', async ()=>{
-  const txt = qs('preview-text').value.trim();
-  const lang = qs('preview-lang').value || 'hi';
-  if(!txt) return alert('Type text first');
-  const btn = qs('btn-preview');
-  btn.disabled = true; btn.textContent = 'Generating...';
-  try{
-    const fd = new FormData(); fd.append('text', txt); fd.append('lang', lang);
-    const res = await fetch(BASE()+"/preview_voice", { method:'POST', body: fd});
-    const j = await res.json();
-    if(!res.ok){ alert('Preview failed: '+(j.error||'unknown')); return; }
-    const audioUrl = j.audio_url || (BASE()+"/uploads/"+(j.audio_rel||''));
-    qs('preview-audio').innerHTML = `<audio controls src="${audioUrl}"></audio>`;
-  }catch(e){ alert('Preview error: '+fmtErr(e)); console.warn(e) }
-  finally{ btn.disabled=false; btn.textContent='Preview Voice'; }
-});
-
-// ---------- Assistant ----------
-qs('btn-assistant').addEventListener('click', async ()=>{
-  const q = qs('assistant-q').value.trim();
-  if(!q) return;
-  const tone = qs('assistant-tone').value;
-  const lang = qs('assistant-lang').value;
-  qs('assistant-output').textContent = 'Thinking...';
-  try{
-    const res = await fetch(BASE()+"/assistant", { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q,tone:tone,lang:lang})});
-    const j = await res.json();
-    if(!res.ok) { qs('assistant-output').textContent = 'Assistant failed'; console.warn(j); return; }
-    qs('assistant-output').innerHTML = `<div style="font-weight:700">Reply</div><div class="small muted">${j.reply}</div>` + (j.audio_url? `<div style="margin-top:8px"><audio controls src="${j.audio_url}"></audio></div>` : '');
-  }catch(e){ qs('assistant-output').textContent = 'Error: '+fmtErr(e); console.warn(e) }
-});
-
-// ---------- Generate video (upload + enqueue) ----------
-qs('image-files').addEventListener('change', ()=> {
-  const count = qs('image-files').files.length;
-  qs('images-list').textContent = count ? (Array.from(qs('image-files').files).map(f=>f.name).join(', ')) : 'No images selected';
-});
-qs('voice-files').addEventListener('change', ()=> {
-  const count = qs('voice-files').files.length;
-  qs('voices-list').textContent = count ? (Array.from(qs('voice-files').files).map(f=>f.name).join(', ')) : 'No voice files selected';
-});
-qs('bg-file').addEventListener('change', ()=> {
-  const f = qs('bg-file').files[0];
-  qs('bg-list').textContent = f ? f.name : 'No background selected';
-});
-
-qs('btn-render').addEventListener('click', async ()=>{
-  const title = qs('title').value.trim() || 'Untitled';
-  const script = qs('script').value.trim() || '';
-  const template = qs('template').value || 'Motivation';
-  const quality = qs('quality').value || 'HD';
-  const lang = qs('language').value || 'hi';
-  const length = qs('length').value || 'short';
-
-  const imgs = qs('image-files').files;
-  if(!imgs || imgs.length===0){ return alert('Please upload at least one character image.'); }
-
-  const fd = new FormData();
-  fd.append('user_email', qs('profile-email').value||'demo@visora.com');
-  fd.append('title', title);
-  fd.append('script', script);
-  fd.append('template', template);
-  fd.append('quality', quality);
-  fd.append('lang', lang);
-  fd.append('length_type', length);
-
-  for(let i=0;i<imgs.length;i++) fd.append('characters', imgs[i], imgs[i].name);
-  const voices = qs('voice-files').files;
-  for(let i=0;i<voices.length;i++) fd.append('character_voice_files', voices[i], voices[i].name);
-  const bg = qs('bg-file').files[0];
-  if(bg) fd.append('bg_music_file', bg, bg.name);
-
-  const btn = qs('btn-render'); btn.disabled=true; btn.textContent='Rendering...';
-  qs('render-status').textContent = 'Uploading to server — please wait (backend may queue render)';
-  try{
-    const res = await fetch(BASE()+"/generate_video", { method:'POST', body: fd });
-    const j = await res.json();
-    if(!res.ok){
-      qs('render-status').textContent = 'Render request failed: '+(j.error||res.status);
-      alert('Render failed: '+(j.error||JSON.stringify(j)));
-      return;
-    }
-    // server returns job id or output url
-    if(j.job_id){
-      qs('render-status').textContent = 'Render enqueued. Job: '+j.job_id;
-      alert('Render enqueued. Job id: '+j.job_id);
-    } else if(j.download_url){
-      qs('render-status').textContent = 'Render finished: '+j.download_url;
-      window.open(j.download_url,'_blank');
-    } else {
-      qs('render-status').textContent = 'Render request accepted';
-    }
-  }catch(e){
-    qs('render-status').textContent = 'Error: '+fmtErr(e);
-    console.warn(e);
-  }finally{
-    btn.disabled=false; btn.textContent='Render';
-    // refresh gallery after a short delay
-    setTimeout(()=> refreshGallery(), 2000);
-  }
-});
-
-// ---------- Gallery ----------
-async function refreshGallery(){
-  const cont = qs('gallery-list'); cont.innerHTML = '<div class="small muted">Loading...</div>';
-  try{
-    const res = await fetch(BASE()+"/gallery?user_email="+encodeURIComponent(qs('profile-email').value||'demo@visora.com'));
-    if(!res.ok) throw await res.text();
-    const arr = await res.json();
-    if(!arr || arr.length===0){ cont.innerHTML = '<div class="small muted">No videos yet</div>'; return; }
-    cont.innerHTML = '';
-    arr.forEach(v=>{
-      const d = document.createElement('div'); d.className='gallery-item';
-      const thumb = document.createElement('div'); thumb.className='thumbnail';
-      thumb.textContent = v.title || 'Video';
-      const r = document.createElement('div'); r.className='right';
-      r.innerHTML = `<div style="font-weight:700">${v.title||'Untitled'}</div>
-        <div class="small">${(new Date(v.created_at)).toLocaleString()} • ${v.status}</div>
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${v.file ? `<button class="btn-open" data-file="${v.file}">Open</button>` : ''}
-          <button class="btn-meta" data-meta='${JSON.stringify(v.meta||{})}'>Meta</button>
-        </div>`;
-      d.appendChild(thumb); d.appendChild(r); cont.appendChild(d);
-      const openBtn = r.querySelector('.btn-open');
-      if(openBtn) openBtn.addEventListener('click', ()=>{
-        // file path likely stored relative to outputs; build URL
-        const p = openBtn.dataset.file || '';
-        const fileName = p.split('/').pop();
-        const url = BASE()+"/outputs/"+fileName;
-        window.open(url,'_blank');
-      });
-      r.querySelector('.btn-meta').addEventListener('click', ()=> {
-        alert('Meta: \\n'+JSON.stringify(v.meta||{},null,2));
-      });
-    });
-  }catch(e){ cont.innerHTML = '<div class="small muted">Error loading gallery</div>'; console.warn(e) }
-}
-
-qs('btn-refresh-gallery').addEventListener('click', refreshGallery);
-
-// ---------- Health check ----------
-async function healthCheck(showJson=false){
-  const box = qs('health-box'); box.textContent = 'Checking...';
-  try{
-    const res = await fetch(BASE()+"/health");
-    const j = await res.json();
-    box.textContent = 'Status: OK';
-    qs('health-pre').style.display='none';
-    qs('health-json').textContent = toJSONSafe(j);
-    if(showJson) qs('health-pre').style.display='block';
-    // update some UI
-    if(j && j.db) qs('credits-count').textContent = qs('credits-count').textContent || '—';
-  }catch(e){
-    box.textContent = 'Health check failed: '+fmtErr(e);
-  }
-}
-qs('btn-health').addEventListener('click', ()=>healthCheck(true));
-qs('btn-health2').addEventListener('click', ()=>healthCheck(true));
-
-// ---------- Utilities / init ----------
-qs('btn-refresh').addEventListener('click', async ()=>{
-  baseShow.textContent = BASE() || '—';
-  await fetchTemplates(); await loadProfile(); await refreshCharacters(); await refreshVoices(); await refreshGallery(); healthCheck();
-});
-
-// initial
-(async function init(){
-  baseShow.textContent = BASE();
-  await fetchTemplates();
-  await loadProfile();
-  await refreshCharacters();
-  await refreshVoices();
-  await refreshGallery();
-  healthCheck();
-})();
-
-// safety: show simple errors in console and alerts for critical flows
-window.addEventListener('unhandledrejection', e=>{ console.warn('unhandled', e); });
 </script>
+
 </body>
 </html>
