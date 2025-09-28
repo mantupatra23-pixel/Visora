@@ -23,3 +23,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+dependency_overrides:
+  file_picker_windows: ^0.0.1
+  file_picker_linux: ^0.0.1
+  file_picker_macos: ^0.0.1
