@@ -1,147 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visora</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visora Frontend</title>
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#14151B; color:#fff; }
-    header { background:#1f2026; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; }
-    header h1 { color: #f5c842; margin:0; }
-    nav { display:flex; justify-content:space-around; position:fixed; bottom:0; left:0; right:0; background:#1f2026; padding:10px 0; }
-    nav button { background:none; border:none; color:#aaa; font-size:14px; }
-    nav button.active { color:#f5c842; font-weight:bold; }
-    main { padding:20px; margin-bottom:60px; }
-    .card { background:#1e1f25; padding:15px; border-radius:8px; margin-bottom:12px; }
-    .btn { background:#f5c842; color:#000; border:none; padding:8px 16px; border-radius:5px; cursor:pointer; }
-    .btn:disabled { opacity:0.6; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    input, textarea, select, button {
+      margin: 8px;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    input, textarea, select {
+      width: 90%;
+    }
+    button {
+      background: #f5a623;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #222;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Visora</h1>
-    <button onclick="alert('Help Coming Soon')">❓</button>
-  </header>
+  <h1>🎬 Visora Video Generator</h1>
+  <div class="container">
+    <form id="videoForm">
+      <input type="text" id="title" placeholder="Video Title" required><br>
+      <textarea id="script" placeholder="Enter script..." rows="4" required></textarea><br>
+      
+      <label>Template:</label>
+      <select id="template">
+        <option value="Motivation">Motivation</option>
+        <option value="Promo">Promo</option>
+        <option value="Explainer">Explainer</option>
+        <option value="Cinematic">Cinematic</option>
+      </select><br>
 
-  <main id="content">
-    <div class="card">
-      <h2>Credits: <span id="credits">--</span></h2>
-      <button class="btn" onclick="alert('Upgrade Coming Soon')">Upgrade</button>
-    </div>
+      <label>Quality:</label>
+      <select id="quality">
+        <option value="HD">HD</option>
+        <option value="FULLHD">FULL HD</option>
+        <option value="4K">4K</option>
+      </select><br>
 
-    <div class="card">
-      <h3>Quick Actions</h3>
-      <button class="btn" onclick="showCreate()">Create Video</button>
-      <button class="btn" onclick="fetchGallery()">View Gallery</button>
-    </div>
+      <label>Language:</label>
+      <select id="lang">
+        <option value="hi">Hindi</option>
+        <option value="en">English</option>
+        <option value="bn">Bengali</option>
+        <option value="ta">Tamil</option>
+      </select><br>
 
-    <div class="card">
-      <h3>Recent Videos</h3>
-      <ul id="videoList"></ul>
-    </div>
-  </main>
+      <label>Length:</label>
+      <select id="length_type">
+        <option value="short">Short</option>
+        <option value="long">Long</option>
+      </select><br>
 
-  <nav>
-    <button onclick="showHome()" id="homeBtn" class="active">Home</button>
-    <button onclick="showCreate()" id="createBtn">Create</button>
-    <button onclick="fetchGallery()" id="galleryBtn">Gallery</button>
-    <button onclick="alert('Assets Coming Soon')">Assets</button>
-    <button onclick="alert('Profile Coming Soon')">Profile</button>
-  </nav>
+      <button type="submit">🎥 Generate Video</button>
+    </form>
 
-<script>
-  const API_BASE = "https://aivideoapp-kzp6.onrender.com"; // 🔗 Backend URL
+    <div id="output" class="result"></div>
+  </div>
 
-  async function fetchCredits() {
-    document.getElementById("credits").innerText = "Loading...";
-    try {
-      // Example API (replace with your actual credits API if exists)
-      let res = await fetch(`${API_BASE}/credits?user_email=demo@visora.com`);
-      let data = await res.json();
-      document.getElementById("credits").innerText = data.credits || "0";
-    } catch (e) {
-      document.getElementById("credits").innerText = "Error";
-    }
-  }
+  <script>
+    const BASE_URL = "https://aivideoapp-kzp6.onrender.com";
 
-  async function fetchGallery() {
-    document.getElementById("content").innerHTML = "<h2>Loading Gallery...</h2>";
-    try {
-      let res = await fetch(`${API_BASE}/gallery?user_email=demo@visora.com`);
-      let data = await res.json();
-      let html = "<h2>Gallery</h2>";
-      if (data.length === 0) html += "<p>No videos found</p>";
-      else {
-        html += "<ul>";
-        data.forEach(v => {
-          html += `<li>${v.title || "Untitled"} - ${v.status || ""} 
-                   <button class="btn" onclick="editVideo(${v.id})">Edit</button></li>`;
+    document.getElementById("videoForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      document.getElementById("output").innerHTML = "⏳ Generating video... Please wait.";
+
+      let data = {
+        user_email: "demo@visora.com",
+        title: document.getElementById("title").value,
+        script: document.getElementById("script").value,
+        template: document.getElementById("template").value,
+        quality: document.getElementById("quality").value,
+        lang: document.getElementById("lang").value,
+        length_type: document.getElementById("length_type").value
+      };
+
+      try {
+        let res = await fetch(BASE_URL + "/generate_video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
         });
-        html += "</ul>";
+
+        let result = await res.json();
+        if (res.ok) {
+          document.getElementById("output").innerHTML = `
+            ✅ Video Rendered Successfully! <br>
+            <a href="${result.download_url}" target="_blank">Download Video</a>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = "❌ Error: " + (result.error || res.status);
+        }
+      } catch (err) {
+        document.getElementById("output").innerHTML = "⚠️ Failed: " + err.message;
       }
-      document.getElementById("content").innerHTML = html;
-    } catch (e) {
-      document.getElementById("content").innerHTML = "<p>Error loading gallery</p>";
-    }
-  }
-
-  function showCreate() {
-    document.getElementById("content").innerHTML = `
-      <h2>Create Video</h2>
-      <input id="title" placeholder="Title" style="width:100%;padding:8px;margin-bottom:8px;" />
-      <textarea id="script" placeholder="Script" rows="4" style="width:100%;padding:8px;margin-bottom:8px;"></textarea>
-      <button class="btn" onclick="submitRender()">Render</button>
-    `;
-  }
-
-  async function submitRender() {
-    let title = document.getElementById("title").value;
-    let script = document.getElementById("script").value;
-    alert("Submitting render...");
-
-    let fd = new FormData();
-    fd.append("user_email","demo@visora.com");
-    fd.append("title", title);
-    fd.append("script", script);
-    fd.append("template","Motivation");
-    fd.append("quality","HD");
-    fd.append("lang","hi");
-    fd.append("length_type","short");
-
-    try {
-      let res = await fetch(`${API_BASE}/generate_video`, {method:"POST", body:fd});
-      let data = await res.json();
-      alert("Render Started. Download: "+data.download_url);
-    } catch (e) {
-      alert("Error: "+e);
-    }
-  }
-
-  function showHome() {
-    document.getElementById("content").innerHTML = `
-      <div class="card">
-        <h2>Credits: <span id="credits">--</span></h2>
-        <button class="btn" onclick="alert('Upgrade Coming Soon')">Upgrade</button>
-      </div>
-      <div class="card">
-        <h3>Quick Actions</h3>
-        <button class="btn" onclick="showCreate()">Create Video</button>
-        <button class="btn" onclick="fetchGallery()">View Gallery</button>
-      </div>
-      <div class="card">
-        <h3>Recent Videos</h3>
-        <ul id="videoList"></ul>
-      </div>
-    `;
-    fetchCredits();
-  }
-
-  function editVideo(id) {
-    alert("Edit Page Coming for Video ID: "+id);
-  }
-
-  // load home on startup
-  fetchCredits();
-</script>
+    });
+  </script>
 </body>
 </html>
