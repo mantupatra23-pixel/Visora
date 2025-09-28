@@ -1,181 +1,313 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visora – All in One</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background:#111; color:#eee; }
-    .navbar { background:#222; }
-    .card { background:#1c1c1c; border:none; border-radius:12px; }
-    .btn-main { background:#f9a825; color:black; font-weight:bold; }
-    .btn-main:hover { background:#ffca28; }
-    .section-title { margin:25px 0 15px; font-size:1.3rem; font-weight:bold; }
-    video { width:100%; border-radius:10px; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Visora — Quick Web Frontend</title>
+<link rel="icon" href="data:," />
+<style>
+  /* ===== Reset & base ===== */
+  :root{
+    --bg:#0f1114; --card:#16171b; --muted:#9aa0a6; --accent:#ffb400; --pill:#0e0f12;
+    --glass: rgba(255,255,255,0.02);
+    --radius:14px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:linear-gradient(180deg,#0b0c0f 0%, #0f1114 100%);
+    color:#eee; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    padding-bottom:84px;
+  }
+  .container{max-width:940px;margin:0 auto;padding:18px;}
+  /* ===== Card / header ===== */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .top-left{display:flex;align-items:center;gap:12px}
+  .hamb{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-weight:700}
+  h1{font-size:20px;margin:0}
+  .credits{background:linear-gradient(90deg,#0f2 0%, #1a61ff 100%);padding:10px;border-radius:12px;color:#051017;font-weight:700}
+  /* ===== hero ===== */
+  .hero{
+    position:relative;border-radius:16px;overflow:hidden;height:160px;background:#0b0b0b;margin-bottom:16px;
+    display:flex;align-items:flex-end;padding:16px;background-image:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.6));
+  }
+  .hero .banner-title{font-size:18px;font-weight:700}
+  .buttons-row{display:flex;gap:12px;margin-bottom:18px}
+  .card-btn{flex:1;background:linear-gradient(180deg,#2b6fb3,#2b8cd6);padding:18px;border-radius:12px;color:#fff;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,0.5)}
+  .card-btn.secondary{background:linear-gradient(180deg,#2b6fb3 0%, #4da1ff 100%);opacity:0.95}
+  /* ===== Effects row ===== */
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:8px 0 10px}
+  .cards{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+  .effect-card{min-width:120px;height:160px;border-radius:12px;background:var(--card);padding:10px;flex:0 0 auto}
+  .effect-card img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+  /* ===== Gallery / card list ===== */
+  .panel{background:var(--card);padding:14px;border-radius:12px;margin-bottom:14px}
+  .panel h3{margin:0 0 10px}
+  /* ===== Floating + menu ===== */
+  .fab{position:fixed;right:18px;bottom:28px;z-index:40}
+  .fab .btn{width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#051017;box-shadow:0 10px 24px rgba(0,0,0,0.4)}
+  .radial{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;display:none;z-index:45}
+  .radial.open{display:block}
+  .radial .row{display:flex;gap:22px;background:linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.45));padding:12px;border-radius:28px;backdrop-filter: blur(6px)}
+  .radial .icon{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center}
+  /* ===== bottom nav ===== */
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;background:linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.6));display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:30}
+  .nav-item{flex:1;text-align:center;color:var(--muted)}
+  .nav-item.active{color:var(--accent)}
+  /* ===== form styles ===== */
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], textarea, select{width:100%;padding:12px;border-radius:10px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.03);color:#eee}
+  textarea{min-height:110px}
+  .btn-yellow{background:var(--accent);padding:12px;border-radius:10px;color:#051017;font-weight:700;border:none}
+  .muted{color:var(--muted);font-size:13px}
+  .small{font-size:13px}
+  .spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,0.08);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* responsive */
+  @media(min-width:760px){ .container{max-width:760px} }
+</style>
 </head>
 <body>
+  <div class="container" id="app">
+    <div class="topbar">
+      <div class="top-left">
+        <div class="hamb" role="button" aria-label="menu">≡</div>
+        <div>
+          <h1>Visora</h1>
+          <div class="muted small">Demo user: demo@visora.com</div>
+        </div>
+      </div>
+      <div class="credits">Credits <strong id="credits">5</strong></div>
+    </div>
 
-<nav class="navbar navbar-dark px-3">
-  <a class="navbar-brand" href="#">Visora</a>
-  <span id="user-credits">Credits: --</span>
-</nav>
+    <div class="hero">
+      <div style="flex:1">
+        <div class="banner-title">Kiss. Bounce. Listen. Play.</div>
+        <div class="muted small">Four ways to make your day. Ready to play?</div>
+      </div>
+      <div style="width:110px;height:90px;border-radius:12px;background:linear-gradient(180deg,#00000066,#ffffff03);margin-left:12px"></div>
+    </div>
 
-<div class="container my-3">
+    <div class="buttons-row">
+      <button class="card-btn" id="btn-image">Image Generation</button>
+      <button class="card-btn secondary" id="btn-video">Video generation</button>
+    </div>
 
-  <!-- Profile -->
-  <div class="card p-3 mb-3">
-    <h4>👤 Profile</h4>
-    <div id="profileBox">Loading...</div>
+    <div class="panel" id="create-panel">
+      <h3>Create Video</h3>
+      <div class="small muted" style="margin-bottom:8px">Title</div>
+      <input id="title" type="text" placeholder="Video title" />
+      <div style="height:8px"></div>
+      <div class="small muted">Script</div>
+      <textarea id="script" placeholder="Type your script..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div style="flex:1">
+          <label class="small muted">Template</label>
+          <select id="template">
+            <option>Motivation</option><option>Promo</option><option>Explainer</option><option>Cinematic</option>
+          </select>
+        </div>
+        <div style="width:12px"></div>
+        <div style="flex:1">
+          <label class="small muted">Quality</label>
+          <select id="quality"><option>HD</option><option>FULLHD</option><option>4K</option></select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div style="flex:1">
+          <label class="small muted">Language</label>
+          <select id="lang"><option>hi</option><option>en</option><option>bn</option><option>ta</option></select>
+        </div>
+        <div style="width:12px"></div>
+        <div style="flex:1">
+          <label class="small muted">Video length</label>
+          <select id="lengthType"><option>short</option><option>long</option></select>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label class="small muted">Upload character images (multiple)</label>
+        <input id="characters" type="file" accept="image/*" multiple />
+      </div>
+      <div style="margin-top:8px">
+        <label class="small muted">Upload voice files (mp3,wav)</label>
+        <input id="voices" type="file" accept="audio/*" multiple />
+      </div>
+      <div style="margin-top:8px">
+        <label class="small muted">Background music</label>
+        <input id="bgmusic" type="file" accept="audio/*" />
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button id="btnRender" class="btn-yellow">Render</button>
+        <div id="statusText" class="muted small" style="margin-left:8px">Ready</div>
+      </div>
+    </div>
+
+    <div class="panel" id="gallery-panel">
+      <h3>Gallery</h3>
+      <div id="galleryArea" class="muted">Loading gallery...</div>
+      <div style="margin-top:10px"><button id="refreshGallery" class="btn-yellow" style="background:#333;color:#fff">Refresh Gallery</button></div>
+    </div>
+
+    <div class="section-title"><div class="muted">Effects</div><div class="small muted">More ▶</div></div>
+    <div class="cards" id="effectsRow" aria-hidden="false">
+      <!-- sample cards -->
+      <div class="effect-card"><img src="https://picsum.photos/300/400?random=1" alt="e1" /></div>
+      <div class="effect-card"><img src="https://picsum.photos/300/400?random=2" alt="e2" /></div>
+      <div class="effect-card"><img src="https://picsum.photos/300/400?random=3" alt="e3" /></div>
+      <div class="effect-card"><img src="https://picsum.photos/300/400?random=4" alt="e4" /></div>
+    </div>
+
   </div>
 
-  <!-- Create Character -->
-  <div class="card p-3 mb-3">
-    <h4>🧑‍🎤 Create Character</h4>
-    <form id="charForm">
-      <input class="form-control mb-2" name="name" placeholder="Character name" required>
-      <input type="file" name="photo" class="form-control mb-2" accept="image/*">
-      <input type="file" name="voice" class="form-control mb-2" accept="audio/*">
-      <button class="btn btn-main w-100">Save Character</button>
-    </form>
-    <div id="charList" class="mt-2"></div>
+  <!-- radial FAB -->
+  <div class="radial" id="radialMenu">
+    <div class="row">
+      <div class="icon" data-action="effects" title="Effects">✦</div>
+      <div class="icon" data-action="image2video" title="Image to Video">🎞</div>
+      <div class="icon" data-action="text2video" title="Text to Video">📝</div>
+      <div class="icon" data-action="aiimages" title="AI Images">🖼</div>
+      <div class="icon" data-action="lipsync" title="Lip Sync">💋</div>
+    </div>
+  </div>
+  <div class="fab">
+    <div class="btn" id="openFab">＋</div>
   </div>
 
-  <!-- Voices -->
-  <div class="card p-3 mb-3">
-    <h4>🎙 Voices</h4>
-    <form id="voiceForm">
-      <input type="file" name="file" class="form-control mb-2" accept="audio/*">
-      <button class="btn btn-main w-100">Upload Voice</button>
-    </form>
-    <div id="voiceList" class="mt-2"></div>
+  <!-- bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active">Home</div>
+    <div class="nav-item">Explore</div>
+    <div class="nav-item" style="transform:translateY(-18px)"><div style="width:56px;height:56px;border-radius:50%;background:#1b1b1b;display:flex;align-items:center;justify-content:center">＋</div></div>
+    <div class="nav-item">Assets</div>
+    <div class="nav-item">My Space</div>
   </div>
-
-  <!-- Create Video -->
-  <div class="card p-3 mb-3">
-    <h4>🎬 Create Video</h4>
-    <form id="videoForm">
-      <input class="form-control mb-2" name="title" placeholder="Video Title">
-      <textarea class="form-control mb-2" name="script" placeholder="Script"></textarea>
-      <select class="form-select mb-2" name="template" id="templateSelect"></select>
-      <select class="form-select mb-2" name="quality">
-        <option>HD</option><option>FullHD</option><option>4K</option>
-      </select>
-      <select class="form-select mb-2" name="length_type">
-        <option value="short">Short</option><option value="long">Long</option>
-      </select>
-      <input type="file" class="form-control mb-2" name="images" multiple>
-      <input type="file" class="form-control mb-2" name="voices" multiple>
-      <input type="file" class="form-control mb-2" name="bg_music">
-      <button class="btn btn-main w-100">Render</button>
-    </form>
-    <div id="renderStatus" class="mt-2 text-warning"></div>
-  </div>
-
-  <!-- Gallery -->
-  <h4 class="section-title">📂 Gallery</h4>
-  <div id="galleryRow" class="row"></div>
-
-  <!-- Templates -->
-  <h4 class="section-title">🔥 Trending Templates</h4>
-  <div id="trendingRow" class="row"></div>
-
-  <!-- Assistant -->
-  <div class="card p-3 mb-3">
-    <h4>🤖 Assistant</h4>
-    <textarea id="assistantQuery" class="form-control mb-2" placeholder="Ask for help..."></textarea>
-    <select id="toneSelect" class="form-select mb-2">
-      <option value="helpful">Helpful</option>
-      <option value="friendly">Friendly</option>
-      <option value="funny">Funny</option>
-    </select>
-    <button class="btn btn-main w-100" onclick="askAssistant()">Ask</button>
-    <div id="assistantReply" class="mt-2"></div>
-  </div>
-
-  <!-- Payments -->
-  <div class="card p-3 mb-3">
-    <h4>💳 Upgrade Plan</h4>
-    <button class="btn btn-main w-100" onclick="alert('Use Razorpay/PayPal integration on backend!')">Upgrade</button>
-  </div>
-
-</div>
 
 <script>
-const BASE_URL = "https://visora-backend.onrender.com"; // <-- अपना backend URL डालना
+/* ======= CONFIG =======
+   Set your backend base URL here. Example:
+   const BASE_URL = "https://visora.onrender.com";
+   If you host frontend on Render and backend on onrender, use the backend URL.
+*/
+const BASE_URL = "https://visora.onrender.com"; // <<< change this to your backend
 
-// Load profile
-fetch(BASE_URL+"/profile/demo@visora.com").then(r=>r.json()).then(u=>{
-  document.getElementById("profileBox").innerHTML =
-    `Email: ${u.email}<br>Name: ${u.name}<br>Plan: ${u.plan}<br>Credits: ${u.credits}`;
-  document.getElementById("user-credits").innerText = "Credits: "+u.credits;
+/* ======= small helpers ====== */
+const $ = (s) => document.querySelector(s);
+const el = (s) => document.createElement(s);
+function toast(msg, time=3000){ console.log("TOAST:", msg); const d=document.createElement('div'); d.textContent=msg; d.style.position='fixed'; d.style.left='50%'; d.style.transform='translateX(-50%)'; d.style.bottom='120px'; d.style.background='rgba(0,0,0,0.7)'; d.style.color='#fff'; d.style.padding='8px 12px'; d.style.borderRadius='8px'; d.style.zIndex=9999; document.body.appendChild(d); setTimeout(()=>d.remove(),time);}
+
+/* ======= UI logic ====== */
+document.getElementById('openFab').addEventListener('click', ()=> {
+  const r = document.getElementById('radialMenu'); r.classList.toggle('open');
 });
 
-// Characters
-function loadCharacters(){
-  fetch(BASE_URL+"/characters?user_email=demo@visora.com").then(r=>r.json()).then(cs=>{
-    document.getElementById("charList").innerHTML = cs.map(c=>`<div>${c.name} (${c.ai_style})</div>`).join("");
-  });
-}
-document.getElementById("charForm").onsubmit = async e=>{
-  e.preventDefault(); let fd=new FormData(e.target);
-  await fetch(BASE_URL+"/character",{method:"POST",body:fd});
-  loadCharacters();
-};
-loadCharacters();
+/* Render (submit) */
+const btnRender = document.getElementById('btnRender');
+const statusText = document.getElementById('statusText');
+btnRender.addEventListener('click', async ()=> {
+  try {
+    btnRender.disabled = true;
+    statusText.innerHTML = '<span class="spinner"></span> Sending...';
+    const title = document.getElementById('title').value || 'Untitled';
+    const script = document.getElementById('script').value || '';
+    const template = document.getElementById('template').value || 'Motivation';
+    const quality = document.getElementById('quality').value || 'HD';
+    const lang = document.getElementById('lang').value || 'hi';
+    const length_type = document.getElementById('lengthType').value || 'short';
+    const charFiles = document.getElementById('characters').files;
+    const voiceFiles = document.getElementById('voices').files;
+    const bgMusic = document.getElementById('bgmusic').files[0];
 
-// Voices
-function loadVoices(){
-  fetch(BASE_URL+"/voices?user_email=demo@visora.com").then(r=>r.json()).then(vs=>{
-    document.getElementById("voiceList").innerHTML = vs.map(v=>`<div>${v.name}</div>`).join("");
-  });
-}
-document.getElementById("voiceForm").onsubmit = async e=>{
-  e.preventDefault(); let fd=new FormData(e.target);
-  await fetch(BASE_URL+"/voice",{method:"POST",body:fd}); loadVoices();
-};
-loadVoices();
+    const fd = new FormData();
+    fd.append('user_email','demo@visora.com');
+    fd.append('title', title);
+    fd.append('script', script);
+    fd.append('template', template);
+    fd.append('quality', quality);
+    fd.append('lang', lang);
+    fd.append('length_type', length_type);
 
-// Templates
-fetch(BASE_URL+"/templates/trending").then(r=>r.json()).then(ts=>{
-  let row=document.getElementById("trendingRow");
-  row.innerHTML=ts.map(t=>`<div class="col-6 col-md-3 mb-2"><div class="card p-2 text-center">${t.name}</div></div>`).join("");
-  document.getElementById("templateSelect").innerHTML=ts.map(t=>`<option>${t.name}</option>`).join("");
+    for(let i=0;i<charFiles.length;i++){
+      fd.append('characters', charFiles[i], charFiles[i].name);
+    }
+    for(let i=0;i<voiceFiles.length;i++){
+      fd.append('character_voice_files', voiceFiles[i], voiceFiles[i].name);
+    }
+    if(bgMusic) fd.append('bg_music_file', bgMusic, bgMusic.name);
+
+    // send request
+    const res = await fetch(BASE_URL + '/generate_video', { method:'POST', body: fd });
+    const json = await res.json().catch(()=>({error:'invalid-json'}));
+    if(res.ok){
+      statusText.textContent = 'Render requested';
+      toast('Render requested. Check gallery after a few minutes');
+      if(json && json.download_url){
+        // show url
+        const a = document.createElement('a'); a.href = json.download_url; a.textContent='Download result'; a.target='_blank';
+        statusText.innerHTML='Result available: '; statusText.appendChild(a);
+      }
+    } else {
+      statusText.textContent = 'Render failed';
+      toast('Render failed: ' + (json.error || res.statusText || JSON.stringify(json)));
+      console.error(json);
+    }
+  } catch(err){
+    console.error(err);
+    toast('Error: ' + err.message);
+    statusText.textContent = 'Error';
+  } finally {
+    btnRender.disabled = false;
+  }
 });
 
-// Gallery
-function loadGallery(){
-  fetch(BASE_URL+"/gallery?user_email=demo@visora.com").then(r=>r.json()).then(vs=>{
-    let row=document.getElementById("galleryRow");
-    row.innerHTML=vs.map(v=>`
-      <div class="col-6 col-md-4 mb-2">
-        <div class="card p-2">
-          <video src="${BASE_URL}/outputs/${v.file}" controls></video>
-          <small>${v.title} - ${v.status}</small>
-        </div>
-      </div>`).join("");
-  });
+/* ===== Gallery ===== */
+async function loadGallery(){
+  const area = document.getElementById('galleryArea');
+  area.textContent = 'Loading...';
+  try{
+    const resp = await fetch(BASE_URL + '/gallery?user_email=demo@visora.com');
+    if(!resp.ok) throw new Error('Failed to fetch gallery: ' + resp.status);
+    const arr = await resp.json();
+    if(!Array.isArray(arr) || arr.length===0){ area.textContent = 'No videos yet'; return; }
+    const grid = document.createElement('div'); grid.style.display='grid'; grid.style.gridTemplateColumns='1fr 1fr'; grid.style.gap='8px';
+    arr.forEach(v=>{
+      const c = document.createElement('div'); c.style.background='rgba(255,255,255,0.02)'; c.style.padding='8px'; c.style.borderRadius='10px';
+      const title = document.createElement('div'); title.textContent = v.title || 'Untitled'; title.style.fontWeight='700';
+      const sub = document.createElement('div'); sub.textContent = (v.status||'') + (v.file? ' • has file':''); sub.className='muted small';
+      const btn = document.createElement('button'); btn.textContent='Open'; btn.className='btn-yellow'; btn.style.marginTop='8px';
+      btn.addEventListener('click', ()=>{ if(v.file){ window.open(BASE_URL + '/outputs/' + v.file, '_blank'); } else toast('No file yet'); });
+      c.appendChild(title); c.appendChild(sub); c.appendChild(btn); grid.appendChild(c);
+    });
+    area.innerHTML=''; area.appendChild(grid);
+  }catch(e){
+    console.error(e); area.textContent = 'Error loading gallery: ' + (e.message||e);
+  }
 }
+document.getElementById('refreshGallery').addEventListener('click', loadGallery);
 loadGallery();
 
-// Video render
-document.getElementById("videoForm").onsubmit=async e=>{
-  e.preventDefault(); let fd=new FormData(e.target);
-  document.getElementById("renderStatus").innerText="Submitting...";
-  let r=await fetch(BASE_URL+"/generate_video",{method:"POST",body:fd});
-  let d=await r.json(); document.getElementById("renderStatus").innerText=JSON.stringify(d);
-  setTimeout(loadGallery,3000);
-};
-
-// Assistant
-async function askAssistant(){
-  let q=document.getElementById("assistantQuery").value;
-  let tone=document.getElementById("toneSelect").value;
-  let r=await fetch(BASE_URL+"/assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q,tone})});
-  let d=await r.json(); document.getElementById("assistantReply").innerText=d.reply;
+/* ===== set credits from profile ===== */
+async function loadProfile(){
+  try{
+    const res = await fetch(BASE_URL + '/profile/demo@visora.com');
+    if(res.ok){
+      const j = await res.json();
+      if(j.credits) document.getElementById('credits').textContent = j.credits;
+    }
+  }catch(e){ console.log('profile load err',e) }
 }
-</script>
+loadProfile();
 
+/* ===== CORS note (if needed) =====
+   If you get CORS errors on deploy, enable CORS on your Flask backend:
+   pip install flask-cors
+   from flask_cors import CORS
+   CORS(app, resources={r"/*": {"origins": "*"}})
+   (Better: set allowed origins only to your frontend domain)
+*/
+
+</script>
 </body>
 </html>
