@@ -1,6 +1,2 @@
-package com.visora.app;
-
-import io.flutter.embedding.android.FlutterActivity;
-
-public class MainActivity extends FlutterActivity {
-}
+import io.flutter.app.FlutterActivity;
+public class MainActivity extends FlutterActivity { ... }
