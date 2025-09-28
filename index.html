@@ -1,126 +1,229 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visora Frontend</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora - Quick Web Frontend</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
+    :root{
+      --bg:#14151B;--card:#1F2026;--muted:#9AA0A6;--accent:#FFB400;--text:#EAECEF;
     }
-    input, textarea, select, button {
-      margin: 8px;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-    input, textarea, select {
-      width: 90%;
-    }
-    button {
-      background: #f5a623;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 10px;
-      background: #222;
-      border-radius: 6px;
-    }
+    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text);}
+    .container{max-width:900px;margin:24px auto;padding:16px;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+    label{display:block;margin-top:10px;color:var(--muted);font-size:13px}
+    input[type=text],textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:#0f1113;color:var(--text)}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    button{background:var(--accent);border:0;padding:10px 14px;border-radius:8px;color:#111;font-weight:700;cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+    .small{font-size:13px;color:var(--muted)}
+    .files-list{margin-top:8px;color:var(--muted);font-size:13px}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+    .thumb{background:#0b0b0c;padding:6px;border-radius:8px;display:flex;flex-direction:column;gap:6px}
+    .thumb video,.thumb img{width:100%;height:100px;object-fit:cover;border-radius:6px}
+    .center{display:flex;justify-content:center;align-items:center}
+    footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+    @media(max-width:520px){.row{flex-direction:column}}
   </style>
 </head>
 <body>
-  <h1>🎬 Visora Video Generator</h1>
   <div class="container">
-    <form id="videoForm">
-      <input type="text" id="title" placeholder="Video Title" required><br>
-      <textarea id="script" placeholder="Enter script..." rows="4" required></textarea><br>
-      
-      <label>Template:</label>
-      <select id="template">
-        <option value="Motivation">Motivation</option>
-        <option value="Promo">Promo</option>
-        <option value="Explainer">Explainer</option>
-        <option value="Cinematic">Cinematic</option>
-      </select><br>
+    <header>
+      <h1>Visora — Quick Web Frontend</h1>
+      <div class="muted">Demo user: demo@visora.com</div>
+    </header>
 
-      <label>Quality:</label>
-      <select id="quality">
-        <option value="HD">HD</option>
-        <option value="FULLHD">FULL HD</option>
-        <option value="4K">4K</option>
-      </select><br>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Credits</div>
+          <div style="font-weight:800;color:#6EE7B7">5</div>
+        </div>
+        <button id="upgradeBtn">Upgrade</button>
+      </div>
+    </div>
 
-      <label>Language:</label>
-      <select id="lang">
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-        <option value="bn">Bengali</option>
-        <option value="ta">Tamil</option>
-      </select><br>
+    <div style="height:12px"></div>
 
-      <label>Length:</label>
-      <select id="length_type">
-        <option value="short">Short</option>
-        <option value="long">Long</option>
-      </select><br>
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Create Video</h3>
 
-      <button type="submit">🎥 Generate Video</button>
-    </form>
+      <label>Title</label>
+      <input id="title" type="text" placeholder="Video title" />
 
-    <div id="output" class="result"></div>
+      <label>Script</label>
+      <textarea id="script" placeholder="Type your script..."></textarea>
+
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label>Template</label>
+          <select id="template">
+            <option>Motivation</option>
+            <option>Promo</option>
+            <option>Explainer</option>
+            <option>Cinematic</option>
+          </select>
+        </div>
+        <div>
+          <label>Quality</label>
+          <select id="quality"><option>HD</option><option>FULLHD</option><option>4K</option></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Language</label>
+          <select id="lang"><option value="hi">hi</option><option value="en">en</option><option value="bn">bn</option><option value="ta">ta</option></select>
+        </div>
+        <div>
+          <label>Video length</label>
+          <select id="length"><option value="short">short</option><option value="long">long</option></select>
+        </div>
+      </div>
+
+      <label>Upload character images (multiple)</label>
+      <input id="characters" type="file" accept="image/*" multiple />
+
+      <label>Upload voice files (mp3,wav)</label>
+      <input id="voices" type="file" accept=".mp3,.wav,.m4a,.ogg" multiple />
+
+      <label>Background music</label>
+      <input id="bgmusic" type="file" accept=".mp3,.wav,.m4a,.ogg" />
+
+      <div style="margin-top:12px" class="center">
+        <button id="renderBtn">Render</button>
+      </div>
+
+      <div id="status" class="small" style="margin-top:8px;color:var(--muted)">Ready</div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Gallery</h3>
+      <div id="gallery" class="gallery">
+        <!-- thumbnails -->
+      </div>
+      <div style="margin-top:10px" class="center">
+        <button id="refreshGallery">Refresh Gallery</button>
+      </div>
+    </div>
+
+    <footer>Visora quick web frontend • Use your backend BASE_URL</footer>
   </div>
 
-  <script>
-    const BASE_URL = "https://aivideoapp-kzp6.onrender.com";
+<script>
+  // ====== SET YOUR BACKEND URL HERE ======
+  const BASE_URL = 'https://aivideoapp-kzp6.onrender.com'; // <-- change if needed
+  // =======================================
 
-    document.getElementById("videoForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      document.getElementById("output").innerHTML = "⏳ Generating video... Please wait.";
+  const titleEl = document.getElementById('title');
+  const scriptEl = document.getElementById('script');
+  const templateEl = document.getElementById('template');
+  const qualityEl = document.getElementById('quality');
+  const langEl = document.getElementById('lang');
+  const lengthEl = document.getElementById('length');
+  const charsEl = document.getElementById('characters');
+  const voicesEl = document.getElementById('voices');
+  const bgEl = document.getElementById('bgmusic');
+  const statusEl = document.getElementById('status');
+  const renderBtn = document.getElementById('renderBtn');
+  const galleryEl = document.getElementById('gallery');
+  const refreshBtn = document.getElementById('refreshGallery');
 
-      let data = {
-        user_email: "demo@visora.com",
-        title: document.getElementById("title").value,
-        script: document.getElementById("script").value,
-        template: document.getElementById("template").value,
-        quality: document.getElementById("quality").value,
-        lang: document.getElementById("lang").value,
-        length_type: document.getElementById("length_type").value
-      };
+  async function fetchGallery(){
+    galleryEl.innerHTML = 'Loading...';
+    try {
+      const res = await fetch(BASE_URL + '/gallery?user_email=demo@visora.com');
+      if(!res.ok) throw new Error('Gallery fetch failed ' + res.status);
+      const data = await res.json();
+      renderGallery(data || []);
+    } catch(err) {
+      galleryEl.innerHTML = '<div class="small">Error loading gallery: ' + err.message + '</div>';
+    }
+  }
 
-      try {
-        let res = await fetch(BASE_URL + "/generate_video", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        let result = await res.json();
-        if (res.ok) {
-          document.getElementById("output").innerHTML = `
-            ✅ Video Rendered Successfully! <br>
-            <a href="${result.download_url}" target="_blank">Download Video</a>
-          `;
-        } else {
-          document.getElementById("output").innerHTML = "❌ Error: " + (result.error || res.status);
-        }
-      } catch (err) {
-        document.getElementById("output").innerHTML = "⚠️ Failed: " + err.message;
+  function renderGallery(items){
+    if(!items || items.length===0){
+      galleryEl.innerHTML = '<div class="small">No videos yet</div>';
+      return;
+    }
+    galleryEl.innerHTML = '';
+    items.forEach(v=>{
+      const d = document.createElement('div'); d.className='thumb';
+      const title = document.createElement('div'); title.textContent = v.title || 'Untitled'; title.style.fontSize='13px';
+      if(v.thumbnail_url){
+        const img = document.createElement('img'); img.src = v.thumbnail_url; d.appendChild(img);
+      } else if (v.download_url && v.download_url.endsWith('.mp4')) {
+        const vid = document.createElement('video'); vid.src = v.download_url; vid.controls = true; d.appendChild(vid);
       }
-    });
-  </script>
+      d.appendChild(title);
+      const btn = document.createElement('button'); btn.textContent='Open'; btn.onclick = ()=>window.open(v.download_url || '#','_blank');
+      d.appendChild(btn);
+      galleryEl.appendChild(d);
+    })
+  }
+
+  async function submitRender(){
+    if(renderBtn.disabled) return;
+    renderBtn.disabled = true; statusEl.textContent = 'Preparing...';
+    try {
+      const form = new FormData();
+      form.append('user_email','demo@visora.com');
+      form.append('title', titleEl.value || 'Untitled');
+      form.append('script', scriptEl.value || '');
+      form.append('template', templateEl.value);
+      form.append('quality', qualityEl.value);
+      form.append('lang', langEl.value);
+      form.append('length_type', lengthEl.value);
+
+      // add image files
+      for(let i=0;i<charsEl.files.length;i++){
+        form.append('characters', charsEl.files[i], charsEl.files[i].name);
+      }
+      for(let i=0;i<voicesEl.files.length;i++){
+        form.append('character_voice_files', voicesEl.files[i], voicesEl.files[i].name);
+      }
+      if(bgEl.files.length>0){
+        form.append('bg_music_file', bgEl.files[0], bgEl.files[0].name);
+      }
+
+      statusEl.textContent = 'Uploading... (this can take time)';
+      // Increase timeout on server if needed; here we do simple fetch
+      const resp = await fetch(BASE_URL + '/generate_video', { method:'POST', body: form });
+      if(!resp.ok){
+        const txt = await resp.text();
+        throw new Error('Server failed: ' + resp.status + ' ' + txt);
+      }
+      const data = await resp.json();
+      statusEl.textContent = 'Render queued/finished';
+      if(data.download_url){
+        alert('Render finished. Download: ' + data.download_url);
+      } else {
+        alert('Render queued. Check gallery later.');
+      }
+      // refresh gallery
+      fetchGallery();
+    } catch(err){
+      console.error(err);
+      statusEl.textContent = 'Error: ' + err.message;
+      alert('Error: ' + err.message);
+    } finally {
+      renderBtn.disabled = false;
+    }
+  }
+
+  // wire buttons
+  renderBtn.addEventListener('click', submitRender);
+  refreshBtn.addEventListener('click', fetchGallery);
+
+  // on load
+  fetchGallery();
+</script>
 </body>
 </html>
+
