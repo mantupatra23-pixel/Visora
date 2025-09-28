@@ -2,17 +2,11 @@
 """
 Visora - Single-file Flask backend (production-like)
 
-Features included:
-- SQLite by default (Postgres via DATABASE_URL)
-- Uploads under ./uploads, outputs under ./outputs, tmp under ./tmp
-- Save / list characters & voices (user can re-use)
-- Per-character TTS (gTTS) fallback; user voice upload priority
-- MoviePy renderer (naive lip-sync effect)
-- Background render queue (threading) with job status endpoints
-- One-click auto-create endpoint (/auto_create) that fills characters/templates
-- Assistant endpoint with tone (friendly/funny/helpful) and TTS reply
-- Gallery, trending templates, edit endpoints, payment stubs (PayPal/Razorpay)
-- No login/register (as requested). Demo user = demo@visora.com
+Usage:
+  - pip install -r requirements.txt
+  - set env vars for PAYPAL/RAZORPAY if needed
+  - ensure ffmpeg available if you want movie rendering (moviepy)
+  - run: python app.py
 """
 
 import os
@@ -75,7 +69,7 @@ try:
 except Exception as e:
     log.warning("gTTS unavailable: %s", e)
 
-# Payment env (set as needed)
+# Payment env (optional)
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
@@ -187,7 +181,7 @@ def _abs_path(rel_or_abs: str) -> str:
         p = BASE_DIR / rel_or_abs
     return str(p.resolve())
 
-# ---------- Simple lip-sync-like clip ----------
+# ---------- Movie helpers (lip-sync like) ----------
 def create_lip_sync_like_clip(image_path: str, duration: float, size_width: int = 1280):
     if not MOVIEPY_AVAILABLE:
         raise RuntimeError("MoviePy not available")
@@ -249,9 +243,9 @@ def render_video_multi_characters(image_rel_paths: List[str], audio_rel_paths: L
         try: a.close()
         except: pass
 
-# ---------- Background render queue (simple) ----------
+# ---------- Background render queue ----------
 render_queue: "Queue[Dict[str,Any]]" = Queue()
-render_jobs: Dict[str, Dict[str,Any]] = {}  # job_id -> meta/status
+render_jobs: Dict[str, Dict[str,Any]] = {}
 
 def render_worker():
     while True:
@@ -263,7 +257,6 @@ def render_worker():
         job_id = job.get("job_id")
         log.info("Worker picked job %s", job_id)
         try:
-            # perform rendering (same logic as synchronous endpoint)
             image_rel_paths = job["images"]
             audio_rel_paths = job["audios"]
             bg_rel = job.get("bg")
@@ -280,18 +273,16 @@ def render_worker():
         finally:
             render_queue.task_done()
 
-# start worker thread (daemon)
 worker_thread = threading.Thread(target=render_worker, daemon=True)
 worker_thread.start()
 
-# ---------- Simple assistant text generator ----------
+# ---------- Small assistant ----------
 def assistant_generate(query: str, tone: str = "helpful") -> str:
-    # lightweight rule-based reply — replace with LLM in future
-    base = f"Suggestion: Make the opening line punchy and include a short call-to-action. You asked: {query}"
+    base = f"Suggestion: Make the opening line punchy and add a short CTA. You asked: {query}"
     if tone == "funny":
-        return f"Okay comedian mode ON 🤪 — Start with a hook like 'Did you know...' and end with 'Click to see the magic!' — Also: {query}"
+        return f"Okay funny mode 😂 — Start with 'Guess what...' and add a one-line CTA. You asked: {query}"
     if tone == "friendly":
-        return f"Hey! Try opening with a friendly greeting, then one quick benefit. Example start: 'Hi, I'm excited to share...' — You said: {query}"
+        return f"Hi! Try a friendly start: 'Hey, I found this...' — You said: {query}"
     return base
 
 # ---------- Routes ----------
@@ -316,7 +307,7 @@ def uploaded_file(filename):
 def output_file(filename):
     return send_from_directory(app.config["OUTPUT_FOLDER"], filename)
 
-# ---------- Profiles ----------
+# Profiles
 @app.route("/profile/<string:email>", methods=["GET"])
 def get_profile(email):
     u = UserProfile.query.filter_by(email=email).first()
@@ -338,10 +329,9 @@ def upsert_profile():
     db.session.commit()
     return jsonify({"message":"ok","email":u.email})
 
-# ---------- Characters & Voices CRUD ----------
+# Character upload
 @app.route("/character", methods=["POST"])
 def upload_character():
-    # files: photo (image), optional voice (audio)
     user_email = request.form.get("user_email","demo@visora.com")
     name = request.form.get("name","My Character")
     ai_style = request.form.get("ai_style","real")
@@ -369,36 +359,33 @@ def list_characters():
         out.append({"id":c.id,"name":c.name,"photo":c.photo_path,"voice":c.voice_path,"ai_style":c.ai_style,"mood":c.mood})
     return jsonify(out)
 
+# Voices (raw upload)
 @app.route("/voice", methods=["POST"])
 def upload_voice():
     user_email = request.form.get("user_email","demo@visora.com")
-    name = request.form.get("name","Custom Voice")
     if "file" not in request.files:
         return jsonify({"error":"no file"}), 400
     f = request.files["file"]
     if not allowed_file(f.filename, ALLOWED_AUDIO_EXT):
         return jsonify({"error":"bad file"}), 400
     rel = save_upload(f, "user_voices")
-    # save as a character-less voice (UserCharacter optional). Here we return path and user can attach later.
     return jsonify({"saved": rel, "url": url_for("uploaded_file", filename=str(Path(rel).name), _external=True)})
 
 @app.route("/voices", methods=["GET"])
 def list_voices():
     user = request.args.get("user_email","demo@visora.com")
-    # list voices from UserCharacter.voice_path and user_voices folder
     chars = UserCharacter.query.filter_by(user_email=user).all()
     result = []
     for c in chars:
         if c.voice_path:
             result.append({"source":"character","path":c.voice_path,"character_id":c.id,"name":c.name})
-    # also list raw files in uploads/user_voices
     uvdir = Path(app.config["UPLOAD_FOLDER"]) / "user_voices"
     if uvdir.exists():
         for f in uvdir.iterdir():
             result.append({"source":"file","path": str(Path("user_voices")/f.name),"name":f.name})
     return jsonify(result)
 
-# ---------- Templates / Trending ----------
+# Templates
 @app.route("/templates", methods=["GET"])
 def list_templates():
     t = TemplateCatalog.query.order_by(TemplateCatalog.trending_score.desc()).all()
@@ -411,17 +398,22 @@ def trending_templates():
     out = [{"name":x.name,"category":x.category,"thumbnail":x.thumbnail,"score":x.trending_score} for x in t]
     return jsonify(out)
 
-# ---------- Gallery ----------
+# Gallery
 @app.route("/gallery", methods=["GET"])
 def gallery():
     user = request.args.get("user_email","demo@visora.com")
     vids = UserVideo.query.filter_by(user_email=user).order_by(UserVideo.created_at.desc()).all()
     out = []
     for v in vids:
-        out.append({"id":v.id,"title":v.title,"status":v.status,"file":v.file_path,"created_at": v.created_at.isoformat(), "meta": json.loads(v.meta_json) if v.meta_json else {}})
+        meta = {}
+        try:
+            meta = json.loads(v.meta_json) if v.meta_json else {}
+        except Exception:
+            meta = {}
+        out.append({"id":v.id,"title":v.title,"status":v.status,"file":v.file_path,"created_at": v.created_at.isoformat(), "meta": meta})
     return jsonify(out)
 
-# ---------- Preview voice (gTTS) ----------
+# Preview voice (gTTS)
 @app.route("/preview_voice", methods=["POST"])
 def preview_voice():
     if not GTTS_AVAILABLE:
@@ -440,12 +432,12 @@ def preview_voice():
         log.exception("TTS error")
         return jsonify({"error":"TTS failed","details":str(e)}),500
 
-# ---------- Assistant ----------
+# Assistant
 @app.route("/assistant", methods=["POST"])
 def assistant():
     data = request.get_json() or {}
     q = data.get("query","")
-    tone = data.get("tone","helpful")  # helpful|friendly|funny
+    tone = data.get("tone","helpful")
     lang = data.get("lang","hi")
     reply = assistant_generate(q, tone=tone)
     audio_url = None
@@ -462,7 +454,7 @@ def assistant():
             audio_url = None
     return jsonify({"reply": reply, "audio_url": audio_url})
 
-# ---------- Payments (stubs) ----------
+# Payments stubs
 @app.route("/create_paypal_order", methods=["POST"])
 def create_paypal_order():
     return jsonify({"error":"use your PayPal server integration; this is a stub"}), 501
@@ -471,304 +463,156 @@ def create_paypal_order():
 def create_razorpay_order():
     return jsonify({"error":"use your Razorpay server integration; this is a stub"}), 501
 
-# ---------- Core: generate video (enqueue) ----------
+# Job status
+@app.route("/job_status", methods=["GET"])
+def job_status():
+    job_id = request.args.get("job_id")
+    if not job_id or job_id not in render_jobs:
+        return jsonify({"error":"job_id missing or not found"}), 404
+    return jsonify(render_jobs[job_id])
+
+# Core: generate_video (enqueue)
 @app.route("/generate_video", methods=["POST"])
 def generate_video():
     """
-    Expects form-data:
-    - user_email, title, script, template, quality, length_type, lang
-    - characters[] image files (or existing paths via characters_paths[]), character_voice_files[] (optional)
-    - bg_music_file (optional) or bg_music (preset name)
-    - auto (optional): if "true" -> API will auto-assign splits etc.
-    Response returns job_id immediately.
+    Form-data expected:
+    - user_email (optional)
+    - title
+    - script
+    - template
+    - quality
+    - length_type
+    - lang
+    - bg_music_file (optional file)
+    - bg_music (preset name)
+    - characters[] (image files)
+    - character_voice_files[] (optional audio files)
+    - voice_type[] (optional)
     """
     user_email = request.form.get("user_email","demo@visora.com")
     title = request.form.get("title") or f"Video {datetime.utcnow().isoformat()}"
-    script = request.form.get("script","")
+    script = request.form.get("script","") or ""
     template = request.form.get("template","Default")
     quality = request.form.get("quality","HD")
     length_type = request.form.get("length_type","short")
     lang = request.form.get("lang","hi")
-    auto_mode = request.form.get("auto","false").lower() == "true"
+    bg_choice = request.form.get("bg_music","")
 
     # create DB record
-    video = UserVideo(user_email=user_email, title=title, script=script, template=template, quality=quality, length_type=length_type, background_music=request.form.get("bg_music",""), status="queued")
+    video = UserVideo(user_email=user_email, title=title, script=script, template=template,
+                      quality=quality, length_type=length_type, background_music=bg_choice, status="queued")
     db.session.add(video); db.session.commit()
 
-    job_id = f"job_{video.id}_{uuid.uuid4().hex[:6]}"
-    render_jobs[job_id] = {"status":"queued","video_id": video.id, "created_at": datetime.utcnow().isoformat()}
+    job_id = f"video_{video.id}_{uuid.uuid4().hex[:6]}"
+    render_jobs[job_id] = {"status":"queued", "video_id": video.id, "created_at": datetime.utcnow().isoformat()}
 
-    # Handle character uploads or reuse existing paths
+    # Save character images
     image_rel_paths = []
     if "characters" in request.files:
         files = request.files.getlist("characters")
         for f in files:
             if f and allowed_file(f.filename, ALLOWED_IMAGE_EXT):
                 image_rel_paths.append(save_upload(f, "characters"))
-    elif request.form.getlist("characters_paths"):
-        image_rel_paths = request.form.getlist("characters_paths")
 
-    # If none, try template thumbnail or create placeholder
+    # If none, use template thumbnail or placeholder
     if not image_rel_paths:
         tc = TemplateCatalog.query.filter_by(name=template).first()
         if tc and tc.thumbnail:
             image_rel_paths = [tc.thumbnail]
         else:
-            from PIL import Image
-            placeholder = Path(app.config["TMP_FOLDER"]) / f"{job_id}_ph.png"
-            img = Image.new("RGB",(1280,720),(245,245,245))
-            img.save(placeholder)
-            image_rel_paths = [str(placeholder.relative_to(BASE_DIR))]
+            # placeholder
+            try:
+                from PIL import Image
+                placeholder = Path(app.config["TMP_FOLDER"]) / f"{job_id}_ph.png"
+                img = Image.new("RGB",(1280,720),(245,245,245))
+                img.save(placeholder)
+                image_rel_paths = [str(placeholder.relative_to(BASE_DIR))]
+            except Exception as e:
+                log.exception("placeholder failed")
+                video.status="failed"; db.session.commit()
+                render_jobs[job_id]["status"] = "failed"
+                render_jobs[job_id]["error"] = "placeholder creation failed"
+                return jsonify({"status":"error","message":"no characters and placeholder failed","details":str(e)}),400
 
-    # Character voice uploads or paths
-    char_voice_files = []
-    if "character_voice_files" in request.files:
-        vfiles = request.files.getlist("character_voice_files")
-        for vf in vfiles:
-            if vf and allowed_file(vf.filename, ALLOWED_AUDIO_EXT):
-                char_voice_files.append(save_upload(vf, "user_voices"))
-    elif request.form.getlist("character_voice_paths"):
-        char_voice_files = request.form.getlist("character_voice_paths")
-
-    # bg music
+    # BG music
     bg_rel = None
     if "bg_music_file" in request.files:
         f = request.files.get("bg_music_file")
         if f and allowed_file(f.filename, ALLOWED_AUDIO_EXT):
             bg_rel = save_upload(f, "music")
     else:
-        bg_choice = request.form.get("bg_music","")
         if bg_choice:
             p = Path(app.config["UPLOAD_FOLDER"]) / "music" / f"{bg_choice}.mp3"
-            if p.exists():
-                bg_rel = str(Path("music")/p.name)
+            if p.exists(): bg_rel = str(Path("music")/p.name)
 
-    # split script into char_texts
-    char_texts = []
-    n_chars = max(1, len(image_rel_paths))
-    markers = [f"[C{i+1}]:" for i in range(n_chars)]
-    if any(m in script for m in markers):
-        remaining = script
-        for m in markers:
-            idx = remaining.find(m)
-            if idx == -1:
-                char_texts.append("")
-                continue
-            nxt_positions = [remaining.find(x, idx+1) for x in markers if remaining.find(x, idx+1) != -1]
-            next_pos = min(nxt_positions) if nxt_positions else len(remaining)
-            part = remaining[idx+len(m):next_pos].strip()
-            char_texts.append(part)
-    else:
-        # naive split by sentences/words
-        sentences = [s.strip() for s in script.replace("\r","\n").split("\n") if s.strip()]
-        if not sentences:
-            words = script.split()
-            if not words:
-                char_texts = ["Hello from Visora"] + [""]*(n_chars-1)
-            else:
-                per = max(1, len(words)//n_chars)
-                for i in range(n_chars):
-                    part_words = words[i*per:(i+1)*per] if i < n_chars-1 else words[i*per:]
-                    char_texts.append(" ".join(part_words).strip())
-        else:
-            char_texts = [""]*n_chars
-            for idx, s in enumerate(sentences):
-                char_texts[idx % n_chars] += (s + " ")
-            char_texts = [c.strip() for c in char_texts]
-
-    while len(char_texts) < n_chars:
-        char_texts.append("")
-
-    # Build audio paths per character: uploaded voice else generate gTTS fallback
-    audio_rel_paths = []
-    for i in range(n_chars):
-        if i < len(char_voice_files) and char_voice_files[i]:
-            audio_rel_paths.append(char_voice_files[i])
-            continue
-        text_for_char = char_texts[i] if i < len(char_texts) else ""
-        if not text_for_char.strip():
-            # short silent TTS using space if gTTS available or empty tiny file fallback
-            if GTTS_AVAILABLE:
-                try:
-                    tmp = Path(app.config["TMP_FOLDER"]) / f"{job_id}_empty_{i}.mp3"
-                    gTTS(" ", lang=lang).save(str(tmp))
-                    dest = Path(app.config["UPLOAD_FOLDER"]) / "audio" / tmp.name
-                    dest.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.move(str(tmp), str(dest))
-                    audio_rel_paths.append(str(Path("audio")/dest.name))
-                    continue
-                except Exception:
-                    pass
-            p = Path(app.config["TMP_FOLDER"]) / f"{job_id}_silent_{i}.mp3"
-            p.write_bytes(b"")
-            audio_rel_paths.append(str(p.relative_to(BASE_DIR)))
-            continue
-        if not GTTS_AVAILABLE:
-            return jsonify({"error":"gTTS not available and no user voice uploaded"}), 500
-        try:
-            tmp = Path(app.config["TMP_FOLDER"]) / f"{job_id}_{i}_{uuid.uuid4().hex}.mp3"
-            gTTS(text_for_char, lang=lang).save(str(tmp))
-            dest = Path(app.config["UPLOAD_FOLDER"]) / "audio" / tmp.name
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(tmp), str(dest))
-            audio_rel_paths.append(str(Path("audio")/dest.name))
-        except Exception as e:
-            log.exception("TTS fail")
-            return jsonify({"error":"TTS failed","details":str(e)}),500
-
-    # prepare output path
-    out_name = f"visora_video_{video.id}.mp4"
-    out_abs = str((Path(app.config["OUTPUT_FOLDER"]) / out_name).resolve())
-
-    # enqueue render job
-    job_payload = {"job_id": job_id, "images": image_rel_paths, "audios": audio_rel_paths, "bg": bg_rel, "out_abs": out_abs, "quality": quality}
-    render_jobs[job_id]["status"] = "queued"
-    render_jobs[job_id]["payload"] = {"video_id": video.id, "title": title}
-    render_queue.put(job_payload)
-
-    # update db video status
-    video.status = "queued"
-    db.session.commit()
-
-    return jsonify({"job_id": job_id, "video_id": video.id, "status_url": url_for("job_status", job_id=job_id, _external=True)}), 202
-
-# ---------- Job status ----------
-@app.route("/job/<string:job_id>", methods=["GET"])
-def job_status(job_id):
-    j = render_jobs.get(job_id)
-    if not j:
-        return jsonify({"error":"job not found"}), 404
-    return jsonify(j)
-
-# ---------- Auto-create (one-click) ----------
-@app.route("/auto_create", methods=["POST"])
-def auto_create():
-    """
-    Convenience endpoint: provide script + (optional) style and Visora will pick template,
-    characters, voices automatically (uses simple heuristics). Enqueues a job and returns job_id.
-    """
-    data = request.get_json() or {}
-    script = data.get("script","")
-    lang = data.get("lang","hi")
-    # choose template heuristics
-    template = "Narration"
-    if any(k in script.lower() for k in ["buy", "sale", "discount", "promo", "launch"]):
-        template = "Promo"
-    if any(k in script.lower() for k in ["how to","tutorial","guide","explain"]):
-        template = "Explainer"
-    if any(k in script.lower() for k in ["congrats","birthday","happy"]):
-        template = "Cinematic"
-    # create a fake form-data style call by reusing generate_video internals
-    # We'll create 1-2 placeholder characters based on sentence count
-    # Build a pseudo-request: call generate_video logic by constructing a POST-like context
-    from flask import current_app
-    # create temp images (placeholders)
-    num_chars = 1 if len(script.split()) < 30 else min(3, max(1, len(script.split())//30))
-    placeholder_images = []
-    for i in range(num_chars):
-        ph = Path(app.config["TMP_FOLDER"]) / f"auto_ph_{uuid.uuid4().hex[:6]}_{i}.png"
-        try:
-            from PIL import Image, ImageDraw, ImageFont
-            img = Image.new("RGB",(1280,720),(240,240,240))
-            d = ImageDraw.Draw(img)
-            d.text((60,60), f"Character {i+1}", fill=(40,40,40))
-            img.save(ph)
-            placeholder_images.append(str(ph.relative_to(BASE_DIR)))
-        except Exception:
-            # fallback: create empty file path (moviepy can create black)
-            ph.write_bytes(b"")
-            placeholder_images.append(str(ph.relative_to(BASE_DIR)))
-    # construct a minimal job like generate_video does:
-    # Create DB video
-    user_email = data.get("user_email","demo@visora.com")
-    title = data.get("title", f"AutoVideo {datetime.utcnow().isoformat()}")
-    video = UserVideo(user_email=user_email, title=title, script=script, template=template, quality=data.get("quality","HD"), length_type=data.get("length_type","short"), background_music="", status="queued")
-    db.session.add(video); db.session.commit()
-    job_id = f"job_{video.id}_{uuid.uuid4().hex[:6]}"
-    render_jobs[job_id] = {"status":"queued","video_id": video.id,"created_at":datetime.utcnow().isoformat(),"auto":True}
-    # build short texts for each char by splitting script
-    sentences = [s.strip() for s in script.replace("\r","\n").split("\n") if s.strip()]
-    if not sentences:
-        sentences = [script]
-    char_texts = [""]*num_chars
-    for idx, s in enumerate(sentences):
-        char_texts[idx % num_chars] += (s + " ")
-    # generate audios
-    audio_rel_paths = []
-    if not GTTS_AVAILABLE:
-        return jsonify({"error":"gTTS required for auto_create"}), 500
-    for i in range(num_chars):
-        txt = char_texts[i].strip() or "Hello from Visora"
-        out = Path(app.config["TMP_FOLDER"]) / f"{job_id}_{i}_{uuid.uuid4().hex}.mp3"
-        try:
-            gTTS(txt, lang=lang).save(str(out))
-            dest = Path(app.config["UPLOAD_FOLDER"]) / "audio" / out.name
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(out), str(dest))
-            audio_rel_paths.append(str(Path("audio")/dest.name))
-        except Exception as e:
-            log.exception("gTTS auto_create fail")
-            return jsonify({"error":"gTTS failed","details":str(e)}),500
-    # prepare out path
-    out_name = f"visora_auto_{video.id}.mp4"
-    out_abs = str((Path(app.config["OUTPUT_FOLDER"]) / out_name).resolve())
-    payload = {"job_id": job_id, "images": placeholder_images, "audios": audio_rel_paths, "bg": None, "out_abs": out_abs, "quality": data.get("quality","HD")}
-    render_queue.put(payload)
-    return jsonify({"job_id": job_id, "video_id": video.id, "status_url": url_for("job_status", job_id=job_id, _external=True)}), 202
-
-# ---------- Edit video (simple) ----------
-@app.route("/video/edit/<int:video_id>", methods=["POST"])
-def edit_video(video_id):
-    v = UserVideo.query.get(video_id)
-    if not v:
-        return jsonify({"error":"video not found"}),404
-    # support replace bg music or replace voice files (simple re-render request)
-    change_bg = None
-    if "change_bg_music_file" in request.files:
-        f = request.files.get("change_bg_music_file")
-        if f and allowed_file(f.filename, ALLOWED_AUDIO_EXT):
-            change_bg = save_upload(f, "music")
-    replace_voices = []
-    if "replace_voice_files" in request.files:
-        vfiles = request.files.getlist("replace_voice_files")
+    # character voice files
+    char_voice_files = []
+    if "character_voice_files" in request.files:
+        vfiles = request.files.getlist("character_voice_files")
         for vf in vfiles:
             if vf and allowed_file(vf.filename, ALLOWED_AUDIO_EXT):
-                replace_voices.append(save_upload(vf, "user_voices"))
-    # For simplicity, if replace voices provided, map them to existing characters/audios by index
-    # Find previous job meta (if exists) to reconstruct images & audios
-    meta = {}
-    if v.meta_json:
-        try:
-            meta = json.loads(v.meta_json)
-        except Exception:
-            meta = {}
-    images = meta.get("characters", []) or []
-    audios = meta.get("audios", []) or []
-    # if replace_voices provided, replace audios list accordingly (prefix)
-    for i, rv in enumerate(replace_voices):
-        if i < len(audios):
-            audios[i] = rv
+                char_voice_files.append(save_upload(vf, "user_voices"))
+
+    # build audio per character: uploaded voice else TTS (gTTS) or silent fallback
+    audio_rel_paths = []
+    for i in range(len(image_rel_paths)):
+        if i < len(char_voice_files):
+            audio_rel_paths.append(char_voice_files[i])
+            continue
+        # generate TTS from script split (simple round-robin)
+        # split script roughly
+        sentences = [s.strip() for s in script.replace("\r","\n").split("\n") if s.strip()]
+        if not sentences:
+            text_for_char = "Hello from Visora"
         else:
-            audios.append(rv)
-    # enqueue a re-render job
-    job_id = f"edit_{v.id}_{uuid.uuid4().hex[:6]}"
-    render_jobs[job_id] = {"status":"queued","video_id": v.id, "edited_at": datetime.utcnow().isoformat()}
-    out_name = f"visora_video_{v.id}_edited_{uuid.uuid4().hex[:6]}.mp4"
-    out_abs = str((Path(app.config["OUTPUT_FOLDER"]) / out_name).resolve())
-    payload = {"job_id": job_id, "images": images, "audios": audios, "bg": change_bg or v.background_music, "out_abs": out_abs, "quality": v.quality or "HD"}
-    render_queue.put(payload)
-    v.status = "re-render-queued"
+            # distribute sentences round-robin
+            char_texts = [""] * len(image_rel_paths)
+            for idx, s in enumerate(sentences):
+                char_texts[idx % len(image_rel_paths)] += (s + " ")
+            text_for_char = char_texts[i].strip() if i < len(char_texts) else ""
+            if not text_for_char:
+                text_for_char = sentences[0]
+        if GTTS_AVAILABLE:
+            try:
+                uid = uuid.uuid4().hex
+                out = Path(app.config["TMP_FOLDER"]) / f"{job_id}_{i}_{uid}.mp3"
+                gTTS(text_for_char, lang=lang).save(str(out))
+                dest = Path(app.config["UPLOAD_FOLDER"]) / "audio" / out.name
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(out), str(dest))
+                audio_rel_paths.append(str(Path("audio")/dest.name))
+                continue
+            except Exception as e:
+                log.exception("gTTS failed for char %s: %s", i, e)
+        # fallback empty file (moviepy may error; better to generate tiny silent mp3 in production)
+        p = Path(app.config["TMP_FOLDER"]) / f"{job_id}_silent_{i}.mp3"
+        p.write_bytes(b"")
+        audio_rel_paths.append(str(p.relative_to(BASE_DIR)))
+
+    # prepare output path
+    out_name = f"{job_id}.mp4"
+    out_abs = str(Path(app.config["OUTPUT_FOLDER"]) / out_name)
+
+    # update DB record meta and status
+    video.status = "queued"
+    video.meta_json = json.dumps({"script": script, "characters": image_rel_paths, "voices": audio_rel_paths, "template": template, "quality": quality, "created_at": datetime.utcnow().isoformat()})
     db.session.commit()
-    return jsonify({"job_id":job_id,"status_url": url_for("job_status", job_id=job_id, _external=True)}), 202
 
-# ---------- Admin/status simple ----------
-@app.route("/admin/status", methods=["GET"])
-def admin_status():
-    pending = [k for k,v in render_jobs.items() if v.get("status") in ("queued","running")]
-    return jsonify({"jobs_total": len(render_jobs), "pending": len(pending), "moviepy": MOVIEPY_AVAILABLE, "gtts": GTTS_AVAILABLE})
+    # enqueue job
+    render_queue.put({"job_id": job_id, "images": image_rel_paths, "audios": audio_rel_paths, "bg": bg_rel, "out_abs": out_abs, "quality": quality})
+    render_jobs[job_id]["status"] = "queued"
+    render_jobs[job_id]["video_id"] = video.id
+    render_jobs[job_id]["out_name"] = out_name
 
-# ---------------- Run ----------------
+    return jsonify({"status":"queued","job_id":job_id,"video_id":video.id,"preview_url": None, "note":"Job queued. Poll /job_status?job_id=<job_id>"}), 200
+
+# simple edit endpoint (stub)
+@app.route("/video/edit/<int:video_id>", methods=["POST"])
+def edit_video(video_id):
+    # For production implement: fetch existing meta, accept replace voice/bg music/apply cinematic, enqueue new job
+    return jsonify({"error":"not implemented","note":"Implement per project needs"}), 501
+
+# ---------- Run ----------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
-    log.info("Starting Visora on port %s", port)
     app.run(host="0.0.0.0", port=port, debug=False)
