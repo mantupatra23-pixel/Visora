@@ -1,410 +1,599 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Visora — Dualite Frontend</title>
+  <title>Visora - Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root{
-      --bg:#14151B; --panel:#18191F; --muted:#9aa0a6; --accent:#FFC107; --card:#21222A;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#fff}
-    header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--panel);border-bottom:1px solid #222}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#ffce56,#ff8a00);display:flex;align-items:center;justify-content:center;color:#111;font-weight:700}
-    h1{font-size:16px;margin:0}
-    .actions{display:flex;gap:8px;align-items:center}
-    .btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
-    .ghost{background:transparent;border:1px solid #2a2a2a;padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
-    .container{display:flex;gap:18px;padding:18px}
-    .left{flex:1;min-width:320px}
-    .right{width:360px;min-width:260px}
-    .card{background:var(--card);padding:14px;border-radius:12px;margin-bottom:14px;border:1px solid #232427}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #2a2a2a;background:#0f1113;color:#fff;font-size:14px}
-    textarea{min-height:120px;resize:vertical}
-    .row{display:flex;gap:10px}
-    .small{font-size:12px;color:var(--muted)}
-    .file-list{font-size:13px;color:var(--muted);margin-top:8px}
-    .center{display:flex;justify-content:center;align-items:center}
-    .bottom-fixed{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;background:linear-gradient(0deg, rgba(20,21,27,0.95), transparent)}
-    .link{color:var(--accent);cursor:pointer;text-decoration:underline}
-    .gallery-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;background:#101214;margin-bottom:8px}
-    .thumb{width:94px;height:56px;border-radius:6px;background:#222}
-    .muted{color:var(--muted)}
-    @media (max-width:900px){
-      .container{flex-direction:column}
-      .right{width:auto}
-    }
+    body { background: #0f1115; color: #e6eef8; font-family: Inter, system-ui, sans-serif; }
+    .sidebar { width: 260px; background: #121318; min-height: 100vh; position: fixed; left: 0; top: 0; padding: 20px; }
+    .content { margin-left: 260px; padding: 24px; }
+    .btn-primary { background:#fbbf24;color:#000;padding:8px 14px;border-radius:8px;font-weight:600; }
+    .muted { color:#9aa3b2; }
+    .card { background:#121218; border:1px solid #1d2128; padding:14px;border-radius:10px; }
+    pre { white-space: pre-wrap; word-break: break-word; color:#cfe8ff; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">V</div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h1 class="text-2xl font-bold text-amber-400 mb-4">Visora</h1>
+    <p class="text-sm muted mb-4">Cloud-first Video Studio</p>
+
+    <nav class="space-y-2">
+      <button onclick="show('dashboard')" class="w-full text-left p-2 rounded hover:bg-gray-900">🏠 Dashboard</button>
+      <button onclick="show('create')" class="w-full text-left p-2 rounded hover:bg-gray-900">🎬 Create Video</button>
+      <button onclick="show('image2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">🖼 Image → Video</button>
+      <button onclick="show('script2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">✍ Script → Video</button>
+      <button onclick="show('gallery')" class="w-full text-left p-2 rounded hover:bg-gray-900">📂 Gallery</button>
+      <button onclick="show('characters')" class="w-full text-left p-2 rounded hover:bg-gray-900">👥 Characters / Voices</button>
+      <button onclick="show('edit')" class="w-full text-left p-2 rounded hover:bg-gray-900">🛠 Edit Video</button>
+      <button onclick="show('assistant')" class="w-full text-left p-2 rounded hover:bg-gray-900">🤖 Assistant</button>
+      <button onclick="show('payments')" class="w-full text-left p-2 rounded hover:bg-gray-900">💳 Payments</button>
+      <button onclick="show('profile')" class="w-full text-left p-2 rounded hover:bg-gray-900">👤 Profile</button>
+      <hr class="my-4 border-gray-800"/>
+      <div class="text-xs muted">Base URL (for debugging)</div>
+      <div id="baseUrlShow" class="text-sm mt-1"></div>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="content">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
       <div>
-        <h1>Visora</h1>
-        <div class="small muted">AI video studio — Dualite frontend</div>
+        <h2 id="pageTitle" class="text-xl font-semibold">Dashboard</h2>
+        <div class="text-sm muted">Visora — Cloud-first automatic video creation</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="refreshAll()" class="btn-primary">Refresh</button>
       </div>
     </div>
-    <div class="actions">
-      <button class="ghost" id="openAssistant">Assistant</button>
-      <button class="btn" id="openCreate">Create Video</button>
-    </div>
-  </header>
 
-  <div class="container">
-    <div class="left">
-      <!-- Create card -->
-      <div class="card" id="createCard">
-        <h3 style="margin-top:0">Create Video</h3>
-        <div style="margin-bottom:10px" class="small muted">Script likho ya assistant se help lo — multi-language support</div>
+    <!-- PAGES -->
 
-        <label>Title</label>
-        <input type="text" id="title" placeholder="Video title (optional)" />
-
-        <label style="margin-top:10px">Script / Dialogue</label>
-        <textarea id="script" placeholder="Type script here..."></textarea>
-
-        <div class="row" style="margin-top:10px">
-          <div style="flex:1">
-            <label>Template</label>
-            <select id="template">
-              <option>Motivation</option>
-              <option>Promo</option>
-              <option>Explainer</option>
-              <option>Cinematic</option>
-            </select>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page">
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="card">
+          <div class="text-sm muted">Credits</div>
+          <div id="credits" class="text-2xl font-bold text-green-400">—</div>
+        </div>
+        <div class="card">
+          <div class="text-sm muted">Trending Templates</div>
+          <div id="trendingList" class="mt-2"></div>
+        </div>
+        <div class="card">
+          <div class="text-sm muted">Quick Actions</div>
+          <div class="mt-3 flex gap-2">
+            <button class="btn-primary" onclick="show('create')">Create Video</button>
+            <button class="btn-primary" onclick="show('gallery')">Open Gallery</button>
           </div>
-          <div style="width:120px">
-            <label>Quality</label>
-            <select id="quality">
-              <option>HD</option>
-              <option>FULLHD</option>
-              <option>4K</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <div style="flex:1">
-            <label>Language</label>
-            <select id="lang">
-              <option value="hi">Hindi (hi)</option>
-              <option value="en">English (en)</option>
-              <option value="bn">Bengali (bn)</option>
-              <option value="ta">Tamil (ta)</option>
-            </select>
-          </div>
-          <div style="width:120px">
-            <label>Length</label>
-            <select id="length_type">
-              <option value="short">Short</option>
-              <option value="long">Long</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <label>Upload Character Images (multi)</label>
-          <input id="characters" type="file" accept="image/*" multiple />
-          <div id="charFiles" class="file-list">No images selected</div>
-        </div>
-
-        <div style="margin-top:8px">
-          <label>Upload Character Voice Files (optional)</label>
-          <input id="charVoices" type="file" accept="audio/*" multiple />
-          <div id="voiceFiles" class="file-list">No voice files</div>
-        </div>
-
-        <div style="margin-top:8px">
-          <label>Upload Background Music (optional)</label>
-          <input id="bgMusic" type="file" accept="audio/*" />
-          <div id="bgFile" class="file-list">No BG music</div>
-        </div>
-
-        <div style="margin-top:12px" class="row">
-          <button class="btn" id="submitRender">Render & Generate</button>
-          <button class="ghost" id="preview10s">Preview 10s</button>
-          <button class="ghost" id="clearForm">Clear</button>
-        </div>
-
-        <div style="margin-top:10px" id="renderStatus" class="small muted">Status: idle</div>
-      </div>
-
-      <!-- Gallery -->
-      <div class="card" id="galleryCard">
-        <h3 style="margin-top:0">My Gallery</h3>
-        <div id="galleryList" style="margin-top:8px">
-          <div class="muted small">Loading gallery...</div>
         </div>
       </div>
 
-    </div>
-
-    <div class="right">
-      <!-- Assistant / Preview -->
       <div class="card">
-        <h4 style="margin:0">Assistant</h4>
-        <div class="small muted" style="margin-top:6px">Get script suggestions or auto-fill</div>
-        <div style="margin-top:10px">
-          <input type="text" id="assistantQuery" placeholder="Ask the assistant e.g. 'Make a 20s promo script'" />
+        <h3 class="font-semibold mb-2">Recent jobs</h3>
+        <div id="recentJobs">Loading...</div>
+      </div>
+    </section>
+
+    <!-- CREATE VIDEO (generic) -->
+    <section id="create" class="page hidden">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="card">
+          <h3 class="font-semibold mb-2">New Video (Quick)</h3>
+          <input id="cv_title" placeholder="Title" class="w-full p-2 mb-2 text-black" />
+          <textarea id="cv_script" placeholder="Script (optional). If empty assistant can suggest." rows="6" class="w-full p-2 mb-2 text-black"></textarea>
+
+          <div class="flex gap-2 mb-2">
+            <select id="cv_template" class="p-2 text-black w-1/2">
+              <option>Motivation</option><option>Promo</option><option>Explainer</option><option>Cinematic</option>
+            </select>
+            <select id="cv_quality" class="p-2 text-black w-1/2">
+              <option>HD</option><option>FULLHD</option><option>4K</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 mb-2">
+            <select id="cv_lang" class="p-2 text-black w-1/2">
+              <option value="hi">Hindi</option><option value="en">English</option><option value="bn">Bengali</option><option value="ta">Tamil</option>
+            </select>
+            <select id="cv_length" class="p-2 text-black w-1/2">
+              <option value="short">Short</option><option value="long">Long</option>
+            </select>
+          </div>
+
+          <div class="mb-2">
+            <label class="text-sm muted">Upload character images (1..4 recommended)</label>
+            <input id="cv_images" type="file" multiple accept="image/*" class="w-full mt-1" />
+          </div>
+          <div class="mb-2">
+            <label class="text-sm muted">Upload voice files (optional)</label>
+            <input id="cv_voices" type="file" multiple accept="audio/*" class="w-full mt-1" />
+          </div>
+          <div class="mb-2">
+            <label class="text-sm muted">Background music (optional)</label>
+            <input id="cv_bg" type="file" accept="audio/*" class="w-full mt-1" />
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <button id="btn_generate" class="btn-primary" onclick="createVideo()">Generate</button>
+            <button class="p-2 border rounded" onclick="autoFillSample()">Auto-fill sample</button>
+          </div>
+
+          <div id="create_resp" class="mt-3"></div>
         </div>
-        <div style="margin-top:8px" class="row">
-          <select id="assistantTone" style="flex:1">
+
+        <!-- left column: preview / templates -->
+        <div class="card">
+          <h3 class="font-semibold mb-2">Preview / Options</h3>
+          <div id="templatePreview" class="mb-4 muted">Template preview will show here.</div>
+
+          <h4 class="text-sm font-semibold mt-2">Assistant quick help</h4>
+          <input id="assistant_quick_q" placeholder="I need a hook for a promo" class="w-full p-2 mb-2 text-black" />
+          <div><button class="btn-primary" onclick="assistantQuick()">Ask Assistant</button></div>
+          <div id="assistant_quick_reply" class="mt-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMAGE -> VIDEO (dedicated) -->
+    <section id="image2video" class="page hidden">
+      <div class="card">
+        <h3 class="font-semibold mb-2">Image → Video (image to character)</h3>
+        <p class="muted mb-2">Upload a photo and optional voice — system will turn it into a lip-synced clip.</p>
+        <input id="iv_image" type="file" accept="image/*" class="mb-2" />
+        <input id="iv_voice" type="file" accept="audio/*" class="mb-2" />
+        <div class="flex gap-2">
+          <button class="btn-primary" onclick="imageToVideo()">Create</button>
+        </div>
+        <div id="iv_resp" class="mt-3"></div>
+      </div>
+    </section>
+
+    <!-- SCRIPT -> VIDEO (dedicated) -->
+    <section id="script2video" class="page hidden">
+      <div class="card">
+        <h3 class="font-semibold mb-2">Script → Video (auto)</h3>
+        <textarea id="sv_script" rows="6" placeholder="Paste script... (you can mark [C1]:.. [C2]:.. to map characters)" class="w-full p-2 mb-2 text-black"></textarea>
+        <div class="flex gap-2">
+          <button class="btn-primary" onclick="scriptToVideo()">Auto Generate</button>
+          <button class="p-2 border rounded" onclick="suggestFromAssistant()">Suggest Script</button>
+        </div>
+        <div id="sv_resp" class="mt-3"></div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="page hidden">
+      <div class="card">
+        <h3 class="font-semibold mb-2">Your Videos</h3>
+        <div id="galleryList">Loading...</div>
+      </div>
+    </section>
+
+    <!-- CHARACTERS / VOICES -->
+    <section id="characters" class="page hidden">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="card">
+          <h3 class="font-semibold mb-2">Add Character</h3>
+          <input id="ch_name" placeholder="Character name" class="w-full p-2 mb-2 text-black"/>
+          <input id="ch_photo" type="file" accept="image/*" class="mb-2" />
+          <input id="ch_voice" type="file" accept="audio/*" class="mb-2" />
+          <div class="flex gap-2">
+            <button class="btn-primary" onclick="uploadCharacter()">Save Character</button>
+            <button class="p-2 border rounded" onclick="listCharacters()">Refresh</button>
+          </div>
+          <div id="ch_resp" class="mt-3"></div>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold mb-2">Saved Characters & Voices</h3>
+          <div id="ch_list">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDIT VIDEO -->
+    <section id="edit" class="page hidden">
+      <div class="card">
+        <h3 class="font-semibold mb-2">Edit Existing Video</h3>
+        <input id="edit_video_id" placeholder="Video ID" class="w-full p-2 mb-2 text-black" />
+        <div class="flex gap-2 mb-2">
+          <button class="btn-primary" onclick="loadVideoForEdit()">Load</button>
+          <button class="p-2 border rounded" onclick="openGalleryForSelection()">Pick from gallery</button>
+        </div>
+
+        <div id="edit_form" class="hidden mt-3">
+          <label class="muted">Change BG music</label>
+          <input id="edit_bg" type="file" accept="audio/*" class="mb-2" />
+          <label class="muted">Replace voice files (optional)</label>
+          <input id="edit_voices" type="file" accept="audio/*" multiple class="mb-2" />
+          <div class="flex gap-2">
+            <button class="btn-primary" onclick="submitEdit()">Apply Changes</button>
+          </div>
+          <div id="edit_resp" class="mt-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ASSISTANT -->
+    <section id="assistant" class="page hidden">
+      <div class="card">
+        <h3 class="font-semibold mb-2">Assistant (Script help)</h3>
+        <input id="as_q" placeholder="Describe tone / what you want" class="w-full p-2 mb-2 text-black" />
+        <div class="flex gap-2 mb-2">
+          <select id="as_tone" class="p-2 text-black">
             <option value="helpful">Helpful</option>
             <option value="friendly">Friendly</option>
             <option value="funny">Funny</option>
           </select>
-          <button class="btn" id="callAssistant">Ask</button>
+          <button class="btn-primary" onclick="callAssistant()">Ask</button>
         </div>
-        <div id="assistantReply" style="margin-top:10px" class="small muted"></div>
-        <div style="margin-top:10px">
-          <button class="ghost" id="previewVoiceBtn">Preview voice (TTS)</button>
-          <div id="previewVoiceUrl" class="file-list"></div>
+        <div id="as_reply" class="mt-3"></div>
+      </div>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section id="payments" class="page hidden">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="card">
+          <h3 class="font-semibold mb-2">Buy Credits (Razorpay)</h3>
+          <input id="rz_amount" placeholder="Amount (INR)" class="w-full p-2 mb-2 text-black"/>
+          <button class="btn-primary" onclick="createRazorpayOrder()">Create Razorpay Order</button>
+          <div id="rz_resp" class="mt-3"></div>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold mb-2">Buy Credits (PayPal)</h3>
+          <input id="pp_amount" placeholder="Amount (USD)" class="w-full p-2 mb-2 text-black"/>
+          <button class="btn-primary" onclick="createPaypalOrder()">Create PayPal Order</button>
+          <div id="pp_resp" class="mt-3"></div>
         </div>
       </div>
+    </section>
 
-      <!-- Templates / Trending -->
+    <!-- PROFILE -->
+    <section id="profile" class="page hidden">
       <div class="card">
-        <h4 style="margin:0">Trending Templates</h4>
-        <div id="templatesList" style="margin-top:10px">
-          <div class="muted small">Loading...</div>
+        <h3 class="font-semibold mb-2">Profile</h3>
+        <pre id="profileBox">Loading...</pre>
+        <div class="flex gap-2 mt-2">
+          <button class="btn-primary" onclick="loadProfile()">Refresh</button>
         </div>
       </div>
+    </section>
 
-      <!-- Quick upload -->
-      <div class="card">
-        <h4 style="margin:0">Quick Upload</h4>
-        <div style="margin-top:8px">
-          <input id="quickFile" type="file" />
-        </div>
-        <div style="margin-top:8px" class="row">
-          <button class="btn" id="uploadQuick">Upload</button>
-          <button class="ghost" id="fetchGalleryBtn">Refresh Gallery</button>
-        </div>
-        <div id="quickResult" class="file-list"></div>
-      </div>
+  </main>
 
-    </div>
-  </div>
-
-  <div class="bottom-fixed center">
-    <div style="max-width:980px;width:100%;display:flex;justify-content:space-between;align-items:center">
-      <div class="small muted">Visora — Dualite frontend • Make sure backend CORS is enabled</div>
-      <div>
-        <span class="small muted">Demo user: </span><strong class="small">demo@visora.com</strong>
-      </div>
-    </div>
-  </div>
-
+  <!-- JS -->
   <script>
-    // ============ CONFIG ============
-    const BASE_URL = "https://visora.onrender.com"; // <<< CHANGE TO YOUR BACKEND URL (no trailing slash)
-    const DEMO_EMAIL = "demo@visora.com";
+    // ⚠️ Change this to your backend URL if different
+    const BASE_URL = "https://visora.onrender.com";
+    document.getElementById('baseUrlShow').innerText = BASE_URL;
 
-    // ============ UI refs ============
-    const characters = document.getElementById('characters');
-    const charFiles = document.getElementById('charFiles');
-    const charVoices = document.getElementById('charVoices');
-    const voiceFiles = document.getElementById('voiceFiles');
-    const bgMusic = document.getElementById('bgMusic');
-    const bgFile = document.getElementById('bgFile');
-    const submitRender = document.getElementById('submitRender');
-    const renderStatus = document.getElementById('renderStatus');
-    const galleryList = document.getElementById('galleryList');
-    const previewVoiceBtn = document.getElementById('previewVoiceBtn');
-    const previewVoiceUrl = document.getElementById('previewVoiceUrl');
-    const assistantQuery = document.getElementById('assistantQuery');
-    const callAssistant = document.getElementById('callAssistant');
-    const assistantReply = document.getElementById('assistantReply');
-    const templatesList = document.getElementById('templatesList');
-    const quickFile = document.getElementById('quickFile');
-    const uploadQuick = document.getElementById('uploadQuick');
-    const quickResult = document.getElementById('quickResult');
-    const fetchGalleryBtn = document.getElementById('fetchGalleryBtn');
-    const openAssistant = document.getElementById('openAssistant');
-    const openCreate = document.getElementById('openCreate');
-    const preview10s = document.getElementById('preview10s');
-    const clearForm = document.getElementById('clearForm');
+    // Utility: show page
+    function show(id) {
+      document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
+    }
 
-    // show selected files
-    characters.addEventListener('change', ()=> {
-      if (characters.files.length) {
-        charFiles.textContent = Array.from(characters.files).map(f=>f.name).join(', ');
-      } else charFiles.textContent = 'No images selected';
-    });
-    charVoices.addEventListener('change', ()=> {
-      if (charVoices.files.length) voiceFiles.textContent = Array.from(charVoices.files).map(f=>f.name).join(', ');
-      else voiceFiles.textContent = 'No voice files';
-    });
-    bgMusic.addEventListener('change', ()=> {
-      if (bgMusic.files.length) bgFile.textContent = bgMusic.files[0].name; else bgFile.textContent = 'No BG music';
-    });
+    // Refresh main data
+    async function refreshAll() {
+      await Promise.all([
+        loadDashboard(),
+        listTemplates(),
+        loadGallery(),
+        listCharacters(),
+        loadProfile()
+      ]);
+    }
 
-    // fetch templates/trending
-    async function loadTemplates(){
-      templatesList.innerHTML = '<div class="small muted">Loading...</div>';
+    // --- DASHBOARD / TRENDS / JOBS ---
+    async function loadDashboard() {
+      // profile -> credits
       try {
-        const r = await fetch(BASE_URL + '/templates/trending');
-        if (!r.ok) throw r.status;
-        const j = await r.json();
-        templatesList.innerHTML = j.map(t=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:52px;height:36px;background:#111;border-radius:6px"></div><div><strong>${t.name}</strong><div class="small muted">${t.category}</div></div></div>`).join('');
-      } catch(e){
-        templatesList.innerHTML = '<div class="small muted">Failed to load templates</div>';
-        console.error('templates err', e);
+        const res = await fetch(`${BASE_URL}/profile/demo@visora.com`);
+        const j = await res.json();
+        document.getElementById('credits').innerText = j.credits ?? '0';
+      } catch (e) {
+        document.getElementById('credits').innerText = 'N/A';
+      }
+      // trending templates
+      await listTemplates();
+
+      // recent jobs -> use /gallery (shows videos)
+      try {
+        const g = await (await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`)).json();
+        const html = g.slice(0,6).map(v => `<div class="py-2 border-b border-gray-800"><strong>${escapeHtml(v.title)}</strong> · ${escapeHtml(v.status)} · <small class="muted">${new Date(v.created_at).toLocaleString()}</small></div>`).join('');
+        document.getElementById('recentJobs').innerHTML = html || '<div class="muted">No jobs yet</div>';
+      } catch (e) {
+        document.getElementById('recentJobs').innerHTML = '<div class="muted">Error loading jobs</div>';
       }
     }
 
-    // fetch gallery
-    async function loadGallery(){
-      galleryList.innerHTML = '<div class="small muted">Loading gallery...</div>';
+    async function listTemplates() {
       try {
-        const r = await fetch(BASE_URL + '/gallery?user_email=' + encodeURIComponent(DEMO_EMAIL));
-        if (!r.ok) throw r.status;
+        const res = await fetch(`${BASE_URL}/templates/trending`);
+        const arr = await res.json();
+        const el = document.getElementById('trendingList');
+        el.innerHTML = arr.map(t=>`<div class="py-1">${escapeHtml(t.name)} <span class="muted">(${escapeHtml(t.category)})</span></div>`).join('') || '<div class="muted">No templates</div>';
+      } catch (e) {
+        document.getElementById('trendingList').innerHTML = '<div class="muted">Templates load failed</div>';
+      }
+    }
+
+    // --- CREATE VIDEO ---
+    async function createVideo() {
+      const btn = document.getElementById('btn_generate');
+      btn.disabled = true; btn.innerText = 'Generating...';
+      const fd = new FormData();
+      fd.append('user_email','demo@visora.com');
+      fd.append('title', document.getElementById('cv_title').value || `Video ${new Date().toISOString()}`);
+      fd.append('script', document.getElementById('cv_script').value || '');
+      fd.append('template', document.getElementById('cv_template').value);
+      fd.append('quality', document.getElementById('cv_quality').value);
+      fd.append('lang', document.getElementById('cv_lang').value);
+      fd.append('length_type', document.getElementById('cv_length').value);
+
+      // attach images
+      const imgFiles = document.getElementById('cv_images').files;
+      for (let f of imgFiles) fd.append('characters', f, f.name);
+      // attach voices
+      const vFiles = document.getElementById('cv_voices').files;
+      for (let f of vFiles) fd.append('character_voice_files', f, f.name);
+      // bg
+      const bg = document.getElementById('cv_bg').files[0];
+      if (bg) fd.append('bg_music_file', bg, bg.name);
+
+      try {
+        const resp = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+        const j = await resp.json();
+        document.getElementById('create_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j, null, 2))}</pre>`;
+        // if server returns job id or download link show it
+      } catch (e) {
+        document.getElementById('create_resp').innerText = 'Generate failed: ' + e;
+      } finally {
+        btn.disabled = false; btn.innerText = 'Generate';
+        await loadGallery(); await loadDashboard();
+      }
+    }
+
+    function autoFillSample() {
+      document.getElementById('cv_title').value = 'Promo: Visora AI';
+      document.getElementById('cv_script').value = 'C1: Hello! Welcome to Visora. C2: We make cinematic AI videos in seconds.';
+      document.getElementById('cv_template').value = 'Promo';
+    }
+
+    // --- IMAGE -> VIDEO simple ---
+    async function imageToVideo() {
+      const img = document.getElementById('iv_image').files[0];
+      const voice = document.getElementById('iv_voice').files[0];
+      if (!img) return alert('Please upload image');
+      const fd = new FormData();
+      fd.append('user_email','demo@visora.com');
+      fd.append('title', 'Image to Video ' + new Date().toISOString());
+      fd.append('template', 'Cinematic');
+      fd.append('quality', 'HD');
+      fd.append('characters', img, img.name);
+      if (voice) fd.append('character_voice_files', voice, voice.name);
+      document.getElementById('iv_resp').innerText = 'Submitting...';
+      try {
+        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
         const j = await r.json();
-        if (!j.length) {
-          galleryList.innerHTML = '<div class="small muted">No videos yet</div>';
-          return;
-        }
-        galleryList.innerHTML = j.map(v=>`
-          <div class="gallery-item">
-            <div class="thumb"></div>
-            <div style="flex:1">
-              <div style="font-weight:600">${v.title || 'Untitled'}</div>
-              <div class="small muted">${v.status} • ${new Date(v.created_at).toLocaleString()}</div>
-            </div>
+        document.getElementById('iv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+        await loadGallery();
+      } catch (e) {
+        document.getElementById('iv_resp').innerText = 'Error: ' + e;
+      }
+    }
+
+    // --- SCRIPT -> VIDEO ---
+    async function scriptToVideo() {
+      const script = document.getElementById('sv_script').value;
+      if (!script) return alert('Script required');
+      const fd = new FormData();
+      fd.append('user_email','demo@visora.com');
+      fd.append('title', 'ScriptVideo '+new Date().toISOString());
+      fd.append('script', script);
+      fd.append('template', 'Explainer');
+      fd.append('quality', 'HD');
+      document.getElementById('sv_resp').innerText = 'Submitting...';
+      try {
+        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+        const j = await r.json();
+        document.getElementById('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+        await loadGallery();
+      } catch (e) {
+        document.getElementById('sv_resp').innerText = 'Error: ' + e;
+      }
+    }
+
+    // --- GALLERY ---
+    async function loadGallery() {
+      try {
+        const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
+        const arr = await res.json();
+        const el = document.getElementById('galleryList');
+        if (!Array.isArray(arr) || arr.length===0) { el.innerHTML = '<div class="muted">No videos yet</div>'; return; }
+        el.innerHTML = arr.map(v => `
+          <div class="py-2 border-b border-gray-800 flex justify-between items-center">
             <div>
-              ${v.file ? `<a href="${BASE_URL}/${v.file}" target="_blank" class="btn" style="padding:6px 8px">Play</a>` : `<button class="ghost" disabled>Processing</button>`}
+              <strong>${escapeHtml(v.title)}</strong><br/>
+              <small class="muted">${new Date(v.created_at).toLocaleString()}</small>
+            </div>
+            <div class="flex gap-2">
+              ${v.file ? `<a class="text-amber-400" href="${BASE_URL}/outputs/${encodeURIComponent(PathBaseName(v.file))}" target="_blank">Open</a>` : ''}
+              <button class="p-2 border rounded" onclick="selectForEdit(${v.id})">Edit</button>
             </div>
           </div>
         `).join('');
-      } catch(e){
-        galleryList.innerHTML = '<div class="small muted">Gallery load failed</div>';
-        console.error('gallery err', e);
+      } catch (e) {
+        document.getElementById('galleryList').innerText = 'Gallery load error';
       }
     }
 
-    // quick upload
-    uploadQuick.addEventListener('click', async ()=>{
-      if (!quickFile.files.length) { quickResult.textContent = 'Choose a file first'; return; }
-      quickResult.textContent = 'Uploading...';
-      const f = quickFile.files[0];
-      const fd = new FormData(); fd.append('file', f); fd.append('kind','misc');
-      try {
-        const r = await fetch(BASE_URL + '/upload', {method:'POST', body:fd});
-        const j = await r.json();
-        if (r.ok) quickResult.innerHTML = 'Uploaded: <span class="link">' + j.url + '</span>';
-        else quickResult.textContent = 'Upload failed: ' + (j.error || r.status);
-      } catch(e){ quickResult.textContent = 'Upload error'; console.error(e); }
-    });
+    // helper to extract base filename (server stores 'outputs/xxx.mp4' or relative)
+    function PathBaseName(p) {
+      try { return p.split('/').pop(); } catch(e){ return p; }
+    }
 
-    // assistant
-    callAssistant.addEventListener('click', async ()=> {
-      const q = assistantQuery.value.trim();
-      if (!q) { assistantReply.textContent = 'Type something first'; return; }
-      assistantReply.textContent = 'Thinking...';
-      try {
-        const r = await fetch(BASE_URL + '/assistant', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone: document.getElementById('assistantTone').value, lang: 'hi'})});
-        const j = await r.json();
-        assistantReply.textContent = j.reply || 'No reply';
-        if (j.audio_url) previewVoiceUrl.innerHTML = `<a href="${j.audio_url}" target="_blank" class="link">Assistant audio</a>`;
-      } catch(e){
-        assistantReply.textContent = 'Assistant error';
-        console.error(e);
-      }
-    });
+    // select for edit
+    function selectForEdit(id) {
+      document.getElementById('edit_video_id').value = id;
+      loadVideoForEdit();
+      show('edit');
+    }
 
-    // preview voice (TTS) using /preview_voice
-    previewVoiceBtn.addEventListener('click', async ()=>{
-      const text = document.getElementById('script').value.trim() || 'Preview from Visora';
-      previewVoiceUrl.textContent = 'Generating...';
-      try {
-        const fd = new FormData(); fd.append('text', text); fd.append('lang', document.getElementById('lang').value);
-        const r = await fetch(BASE_URL + '/preview_voice', {method:'POST', body: fd});
-        const j = await r.json();
-        if (r.ok) previewVoiceUrl.innerHTML = `<a href="${j.audio_url}" target="_blank" class="link">Play preview</a>`;
-        else previewVoiceUrl.textContent = 'Preview failed: ' + (j.error || r.status);
-      } catch(e){
-        previewVoiceUrl.textContent = 'Preview error'; console.error(e);
-      }
-    });
-
-    // submit render (multipart)
-    submitRender.addEventListener('click', async ()=>{
-      const title = document.getElementById('title').value;
-      const script = document.getElementById('script').value;
-      if (!script && !characters.files.length) { alert('Please provide script or character images'); return; }
-      renderStatus.textContent = 'Uploading files & starting render...';
+    // --- CHARACTERS ---
+    async function uploadCharacter() {
+      const name = document.getElementById('ch_name').value || 'MyChar';
+      const photo = document.getElementById('ch_photo').files[0];
+      const voice = document.getElementById('ch_voice').files[0];
+      if (!photo) return alert('Upload photo');
       const fd = new FormData();
-      fd.append('user_email', DEMO_EMAIL);
-      fd.append('title', title);
-      fd.append('script', script);
-      fd.append('template', document.getElementById('template').value);
-      fd.append('quality', document.getElementById('quality').value);
-      fd.append('lang', document.getElementById('lang').value);
-      fd.append('length_type', document.getElementById('length_type').value);
-      // characters
-      for (let f of characters.files) fd.append('characters', f, f.name);
-      // voice files
-      for (let f of charVoices.files) fd.append('character_voice_files', f, f.name);
-      // bg music
-      if (bgMusic.files.length) fd.append('bg_music_file', bgMusic.files[0], bgMusic.files[0].name);
-
+      fd.append('user_email','demo@visora.com');
+      fd.append('name', name);
+      fd.append('photo', photo, photo.name);
+      if (voice) fd.append('voice', voice, voice.name);
+      document.getElementById('ch_resp').innerText = 'Uploading...';
       try {
-        // Start request (may take time). Backend may return immediate job / or block until finished.
-        const r = await fetch(BASE_URL + '/generate_video', {method:'POST', body: fd});
+        const r = await fetch(`${BASE_URL}/character`, { method:'POST', body:fd });
         const j = await r.json();
-        if (r.ok) {
-          renderStatus.textContent = 'Render started/completed: ' + (j.status || 'ok');
-          if (j.download_url) {
-            // show download link
-            const link = document.createElement('a'); link.href = j.download_url; link.target = '_blank'; link.textContent = 'Download video';
-            renderStatus.innerHTML = 'Done: '; renderStatus.appendChild(link);
-          }
-        } else {
-          renderStatus.textContent = 'Render error: ' + (j.message || j.error || r.status);
-        }
-      } catch(e){
-        renderStatus.textContent = 'Render request failed';
-        console.error(e);
+        document.getElementById('ch_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+        await listCharacters();
+      } catch (e) {
+        document.getElementById('ch_resp').innerText = 'Error: ' + e;
       }
-    });
+    }
 
-    // preview 10s (simple: call generate with preview flag if backend supports)
-    preview10s.addEventListener('click', async ()=>{
-      alert('Preview 10s will send request similar to render. Backend must support preview flag.');
-      // you can implement fd.append('preview','1') if backend handles
-    });
+    async function listCharacters() {
+      try {
+        const res = await fetch(`${BASE_URL}/characters?user_email=demo@visora.com`);
+        const arr = await res.json();
+        const el = document.getElementById('ch_list');
+        el.innerHTML = arr.map(c => `<div class="py-2 border-b border-gray-800 flex gap-3 items-center">
+            <div style="width:56px;height:56px;border-radius:8px;background:#222;overflow:hidden"><img src="${BASE_URL}/uploads/${encodeURIComponent(PathBaseName(c.photo||''))}" alt="" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><strong>${escapeHtml(c.name)}</strong><div class="muted">${escapeHtml(c.ai_style||'')}</div></div>
+            <div class="ml-auto muted">${c.voice ? 'Has voice' : ''}</div>
+          </div>`).join('') || '<div class="muted">No characters</div>';
+      } catch (e) {
+        document.getElementById('ch_list').innerText = 'Load failed';
+      }
+    }
 
-    // clear
-    clearForm.addEventListener('click', ()=>{
-      document.getElementById('title').value='';
-      document.getElementById('script').value='';
-      characters.value = ''; charFiles.textContent='No images selected';
-      charVoices.value = ''; voiceFiles.textContent='No voice files';
-      bgMusic.value = ''; bgFile.textContent='No BG music';
-      renderStatus.textContent='Status: idle';
-    });
+    // --- EDIT VIDEO ---
+    async function loadVideoForEdit() {
+      const id = document.getElementById('edit_video_id').value;
+      if (!id) return alert('Enter video id');
+      try {
+        // backend doesn't have specific GET /video/:id in our single-file code, so use gallery to find
+        const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
+        const arr = await res.json();
+        const v = arr.find(x=>String(x.id)===String(id));
+        if (!v) return alert('Video not found in gallery');
+        document.getElementById('edit_form').classList.remove('hidden');
+        document.getElementById('edit_resp').innerText = `Loaded: ${v.title}`;
+      } catch (e) {
+        alert('Load error: '+e);
+      }
+    }
 
-    // quick initial load
-    loadTemplates();
-    loadGallery();
+    async function submitEdit() {
+      const id = document.getElementById('edit_video_id').value;
+      if (!id) return alert('Video ID required');
+      const fd = new FormData();
+      fd.append('apply_cinematic', 'true');
+      const bg = document.getElementById('edit_bg').files[0];
+      if (bg) fd.append('change_bg_music_file', bg, bg.name);
+      const rv = document.getElementById('edit_voices').files;
+      for (let f of rv) fd.append('replace_voice_files', f, f.name);
+      document.getElementById('edit_resp').innerText = 'Submitting edit...';
+      try {
+        const r = await fetch(`${BASE_URL}/video/edit/${id}`, { method:'POST', body: fd });
+        const j = await r.json();
+        document.getElementById('edit_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+        await loadGallery();
+      } catch (e) {
+        document.getElementById('edit_resp').innerText = 'Edit failed: '+e;
+      }
+    }
 
-    fetchGalleryBtn.addEventListener('click', loadGallery);
-    openAssistant.addEventListener('click', ()=>{ window.scrollTo({top:0,behavior:'smooth'}); assistantQuery.focus(); });
-    openCreate.addEventListener('click', ()=>{ window.scrollTo({top:200,behavior:'smooth'}); document.getElementById('title').focus(); });
+    function openGalleryForSelection() { show('gallery'); }
 
-    // show helpful CORS note
-    (function checkCors(){
-      // try a HEAD to health
-      fetch(BASE_URL + '/health').then(r=>{
-        if (!r.ok) console.warn('Health endpoint not ok', r.status);
-      }).catch(e=>{
-        console.warn('Cannot reach backend. Ensure BASE_URL and CORS config are correct.', e);
-      });
+    // --- ASSISTANT ---
+    async function callAssistant() {
+      const q = document.getElementById('as_q').value;
+      const tone = document.getElementById('as_tone').value;
+      if (!q) return alert('Type your question');
+      try {
+        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:tone, lang:'hi'}) });
+        const j = await r.json();
+        document.getElementById('as_reply').innerText = j.reply || JSON.stringify(j);
+      } catch (e) {
+        document.getElementById('as_reply').innerText = 'Assistant failed: '+e;
+      }
+    }
+
+    // assistant quick (From create page)
+    async function assistantQuick() {
+      const q = document.getElementById('assistant_quick_q').value || 'Short hook for a promo';
+      try {
+        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:'helpful', lang:'hi'}) });
+        const j = await r.json();
+        document.getElementById('assistant_quick_reply').innerText = j.reply || JSON.stringify(j);
+      } catch (e) {
+        document.getElementById('assistant_quick_reply').innerText = 'Fail: '+e;
+      }
+    }
+
+    // --- PAYMENTS (stubs call) ---
+    async function createPaypalOrder() {
+      const amt = document.getElementById('pp_amount').value;
+      if (!amt) return alert('Amount required');
+      try {
+        const r = await fetch(`${BASE_URL}/create_paypal_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: amt, currency: 'USD' }) });
+        const j = await r.json();
+        document.getElementById('pp_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+      } catch (e) {
+        document.getElementById('pp_resp').innerText = 'Error: ' + e;
+      }
+    }
+
+    async function createRazorpayOrder() {
+      const amt = document.getElementById('rz_amount').value;
+      if (!amt) return alert('Amount required');
+      try {
+        const r = await fetch(`${BASE_URL}/create_razorpay_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: amt }) });
+        const j = await r.json();
+        document.getElementById('rz_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+      } catch (e) {
+        document.getElementById('rz_resp').innerText = 'Error: ' + e;
+      }
+    }
+
+    // --- PROFILE ---
+    async function loadProfile() {
+      try {
+        const r = await fetch(`${BASE_URL}/profile/demo@visora.com`);
+        const j = await r.json();
+        document.getElementById('profileBox').innerText = JSON.stringify(j, null, 2);
+      } catch (e) {
+        document.getElementById('profileBox').innerText = 'Profile load failed';
+      }
+    }
+
+    // --- small helpers ---
+    function escapeHtml(s) { if (!s && s!==0) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // --- Initialization ---
+    (async function init(){
+      await refreshAll();
+      show('dashboard');
     })();
+
   </script>
 </body>
 </html>
