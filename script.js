@@ -1,468 +1,226 @@
-// ================== SIDEBAR TOGGLE ==================
-const sidebar = document.querySelector(".sidebar");
-const toggleBtn = document.querySelector(".toggle-btn");
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("active");
+// script.js - Visora frontend
+// ⚠️ Change BASE_URL if your backend is different
+const BASE_URL = "https://visora.onrender.com";
+document.getElementById('baseUrlShow').innerText = BASE_URL;
+
+// page switching
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    show(b.dataset.page);
   });
+});
+document.querySelectorAll('[data-page-open]').forEach(e=>{
+  e.addEventListener('click', ()=> show(e.dataset.pageOpen || e.getAttribute('data-page-open')));
+});
+function show(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+  document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
 }
 
-// ================== GLOBAL CONFIG ==================
-/**
- * CHANGE THIS before publishing:
- * - Set to your production backend base URL (HTTPS).
- */
-const API_BASE = "https://visora.onrender.com"; // <- replace with your live backend
+// Refresh master data
+document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+async function refreshAll(){
+  await Promise.all([ loadDashboard(), listTemplates(), loadGallery(), listCharacters(), loadProfile() ]);
+}
 
-// Helper: safe fetch wrapper for JSON responses
-async function fetchJson(url, opts = {}) {
+// Helper escape
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// DASHBOARD
+async function loadDashboard(){
   try {
-    const res = await fetch(url, opts);
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`HTTP ${res.status}: ${text}`);
-    }
-    // may be empty response (204)
-    const contentType = res.headers.get("content-type") || "";
-    if (contentType.includes("application/json")) return await res.json();
-    return { ok: true };
-  } catch (err) {
-    console.error("fetchJson error:", err);
-    throw err;
+    const p = await (await fetch(`${BASE_URL}/profile/demo@visora.com`)).json();
+    document.getElementById('credits').innerText = p.credits ?? '0';
+  } catch(e){ document.getElementById('credits').innerText = 'N/A'; }
+  await listTemplates();
+  try {
+    const g = await (await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`)).json();
+    const html = (Array.isArray(g)? g.slice(0,6).map(v=>`<div class="job"><strong>${escapeHtml(v.title)}</strong> · ${escapeHtml(v.status)} · <small>${new Date(v.created_at).toLocaleString()}</small></div>`).join('') : '<div class="muted">No jobs</div>');
+    document.getElementById('recentJobs').innerHTML = html;
+  } catch(e){ document.getElementById('recentJobs').innerText = 'Jobs load failed'; }
+}
+
+// TEMPLATES
+async function listTemplates(){
+  try {
+    const res = await fetch(`${BASE_URL}/templates/trending`);
+    const arr = await res.json();
+    const el = document.getElementById('trendingList');
+    el.innerHTML = (Array.isArray(arr) && arr.length) ? arr.map(t=>`<div>${escapeHtml(t.name)} <span class="muted">(${escapeHtml(t.category)})</span></div>`).join('') : '<div class="muted">No templates</div>';
+  } catch(e){
+    document.getElementById('trendingList').innerText = 'Templates failed';
   }
 }
 
-// ================== API CALL HELPERS ==================
-async function apiCall(endpoint, body = {}) {
-  return await fetchJson(`${API_BASE}${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    credentials: "include"
-  });
-}
-
-async function apiCallForm(endpoint, formData) {
-  return await fetchJson(`${API_BASE}${endpoint}`, {
-    method: "POST",
-    body: formData,
-    credentials: "include"
-  });
-}
-
-// ================== NOTIFICATIONS ==================
-async function sendNotification(message, type = "info") {
+// GALLERY
+async function loadGallery(){
+  const el = document.getElementById('galleryList');
+  el.innerHTML = 'Loading...';
   try {
-    await apiCall("/notify", { message, type });
-  } catch (err) {
-    console.error("Notification failed:", err);
-  }
+    const arr = await (await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`)).json();
+    if(!Array.isArray(arr) || arr.length===0){ el.innerHTML = '<div class="muted">No videos yet</div>'; return; }
+    el.innerHTML = arr.map(v => `
+      <div class="row between job">
+        <div><strong>${escapeHtml(v.title)}</strong><br/><small class="muted">${new Date(v.created_at).toLocaleString()}</small></div>
+        <div class="row gap">
+          ${v.file ? `<a class="link" href="${BASE_URL}/outputs/${encodeURIComponent(v.file.split('/').pop())}" target="_blank">Open</a>` : ''}
+          <button class="btn" onclick="selectForEdit(${v.id})">Edit</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e){ el.innerText = 'Gallery load error'; }
 }
 
-// Small UI helper
-function showToast(msg) {
-  // minimal fallback: alert (replace with toast UI)
+// CHARACTERS
+async function listCharacters(){
+  const out = document.getElementById('ch_list');
+  out.innerHTML = 'Loading...';
   try {
-    const el = document.getElementById("toast");
-    if (el) {
-      el.innerText = msg;
-      el.classList.add("visible");
-      setTimeout(() => el.classList.remove("visible"), 4000);
-      return;
-    }
-  } catch (e) {}
-  alert(msg);
+    const arr = await (await fetch(`${BASE_URL}/characters?user_email=demo@visora.com`)).json();
+    if(!Array.isArray(arr) || arr.length===0){ out.innerHTML = '<div class="muted">No characters</div>'; return; }
+    out.innerHTML = arr.map(c=>`<div class="row between"><div><img class="thumb" src="${BASE_URL}/uploads/${c.photo ? c.photo.split('/').pop() : ''}" onerror="this.style.display='none'"/><strong>${escapeHtml(c.name)}</strong></div><div class="muted">${c.voice ? 'Has voice' : ''}</div></div>`).join('');
+  } catch(e){ out.innerHTML = 'Characters load failed'; }
 }
 
-// ================== VIDEO CREATION ==================
-// Create Video from Script
-async function createVideoFromScript(scriptText, options = {}) {
+// PROFILE
+async function loadProfile(){
+  const pbox = document.getElementById('profileBox');
   try {
-    const res = await apiCall("/create-video-script", { script: scriptText, ...options });
-    showToast("🎬 Job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting script → video");
-    throw err;
-  }
+    const p = await (await fetch(`${BASE_URL}/profile/demo@visora.com`)).json();
+    pbox.innerText = JSON.stringify(p, null, 2);
+  } catch(e){ pbox.innerText = 'Profile load failed'; }
 }
+document.getElementById('profile_refresh').addEventListener('click', loadProfile);
 
-// Image → Video
-async function createVideoFromImage(imageFile, options = {}) {
+// CREATE VIDEO - Quick
+document.getElementById('btn_generate').addEventListener('click', async ()=>{
+  const btn = document.getElementById('btn_generate'); btn.disabled = true; btn.innerText = 'Generating...';
   const fd = new FormData();
-  fd.append("image", imageFile);
-  Object.entries(options).forEach(([k, v]) => fd.append(k, v));
+  fd.append('user_email','demo@visora.com');
+  fd.append('title', document.getElementById('cv_title').value || `Video ${new Date().toISOString()}`);
+  fd.append('script', document.getElementById('cv_script').value || '');
+  fd.append('template', document.getElementById('cv_template').value);
+  fd.append('quality', document.getElementById('cv_quality').value);
+  fd.append('lang', document.getElementById('cv_lang').value);
+  fd.append('length_type', document.getElementById('cv_length').value);
+  for (let f of document.getElementById('cv_images').files) fd.append('characters', f, f.name);
+  for (let f of document.getElementById('cv_voices').files) fd.append('character_voice_files', f, f.name);
+  const bg = document.getElementById('cv_bg').files[0]; if(bg) fd.append('bg_music_file', bg, bg.name);
   try {
-    const res = await apiCallForm("/create-video-image", fd);
-    showToast("🖼 Job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting image → video");
-    throw err;
-  }
-}
+    const resp = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await resp.json();
+    document.getElementById('create_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await loadGallery(); await loadDashboard();
+  } catch(e){
+    document.getElementById('create_resp').innerText = 'Generate failed: ' + e;
+  } finally { btn.disabled=false; btn.innerText='Generate'; }
+});
+document.getElementById('btn_auto').addEventListener('click', ()=>{
+  document.getElementById('cv_title').value='Promo: Visora AI';
+  document.getElementById('cv_script').value='C1: Hello! Welcome to Visora. C2: We make cinematic AI videos in seconds.';
+  document.getElementById('cv_template').value='Promo';
+});
 
-// Audio → Video (overlay)
-async function createVideoFromAudio(audioFile, options = {}) {
+// IMAGE -> VIDEO
+document.getElementById('iv_submit').addEventListener('click', async ()=>{
+  const img = document.getElementById('iv_image').files[0];
+  if(!img){ alert('Upload image'); return; }
   const fd = new FormData();
-  fd.append("audio", audioFile);
-  Object.entries(options).forEach(([k, v]) => fd.append(k, v));
+  fd.append('user_email','demo@visora.com');
+  fd.append('title','Image to Video ' + new Date().toISOString());
+  fd.append('template','Cinematic');
+  fd.append('quality','HD');
+  fd.append('characters', img, img.name);
+  const v = document.getElementById('iv_voice').files[0]; if(v) fd.append('character_voice_files', v, v.name);
+  document.getElementById('iv_resp').innerText='Submitting...';
   try {
-    const res = await apiCallForm("/create-video-audio", fd);
-    showToast("🎧 Job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting audio → video");
-    throw err;
-  }
-}
+    const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await r.json();
+    document.getElementById('iv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await loadGallery();
+  } catch(e){ document.getElementById('iv_resp').innerText='Error: '+e; }
+});
 
-// TTS → Video
-async function createVideoFromTTS(text, voice = "default", options = {}) {
-  try {
-    const res = await apiCall("/create-video-tts", { text, voice, ...options });
-    showToast("🔊 Job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting TTS → video");
-    throw err;
-  }
-}
-
-// Video → Voice Replace
-async function replaceVoice(videoFile, newVoice) {
+// SCRIPT -> VIDEO
+document.getElementById('sv_submit').addEventListener('click', async ()=>{
+  const script = document.getElementById('sv_script').value;
+  if(!script){ alert('Script required'); return; }
   const fd = new FormData();
-  fd.append("video", videoFile);
-  fd.append("voice", newVoice);
+  fd.append('user_email','demo@visora.com');
+  fd.append('title','ScriptVideo '+new Date().toISOString());
+  fd.append('script', script);
+  fd.append('template','Explainer');
+  fd.append('quality','HD');
+  document.getElementById('sv_resp').innerText='Submitting...';
   try {
-    const res = await apiCallForm("/replace-voice", fd);
-    showToast("🎤 Voice replace started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error replacing voice");
-    throw err;
-  }
+    const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await r.json();
+    document.getElementById('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await loadGallery();
+  } catch(e){ document.getElementById('sv_resp').innerText='Error: '+e; }
+});
+
+// ASSISTANT
+document.getElementById('assistant_quick_btn').addEventListener('click', assistantQuick);
+document.getElementById('as_call').addEventListener('click', callAssistant);
+async function assistantQuick(){
+  const q = document.getElementById('assistant_quick_q').value || 'Give me an opening line for a promo';
+  const tone = document.getElementById('assistant_tone').value || 'helpful';
+  try {
+    const resp = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ query:q, tone, lang:'hi' })});
+    const j = await resp.json();
+    document.getElementById('assistant_quick_reply').innerText = j.reply || 'No reply';
+  } catch(e){ document.getElementById('assistant_quick_reply').innerText='Assistant error'; }
+}
+async function callAssistant(){
+  const q = document.getElementById('as_q').value || 'Help me write a short ad';
+  const tone = document.getElementById('as_tone').value || 'helpful';
+  try {
+    const resp = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ query:q, tone, lang:'hi' })});
+    const j = await resp.json();
+    document.getElementById('as_reply').innerText = j.reply || 'No reply';
+  } catch(e){ document.getElementById('as_reply').innerText='Assistant error'; }
 }
 
-// Video → Audio Extract
-async function extractAudio(videoFile) {
+// CHARACTERS - save
+document.getElementById('ch_save').addEventListener('click', async ()=>{
   const fd = new FormData();
-  fd.append("video", videoFile);
+  fd.append('user_email','demo@visora.com');
+  fd.append('name', document.getElementById('ch_name').value || 'MyChar');
+  if(document.getElementById('ch_photo').files[0]) fd.append('photo', document.getElementById('ch_photo').files[0]);
+  if(document.getElementById('ch_voice').files[0]) fd.append('voice', document.getElementById('ch_voice').files[0]);
+  document.getElementById('ch_resp').innerText='Saving...';
   try {
-    const res = await apiCallForm("/extract-audio", fd);
-    showToast("🎶 Audio extracted");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error extracting audio");
-    throw err;
-  }
-}
+    const r = await fetch(`${BASE_URL}/character`, { method:'POST', body: fd });
+    const j = await r.json();
+    document.getElementById('ch_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await listCharacters();
+  } catch(e){ document.getElementById('ch_resp').innerText='Save failed'; }
+});
+document.getElementById('ch_list_btn').addEventListener('click', listCharacters);
 
-// Slideshow Maker
-async function createSlideshow(images, musicFile, options = {}) {
-  const fd = new FormData();
-  images.forEach(img => fd.append("images", img));
-  if (musicFile) fd.append("music", musicFile);
-  Object.entries(options).forEach(([k, v]) => fd.append(k, v));
+// PAYMENTS - stub
+document.getElementById('rz_create').addEventListener('click', async ()=>{
+  const amt = document.getElementById('rz_amount').value;
+  document.getElementById('rz_resp').innerText = 'Creating...';
   try {
-    const res = await apiCallForm("/create-slideshow", fd);
-    showToast("📽 Slideshow job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting slideshow");
-    throw err;
-  }
+    const r = await fetch(`${BASE_URL}/create_razorpay_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: amt })});
+    const j = await r.json();
+    document.getElementById('rz_resp').innerText = JSON.stringify(j);
+  } catch(e){ document.getElementById('rz_resp').innerText = 'Create failed'; }
+});
+
+// small helpers for edit selection (stub)
+function selectForEdit(id){
+  alert('Select for edit: ' + id + ' (open Edit page in next release)');
 }
 
-// ================== EXTRA VIDEO FEATURES ==================
-async function createAIAvatarVideo(imageFile, text, options = {}) {
-  const fd = new FormData();
-  fd.append("avatar", imageFile);
-  fd.append("script", text);
-  Object.entries(options).forEach(([k, v]) => fd.append(k, v));
-  try {
-    const res = await apiCallForm("/create-ai-avatar", fd);
-    showToast("🤖 Avatar job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error creating AI avatar video");
-    throw err;
-  }
-}
+// POLL gallery periodically (jobs)
+setInterval(loadGallery, 15000);
 
-async function createTemplateVideo(templateName, script, options = {}) {
-  try {
-    const res = await apiCall("/create-template-video", { template: templateName, script, ...options });
-    showToast("Template job started: " + (res.job_id || "unknown"));
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error starting template video");
-    throw err;
-  }
-}
-
-async function addSubtitles(videoFile, lang = "en") {
-  const fd = new FormData();
-  fd.append("video", videoFile);
-  fd.append("language", lang);
-  try {
-    const res = await apiCallForm("/add-subtitles", fd);
-    showToast("✍️ Subtitles job started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error adding subtitles");
-    throw err;
-  }
-}
-
-async function translateSubtitles(videoFile, targetLang = "hi") {
-  const fd = new FormData();
-  fd.append("video", videoFile);
-  fd.append("target_lang", targetLang);
-  try {
-    const res = await apiCallForm("/translate-subtitles", fd);
-    showToast("🌐 Subtitle translation started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error translating subtitles");
-    throw err;
-  }
-}
-
-// ================== AUDIO TOOLS ==================
-async function reduceNoise(audioFile) {
-  const fd = new FormData();
-  fd.append("audio", audioFile);
-  try {
-    const res = await apiCallForm("/audio-noise-reduce", fd);
-    showToast("🔊 Noise reduction started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error reducing noise");
-    throw err;
-  }
-}
-
-async function normalizeAudio(audioFile) {
-  const fd = new FormData();
-  fd.append("audio", audioFile);
-  try {
-    const res = await apiCallForm("/audio-normalize", fd);
-    showToast("🔊 Audio normalize started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error normalizing audio");
-    throw err;
-  }
-}
-
-async function translateAudio(audioFile, lang = "hi") {
-  const fd = new FormData();
-  fd.append("audio", audioFile);
-  fd.append("target_lang", lang);
-  try {
-    const res = await apiCallForm("/audio-translate", fd);
-    showToast("🔁 Audio translation started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error translating audio");
-    throw err;
-  }
-}
-
-async function compressAudio(audioFile) {
-  const fd = new FormData();
-  fd.append("audio", audioFile);
-  try {
-    const res = await apiCallForm("/audio-compress", fd);
-    showToast("🔽 Audio compress started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error compressing audio");
-    throw err;
-  }
-}
-
-// ================== FILE TOOLS ==================
-async function convertFormat(file, type) {
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("type", type); // e.g. 'video-to-audio'
-  try {
-    const res = await apiCallForm("/convert-format", fd);
-    showToast("🔄 Conversion started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error converting file");
-    throw err;
-  }
-}
-
-async function compressVideo(videoFile) {
-  const fd = new FormData();
-  fd.append("video", videoFile);
-  try {
-    const res = await apiCallForm("/compress-video", fd);
-    showToast("🔽 Video compress started");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error compressing video");
-    throw err;
-  }
-}
-
-// ================== DOWNLOAD & SHARE ==================
-async function getDownloadOptions(jobId) {
-  return await fetchJson(`${API_BASE}/download-options/${jobId}`, { credentials: "include" });
-}
-
-async function shareVideo(jobId, platform) {
-  return await apiCall(`/share-video/${jobId}`, { platform });
-}
-
-// ================== JOBS ==================
-async function loadJobs() {
-  try {
-    const res = await fetch(`${API_BASE}/jobs`, { credentials: "include" });
-    if (!res.ok) throw new Error("Jobs fetch failed");
-    const data = await res.json();
-    const jobsList = document.getElementById("jobs-list");
-    if (!jobsList) return;
-    jobsList.innerHTML = "";
-    (data.jobs || []).forEach(job => {
-      let item = document.createElement("li");
-      item.className = "job-item";
-      item.innerHTML = `<strong>${job.id}</strong> — ${job.status} <small>${job.created_at || ""}</small>`;
-      jobsList.appendChild(item);
-    });
-  } catch (err) {
-    console.error("loadJobs", err);
-  }
-}
-setInterval(loadJobs, 10000);
-loadJobs(); // initial
-
-// ================== CREDITS & PAYMENTS ==================
-async function getCredits() {
-  try {
-    const res = await apiCall("/get-credits", {});
-    return res;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function topUpCredits(amount, method = "razorpay") {
-  try {
-    const res = await apiCall("/topup-credits", { amount, method });
-    return res;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// ================== PROFILE ==================
-async function getProfile() {
-  try {
-    const res = await apiCall("/profile", {});
-    return res;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function updateProfile(data) {
-  try {
-    const res = await apiCall("/update-profile", data);
-    showToast("Profile updated");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error updating profile");
-  }
-}
-
-// ================== SETTINGS ==================
-async function updateSettings(settings) {
-  try {
-    const res = await apiCall("/update-settings", settings);
-    showToast("Settings saved");
-    return res;
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Error saving settings");
-  }
-}
-
-// ================== ADMIN PANEL ==================
-async function getAllUsers() {
-  try {
-    return await apiCall("/admin/users", {});
-  } catch (err) {
-    console.error("getAllUsers", err);
-  }
-}
-
-async function getAnalytics() {
-  try {
-    return await apiCall("/admin/analytics", {});
-  } catch (err) {
-    console.error("getAnalytics", err);
-  }
-}
-
-// ================== UTILITIES ==================
-function toBaseFilename(path) {
-  try {
-    return path.split("/").pop();
-  } catch (e) { return path; }
-}
-
-// Provide debug helper visible on console
-window.VisoraAPI = {
-  createVideoFromScript,
-  createVideoFromImage,
-  createVideoFromAudio,
-  createVideoFromTTS,
-  replaceVoice,
-  extractAudio,
-  createSlideshow,
-  createAIAvatarVideo,
-  createTemplateVideo,
-  addSubtitles,
-  translateSubtitles,
-  reduceNoise,
-  normalizeAudio,
-  translateAudio,
-  compressAudio,
-  convertFormat,
-  compressVideo,
-  getDownloadOptions,
-  shareVideo,
-  loadJobs,
-  getCredits,
-  topUpCredits,
-  getProfile,
-  updateProfile,
-  updateSettings,
-  getAllUsers,
-  getAnalytics
-};
-const API_BASE = "https://visora.onrender.com";
+// initial load
+refreshAll();
