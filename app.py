@@ -611,8 +611,30 @@ def generate_video():
 def edit_video(video_id):
     # For production implement: fetch existing meta, accept replace voice/bg music/apply cinematic, enqueue new job
     return jsonify({"error":"not implemented","note":"Implement per project needs"}), 501
+import openai
 
-# ---------- Run ----------
+# ChatGPT API key (Render/Env mein set karo)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route("/chat-assistant", methods=["POST"])
+def chat_assistant():
+    data = request.json
+    user_prompt = data.get("prompt", "")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",   # ya "gpt-4" agar enable hai
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant for video script writing."},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=400
+        )
+        reply = response['choices'][0]['message']['content']
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+# ------------- Run -------------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
