@@ -1,0 +1,37 @@
+:root{
+  --bg:#0f1115; --card:#121218; --muted:#9aa3b2; --accent:#fbbf24;
+  --text:#e6eef8;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
+.sidebar{width:260px;background:#0c0d10;position:fixed;left:0;top:0;bottom:0;padding:18px;overflow:auto;border-right:1px solid #111}
+.brand h1{margin:0;color:var(--accent);font-size:22px}
+.brand .muted{font-size:12px;color:var(--muted);margin-top:6px}
+nav{margin-top:18px;display:flex;flex-direction:column;gap:6px}
+.nav-btn{background:transparent;border:none;color:var(--text);text-align:left;padding:10px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{background:#0f151b}
+.nav-btn.active{background:#11151b;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02)}
+.base-url{position:fixed;bottom:18px;left:18px;right:18px;color:var(--muted);font-size:12px}
+
+/* content */
+.content{margin-left:260px;padding:20px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.muted{color:var(--muted)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--card);padding:14px;border-radius:10px;border:1px solid #15161a}
+.big{font-size:28px;color:#6ee28a}
+.actions{display:flex;gap:8px}
+.btn{padding:8px 12px;border-radius:8px;border:1px solid #232427;background:transparent;color:var(--text);cursor:pointer}
+.btn.primary{background:var(--accent);color:#000;border:none}
+.mt{margin-top:12px}
+.row{display:flex;gap:8px;margin-top:8px}
+input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #232427;background:#0b0c0f;color:var(--text);resize:vertical}
+textarea{min-height:100px}
+.hidden{display:none}
+.resp{margin-top:10px;background:#0b0c0f;padding:8px;border-radius:6px;border:1px solid #15161a;color:var(--muted)}
+@media(max-width:900px){
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .sidebar{position:relative;width:100%;height:auto;border-right:none}
+  .content{margin-left:0;padding:12px}
+}

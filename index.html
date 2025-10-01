@@ -1,1140 +1,251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Visora - Studio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-<<<<<<< HEAD
-    body { background: #0f1115; color: #e6eef8; font-family: Inter, system-ui, sans-serif; }
-    .sidebar { width: 260px; background: #121318; min-height: 100vh; position: fixed; left: 0; top: 0; padding: 20px; }
-    .content { margin-left: 260px; padding: 24px; }
-    .btn-primary { background:#fbbf24;color:#000;padding:8px 14px;border-radius:8px;font-weight:600; }
-    .muted { color:#9aa3b2; }
-    .card { background:#121218; border:1px solid #1d2128; padding:14px;border-radius:10px; }
-    pre { white-space: pre-wrap; word-break: break-word; color:#cfe8ff; }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Sidebar -->
   <aside class="sidebar">
-    <h1 class="text-2xl font-bold text-amber-400 mb-4">Visora</h1>
-    <p class="text-sm muted mb-4">Cloud-first Video Studio</p>
+    <div class="brand">
+      <h1>Visora</h1>
+      <div class="muted">Cloud-first Video Studio</div>
+    </div>
 
-    <nav class="space-y-2">
-      <button onclick="show('dashboard')" class="w-full text-left p-2 rounded hover:bg-gray-900">🏠 Dashboard</button>
-      <button onclick="show('create')" class="w-full text-left p-2 rounded hover:bg-gray-900">🎬 Create Video</button>
-      <button onclick="show('image2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">🖼 Image → Video</button>
-      <button onclick="show('script2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">✍ Script → Video</button>
-      <button onclick="show('gallery')" class="w-full text-left p-2 rounded hover:bg-gray-900">📂 Gallery</button>
-      <button onclick="show('characters')" class="w-full text-left p-2 rounded hover:bg-gray-900">👥 Characters / Voices</button>
-      <button onclick="show('edit')" class="w-full text-left p-2 rounded hover:bg-gray-900">🛠 Edit Video</button>
-      <button onclick="show('assistant')" class="w-full text-left p-2 rounded hover:bg-gray-900">🤖 Assistant</button>
-      <button onclick="show('payments')" class="w-full text-left p-2 rounded hover:bg-gray-900">💳 Payments</button>
-      <button onclick="show('profile')" class="w-full text-left p-2 rounded hover:bg-gray-900">👤 Profile</button>
-      <hr class="my-4 border-gray-800"/>
-      <div class="text-xs muted">Base URL (for debugging)</div>
-      <div id="baseUrlShow" class="text-sm mt-1"></div>
+    <nav>
+      <button data-page="dashboard" class="nav-btn active">🏠 Dashboard</button>
+      <button data-page="create" class="nav-btn">🎬 Create Video</button>
+      <button data-page="image2video" class="nav-btn">🖼 Image → Video</button>
+      <button data-page="script2video" class="nav-btn">✍ Script → Video</button>
+      <button data-page="gallery" class="nav-btn">📂 Gallery</button>
+      <button data-page="characters" class="nav-btn">👥 Characters</button>
+      <button data-page="edit" class="nav-btn">🛠 Edit Video</button>
+      <button data-page="assistant" class="nav-btn">🤖 Assistant</button>
+      <button data-page="payments" class="nav-btn">💳 Payments</button>
+      <button data-page="profile" class="nav-btn">👤 Profile</button>
     </nav>
+
+    <div class="base-url">
+      <label>Base URL</label>
+      <div id="baseUrlShow"></div>
+    </div>
   </aside>
 
-  <!-- Main content -->
   <main class="content">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <header class="topbar">
       <div>
-=======
-    :root{
-      --bg:#0f1115; --panel:#121318; --muted:#9aa3b2; --accent:#fbbf24; --card-border:#1d2128; --text:#e6eef8;
-    }
-    [data-theme="light"]{
-      --bg:#f6f7fb; --panel:#ffffff; --muted:#6b7280; --accent:#f59e0b; --card-border:#e6e9ef; --text:#111827;
-    }
-    body{ background:var(--bg); color:var(--text); font-family:Inter, system-ui, sans-serif; }
-    .sidebar{ width:260px; background:var(--panel); min-height:100vh; position:fixed; left:0; top:0; padding:20px; transition:transform .2s ease; z-index:40;}
-    .content{ margin-left:260px; padding:24px; transition:margin-left .2s ease;}
-    .btn-primary{ background:var(--accent); color:#000; padding:8px 14px; border-radius:8px; font-weight:600; }
-    .muted{ color:var(--muted); }
-    .card{ background:var(--panel); border:1px solid var(--card-border); padding:14px; border-radius:10px; }
-    pre{ white-space:pre-wrap; word-break:break-word; color:var(--text); }
-    .hidden-sm{ display:inline-block; }
-    @media (max-width:900px){
-      .sidebar{ transform: translateX(-100%); position:fixed; }
-      .sidebar.open{ transform:translateX(0); }
-      .content{ margin-left:0; padding:14px; }
-      .hidden-sm{ display:none; }
-    }
-    .toast{ position:fixed; right:20px; top:20px; z-index:80; }
-    .file-list small{ color:var(--muted); display:block; }
-    .preview-video{ width:100%; max-height:480px; background:#000; }
-    .pill{ padding:6px 10px; background:rgba(255,255,255,0.03); border-radius:999px; display:inline-block; }
-    .searchbox{ background:rgba(255,255,255,0.03); border:1px solid var(--card-border); padding:8px 10px; border-radius:8px; color:var(--text); width:100% }
-  </style>
-</head>
-<body data-theme="dark">
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-amber-400">Visora</h1>
-        <div class="text-sm muted">Cloud-first Video Studio</div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <div id="subtitle" class="muted">Visora — Cloud-first automatic video creation</div>
       </div>
-      <button id="sidebarClose" class="hidden-sm p-1 rounded" onclick="toggleSidebar(false)">✕</button>
-    </div>
-
-    <nav class="space-y-2">
-      <button onclick="show('dashboard')" class="w-full text-left p-2 rounded hover:bg-gray-900">🏠 Dashboard</button>
-      <button onclick="show('create')" class="w-full text-left p-2 rounded hover:bg-gray-900">🎬 Create Video</button>
-      <button onclick="show('image2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">🖼 Image → Video</button>
-      <button onclick="show('script2video')" class="w-full text-left p-2 rounded hover:bg-gray-900">✍ Script → Video</button>
-      <button onclick="show('gallery')" class="w-full text-left p-2 rounded hover:bg-gray-900">📂 Gallery</button>
-      <button onclick="show('characters')" class="w-full text-left p-2 rounded hover:bg-gray-900">👥 Characters / Voices</button>
-      <button onclick="show('edit')" class="w-full text-left p-2 rounded hover:bg-gray-900">🛠 Edit Video</button>
-      <button onclick="show('assistant')" class="w-full text-left p-2 rounded hover:bg-gray-900">🤖 Assistant</button>
-      <button onclick="show('payments')" class="w-full text-left p-2 rounded hover:bg-gray-900">💳 Payments</button>
-      <button onclick="show('profile')" class="w-full text-left p-2 rounded hover:bg-gray-900">👤 Profile</button>
-      <hr class="my-4 border-gray-800"/>
-      <div class="text-xs muted">Base URL</div>
-      <div id="baseUrlShow" class="text-sm mt-1"></div>
-
-      <div class="mt-4">
-        <div class="text-xs muted mb-2">Display</div>
-        <button class="p-2 mr-2" onclick="toggleTheme()">Toggle Theme</button>
-        <button class="p-2" onclick="toggleSidebar()">☰</button>
+      <div class="top-actions">
+        <button id="refreshBtn" class="btn primary">Refresh</button>
       </div>
-    </nav>
-  </aside>
+    </header>
 
-  <!-- Main content -->
-  <main id="mainContent" class="content">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-        <h2 id="pageTitle" class="text-xl font-semibold">Dashboard</h2>
-        <div class="text-sm muted">Visora — Cloud-first automatic video creation</div>
-      </div>
-      <div class="flex items-center gap-3">
-<<<<<<< HEAD
-        <button onclick="refreshAll()" class="btn-primary">Refresh</button>
-=======
-        <input id="globalSearch" class="searchbox" placeholder="Search videos / templates..." oninput="debouncedSearch()" style="width:360px; max-width:38vw"/>
-        <button class="btn-primary" onclick="refreshAll()">Refresh</button>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-      </div>
-    </div>
-
-    <!-- PAGES -->
-<<<<<<< HEAD
-
-    <!-- DASHBOARD -->
-=======
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
     <section id="dashboard" class="page">
-      <div class="grid grid-cols-3 gap-4 mb-4">
+      <div class="grid-3">
         <div class="card">
-          <div class="text-sm muted">Credits</div>
-          <div id="credits" class="text-2xl font-bold text-green-400">—</div>
-<<<<<<< HEAD
-=======
-          <div class="mt-2"><button class="p-2 rounded" onclick="show('payments')">Top-up</button></div>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
+          <div class="muted">Credits</div>
+          <div id="credits" class="big">—</div>
         </div>
         <div class="card">
-          <div class="text-sm muted">Trending Templates</div>
-          <div id="trendingList" class="mt-2"></div>
+          <div class="muted">Trending Templates</div>
+          <div id="trendingList"></div>
         </div>
         <div class="card">
-          <div class="text-sm muted">Quick Actions</div>
-          <div class="mt-3 flex gap-2">
-            <button class="btn-primary" onclick="show('create')">Create Video</button>
-<<<<<<< HEAD
-            <button class="btn-primary" onclick="show('gallery')">Open Gallery</button>
-=======
-            <button class="p-2 border rounded" onclick="show('gallery')">Open Gallery</button>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
+          <div class="muted">Quick Actions</div>
+          <div class="actions">
+            <button class="btn primary" data-open="create">Create Video</button>
+            <button class="btn" data-open="gallery">Open Gallery</button>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <h3 class="font-semibold mb-2">Recent jobs</h3>
+      <div class="card mt">
+        <h3>Recent Jobs</h3>
         <div id="recentJobs">Loading...</div>
       </div>
     </section>
 
-    <!-- CREATE VIDEO (generic) -->
+    <!-- Create video -->
     <section id="create" class="page hidden">
-      <div class="grid lg:grid-cols-2 gap-4">
+      <div class="grid-2">
         <div class="card">
-          <h3 class="font-semibold mb-2">New Video (Quick)</h3>
-          <input id="cv_title" placeholder="Title" class="w-full p-2 mb-2 text-black" />
-          <textarea id="cv_script" placeholder="Script (optional). If empty assistant can suggest." rows="6" class="w-full p-2 mb-2 text-black"></textarea>
+          <h3>New Video (Quick)</h3>
+          <input id="cv_title" placeholder="Title" />
+          <textarea id="cv_script" placeholder="Script (optional)"></textarea>
 
-          <div class="flex gap-2 mb-2">
-<<<<<<< HEAD
-            <select id="cv_template" class="p-2 text-black w-1/2">
-              <option>Motivation</option><option>Promo</option><option>Explainer</option><option>Cinematic</option>
-            </select>
-=======
-            <select id="cv_template" class="p-2 text-black w-1/2"></select>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-            <select id="cv_quality" class="p-2 text-black w-1/2">
-              <option>HD</option><option>FULLHD</option><option>4K</option>
-            </select>
+          <div class="row">
+            <select id="cv_template"></select>
+            <select id="cv_quality"><option>HD</option><option>FULLHD</option><option>4K</option></select>
           </div>
 
-          <div class="flex gap-2 mb-2">
-            <select id="cv_lang" class="p-2 text-black w-1/2">
-              <option value="hi">Hindi</option><option value="en">English</option><option value="bn">Bengali</option><option value="ta">Tamil</option>
-            </select>
-            <select id="cv_length" class="p-2 text-black w-1/2">
-              <option value="short">Short</option><option value="long">Long</option>
-            </select>
+          <div class="row">
+            <select id="cv_lang"></select>
+            <select id="cv_length"><option value="short">Short</option><option value="long">Long</option></select>
           </div>
 
-          <div class="mb-2">
-            <label class="text-sm muted">Upload character images (1..4 recommended)</label>
-            <input id="cv_images" type="file" multiple accept="image/*" class="w-full mt-1" />
-          </div>
-          <div class="mb-2">
-            <label class="text-sm muted">Upload voice files (optional)</label>
-            <input id="cv_voices" type="file" multiple accept="audio/*" class="w-full mt-1" />
-          </div>
-          <div class="mb-2">
-            <label class="text-sm muted">Background music (optional)</label>
-            <input id="cv_bg" type="file" accept="audio/*" class="w-full mt-1" />
+          <label>Upload character images (1..4)</label>
+          <input id="cv_images" type="file" multiple accept="image/*" />
+          <label>Upload voice files (optional)</label>
+          <input id="cv_voices" type="file" multiple accept="audio/*" />
+          <label>Background music (optional)</label>
+          <input id="cv_bg" type="file" accept="audio/*" />
+
+          <div class="mt">
+            <button id="btn_generate" class="btn primary">Generate</button>
+            <button id="btn_autofill" class="btn">Auto-fill sample</button>
           </div>
 
-          <div class="flex gap-2 mt-3">
-            <button id="btn_generate" class="btn-primary" onclick="createVideo()">Generate</button>
-            <button class="p-2 border rounded" onclick="autoFillSample()">Auto-fill sample</button>
-          </div>
-
-          <div id="create_resp" class="mt-3"></div>
+          <div id="create_resp" class="resp"></div>
         </div>
 
-<<<<<<< HEAD
-        <!-- left column: preview / templates -->
-=======
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
         <div class="card">
-          <h3 class="font-semibold mb-2">Preview / Options</h3>
-          <div id="templatePreview" class="mb-4 muted">Template preview will show here.</div>
+          <h3>Preview & Assistant</h3>
+          <div id="templatePreview" class="muted">Choose template to preview.</div>
 
-          <h4 class="text-sm font-semibold mt-2">Assistant quick help</h4>
-          <input id="assistant_quick_q" placeholder="I need a hook for a promo" class="w-full p-2 mb-2 text-black" />
-          <div><button class="btn-primary" onclick="assistantQuick()">Ask Assistant</button></div>
-          <div id="assistant_quick_reply" class="mt-3"></div>
+          <h4>Assistant</h4>
+          <input id="assistant_quick_q" placeholder="Help me write a hook..." />
+          <div class="mt">
+            <select id="assistant_tone">
+              <option value="helpful">Helpful</option>
+              <option value="friendly">Friendly</option>
+              <option value="funny">Funny</option>
+            </select>
+            <button id="assistantBtn" class="btn primary">Ask</button>
+          </div>
+          <div id="assistant_quick_reply" class="resp"></div>
         </div>
       </div>
     </section>
 
-<<<<<<< HEAD
-    <!-- IMAGE -> VIDEO (dedicated) -->
+    <!-- Image -> Video -->
     <section id="image2video" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Image → Video (image to character)</h3>
-        <p class="muted mb-2">Upload a photo and optional voice — system will turn it into a lip-synced clip.</p>
-=======
-    <!-- IMAGE -> VIDEO -->
-    <section id="image2video" class="page hidden">
-      <div class="card">
-        <h3 class="font-semibold mb-2">Image → Video</h3>
-        <p class="muted mb-2">Upload a photo & optional voice — system turns it to lip-synced clip.</p>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-        <input id="iv_image" type="file" accept="image/*" class="mb-2" />
-        <input id="iv_voice" type="file" accept="audio/*" class="mb-2" />
-        <div class="flex gap-2">
-          <button class="btn-primary" onclick="imageToVideo()">Create</button>
+        <h3>Image → Video</h3>
+        <p class="muted">Upload photo + optional voice → lip-synced clip</p>
+        <input id="iv_image" type="file" accept="image/*" />
+        <input id="iv_voice" type="file" accept="audio/*" />
+        <div class="mt">
+          <button id="btn_image2video" class="btn primary">Create</button>
         </div>
-        <div id="iv_resp" class="mt-3"></div>
+        <div id="iv_resp" class="resp"></div>
       </div>
     </section>
 
-<<<<<<< HEAD
-    <!-- SCRIPT -> VIDEO (dedicated) -->
+    <!-- Script -> Video -->
     <section id="script2video" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Script → Video (auto)</h3>
-        <textarea id="sv_script" rows="6" placeholder="Paste script... (you can mark [C1]:.. [C2]:.. to map characters)" class="w-full p-2 mb-2 text-black"></textarea>
-=======
-    <!-- SCRIPT -> VIDEO -->
-    <section id="script2video" class="page hidden">
-      <div class="card">
-        <h3 class="font-semibold mb-2">Script → Video (auto)</h3>
-        <textarea id="sv_script" rows="6" placeholder="Paste script... use [C1]: ... [C2]: ... to map characters" class="w-full p-2 mb-2 text-black"></textarea>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-        <div class="flex gap-2">
-          <button class="btn-primary" onclick="scriptToVideo()">Auto Generate</button>
-          <button class="p-2 border rounded" onclick="suggestFromAssistant()">Suggest Script</button>
+        <h3>Script → Video</h3>
+        <textarea id="sv_script" placeholder="Paste script... use [C1]: ... [C2]: ... to map characters"></textarea>
+        <div class="mt">
+          <button id="btn_script2video" class="btn primary">Auto Generate</button>
+          <button id="btn_suggest_script" class="btn">Suggest Script</button>
         </div>
-        <div id="sv_resp" class="mt-3"></div>
+        <div id="sv_resp" class="resp"></div>
       </div>
     </section>
 
-    <!-- GALLERY -->
+    <!-- Gallery -->
     <section id="gallery" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Your Videos</h3>
-<<<<<<< HEAD
-=======
-        <div class="mb-3 flex gap-2">
-          <input id="galleryFilter" class="searchbox" placeholder="Filter by title or status..." oninput="renderGallery()" />
-          <button class="p-2 border rounded" onclick="renderGallery()">Filter</button>
-        </div>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
+        <h3>Your Videos</h3>
         <div id="galleryList">Loading...</div>
       </div>
     </section>
 
-    <!-- CHARACTERS / VOICES -->
+    <!-- Characters -->
     <section id="characters" class="page hidden">
-      <div class="grid lg:grid-cols-2 gap-4">
+      <div class="grid-2">
         <div class="card">
-          <h3 class="font-semibold mb-2">Add Character</h3>
-          <input id="ch_name" placeholder="Character name" class="w-full p-2 mb-2 text-black"/>
-          <input id="ch_photo" type="file" accept="image/*" class="mb-2" />
-          <input id="ch_voice" type="file" accept="audio/*" class="mb-2" />
-          <div class="flex gap-2">
-            <button class="btn-primary" onclick="uploadCharacter()">Save Character</button>
-            <button class="p-2 border rounded" onclick="listCharacters()">Refresh</button>
+          <h3>Add Character</h3>
+          <input id="ch_name" placeholder="Character name" />
+          <input id="ch_photo" type="file" accept="image/*" />
+          <input id="ch_voice" type="file" accept="audio/*" />
+          <div class="mt">
+            <button id="btn_save_character" class="btn primary">Save Character</button>
+            <button id="btn_list_char" class="btn">Refresh</button>
           </div>
-          <div id="ch_resp" class="mt-3"></div>
+          <div id="ch_resp" class="resp"></div>
         </div>
+
         <div class="card">
-          <h3 class="font-semibold mb-2">Saved Characters & Voices</h3>
+          <h3>Saved Characters</h3>
           <div id="ch_list">Loading...</div>
         </div>
       </div>
     </section>
 
-    <!-- EDIT VIDEO -->
+    <!-- Edit -->
     <section id="edit" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Edit Existing Video</h3>
-        <input id="edit_video_id" placeholder="Video ID" class="w-full p-2 mb-2 text-black" />
-        <div class="flex gap-2 mb-2">
-          <button class="btn-primary" onclick="loadVideoForEdit()">Load</button>
-          <button class="p-2 border rounded" onclick="openGalleryForSelection()">Pick from gallery</button>
+        <h3>Edit Video</h3>
+        <input id="edit_video_id" placeholder="Video ID" />
+        <div class="mt">
+          <button id="btn_load_edit" class="btn primary">Load</button>
+          <button id="btn_pick_gallery" class="btn">Pick from Gallery</button>
         </div>
 
-        <div id="edit_form" class="hidden mt-3">
-          <label class="muted">Change BG music</label>
-          <input id="edit_bg" type="file" accept="audio/*" class="mb-2" />
-          <label class="muted">Replace voice files (optional)</label>
-          <input id="edit_voices" type="file" accept="audio/*" multiple class="mb-2" />
-          <div class="flex gap-2">
-            <button class="btn-primary" onclick="submitEdit()">Apply Changes</button>
+        <div id="edit_form" class="hidden">
+          <label>Change BG music</label>
+          <input id="edit_bg" type="file" accept="audio/*" />
+          <label>Replace voice files</label>
+          <input id="edit_voices" type="file" accept="audio/*" multiple />
+          <div class="mt">
+            <button id="btn_submit_edit" class="btn primary">Apply Changes</button>
           </div>
-          <div id="edit_resp" class="mt-3"></div>
+          <div id="edit_resp" class="resp"></div>
         </div>
       </div>
     </section>
 
-    <!-- ASSISTANT -->
+    <!-- Assistant -->
     <section id="assistant" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Assistant (Script help)</h3>
-        <input id="as_q" placeholder="Describe tone / what you want" class="w-full p-2 mb-2 text-black" />
-        <div class="flex gap-2 mb-2">
-          <select id="as_tone" class="p-2 text-black">
-            <option value="helpful">Helpful</option>
-            <option value="friendly">Friendly</option>
-            <option value="funny">Funny</option>
+        <h3>Assistant</h3>
+        <input id="as_q" placeholder="Describe tone / help" />
+        <div class="mt">
+          <select id="as_tone">
+            <option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="funny">Funny</option>
           </select>
-          <button class="btn-primary" onclick="callAssistant()">Ask</button>
+          <button id="btn_assistant" class="btn primary">Ask</button>
         </div>
-        <div id="as_reply" class="mt-3"></div>
+        <div id="as_reply" class="resp"></div>
       </div>
     </section>
 
-    <!-- PAYMENTS -->
+    <!-- Payments (stubs) -->
     <section id="payments" class="page hidden">
-      <div class="grid lg:grid-cols-2 gap-4">
+      <div class="grid-2">
         <div class="card">
-          <h3 class="font-semibold mb-2">Buy Credits (Razorpay)</h3>
-          <input id="rz_amount" placeholder="Amount (INR)" class="w-full p-2 mb-2 text-black"/>
-          <button class="btn-primary" onclick="createRazorpayOrder()">Create Razorpay Order</button>
-          <div id="rz_resp" class="mt-3"></div>
+          <h3>Razorpay</h3>
+          <input id="rz_amount" placeholder="Amount (INR)" />
+          <button id="btn_rz" class="btn primary">Create Order</button>
+          <div id="rz_resp" class="resp"></div>
         </div>
         <div class="card">
-          <h3 class="font-semibold mb-2">Buy Credits (PayPal)</h3>
-          <input id="pp_amount" placeholder="Amount (USD)" class="w-full p-2 mb-2 text-black"/>
-          <button class="btn-primary" onclick="createPaypalOrder()">Create PayPal Order</button>
-          <div id="pp_resp" class="mt-3"></div>
+          <h3>PayPal</h3>
+          <input id="pp_amount" placeholder="Amount (USD)" />
+          <button id="btn_pp" class="btn primary">Create PayPal Order</button>
+          <div id="pp_resp" class="resp"></div>
         </div>
       </div>
     </section>
 
-    <!-- PROFILE -->
+    <!-- Profile -->
     <section id="profile" class="page hidden">
       <div class="card">
-        <h3 class="font-semibold mb-2">Profile</h3>
+        <h3>Profile</h3>
         <pre id="profileBox">Loading...</pre>
-        <div class="flex gap-2 mt-2">
-          <button class="btn-primary" onclick="loadProfile()">Refresh</button>
-<<<<<<< HEAD
-=======
-          <button class="p-2 border rounded" onclick="openProfileEditor()">Edit</button>
-        </div>
-        <div id="profileEdit" class="hidden mt-3">
-          <input id="p_name" class="w-full p-2 mb-2 text-black" placeholder="Name" />
-          <input id="p_country" class="w-full p-2 mb-2 text-black" placeholder="Country" />
-          <input id="p_photo" type="file" accept="image/*" class="mb-2" />
-          <div><button class="btn-primary" onclick="submitProfile()">Save Profile</button></div>
-          <div id="p_resp" class="mt-2"></div>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
+        <div class="mt">
+          <button id="btn_profile_refresh" class="btn primary">Refresh</button>
         </div>
       </div>
     </section>
 
-<<<<<<< HEAD
-  </main>
-=======
-    <!-- Preview modal area -->
-    <div id="previewArea" class="mt-6"></div>
-
   </main>
 
-  <!-- Toast container -->
-  <div id="toasts" class="toast"></div>
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-
-  <!-- JS -->
-  <script>
-<<<<<<< HEAD
-    // ⚠️ Change this to your backend URL if different
-    const BASE_URL = "https://visora.onrender.com";
-    document.getElementById('baseUrlShow').innerText = BASE_URL;
-
-    // Utility: show page
-    function show(id) {
-      document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-    }
-
-    // Refresh main data
-    async function refreshAll() {
-      await Promise.all([
-        loadDashboard(),
-        listTemplates(),
-        loadGallery(),
-        listCharacters(),
-        loadProfile()
-      ]);
-    }
-
-    // --- DASHBOARD / TRENDS / JOBS ---
-    async function loadDashboard() {
-      // profile -> credits
-      try {
-        const res = await fetch(`${BASE_URL}/profile/demo@visora.com`);
-        const j = await res.json();
-        document.getElementById('credits').innerText = j.credits ?? '0';
-      } catch (e) {
-        document.getElementById('credits').innerText = 'N/A';
-      }
-      // trending templates
-      await listTemplates();
-
-      // recent jobs -> use /gallery (shows videos)
-      try {
-        const g = await (await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`)).json();
-        const html = g.slice(0,6).map(v => `<div class="py-2 border-b border-gray-800"><strong>${escapeHtml(v.title)}</strong> · ${escapeHtml(v.status)} · <small class="muted">${new Date(v.created_at).toLocaleString()}</small></div>`).join('');
-        document.getElementById('recentJobs').innerHTML = html || '<div class="muted">No jobs yet</div>';
-      } catch (e) {
-        document.getElementById('recentJobs').innerHTML = '<div class="muted">Error loading jobs</div>';
-      }
-    }
-
-    async function listTemplates() {
-      try {
-        const res = await fetch(`${BASE_URL}/templates/trending`);
-        const arr = await res.json();
-        const el = document.getElementById('trendingList');
-        el.innerHTML = arr.map(t=>`<div class="py-1">${escapeHtml(t.name)} <span class="muted">(${escapeHtml(t.category)})</span></div>`).join('') || '<div class="muted">No templates</div>';
-      } catch (e) {
-        document.getElementById('trendingList').innerHTML = '<div class="muted">Templates load failed</div>';
-      }
-    }
-
-    // --- CREATE VIDEO ---
-    async function createVideo() {
-      const btn = document.getElementById('btn_generate');
-      btn.disabled = true; btn.innerText = 'Generating...';
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title', document.getElementById('cv_title').value || `Video ${new Date().toISOString()}`);
-      fd.append('script', document.getElementById('cv_script').value || '');
-      fd.append('template', document.getElementById('cv_template').value);
-      fd.append('quality', document.getElementById('cv_quality').value);
-      fd.append('lang', document.getElementById('cv_lang').value);
-      fd.append('length_type', document.getElementById('cv_length').value);
-
-      // attach images
-      const imgFiles = document.getElementById('cv_images').files;
-      for (let f of imgFiles) fd.append('characters', f, f.name);
-      // attach voices
-      const vFiles = document.getElementById('cv_voices').files;
-      for (let f of vFiles) fd.append('character_voice_files', f, f.name);
-      // bg
-      const bg = document.getElementById('cv_bg').files[0];
-      if (bg) fd.append('bg_music_file', bg, bg.name);
-
-      try {
-        const resp = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
-        const j = await resp.json();
-        document.getElementById('create_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j, null, 2))}</pre>`;
-        // if server returns job id or download link show it
-      } catch (e) {
-        document.getElementById('create_resp').innerText = 'Generate failed: ' + e;
-      } finally {
-        btn.disabled = false; btn.innerText = 'Generate';
-        await loadGallery(); await loadDashboard();
-      }
-    }
-
-    function autoFillSample() {
-      document.getElementById('cv_title').value = 'Promo: Visora AI';
-      document.getElementById('cv_script').value = 'C1: Hello! Welcome to Visora. C2: We make cinematic AI videos in seconds.';
-      document.getElementById('cv_template').value = 'Promo';
-    }
-
-    // --- IMAGE -> VIDEO simple ---
-    async function imageToVideo() {
-      const img = document.getElementById('iv_image').files[0];
-      const voice = document.getElementById('iv_voice').files[0];
-      if (!img) return alert('Please upload image');
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title', 'Image to Video ' + new Date().toISOString());
-      fd.append('template', 'Cinematic');
-      fd.append('quality', 'HD');
-      fd.append('characters', img, img.name);
-      if (voice) fd.append('character_voice_files', voice, voice.name);
-      document.getElementById('iv_resp').innerText = 'Submitting...';
-      try {
-        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
-        const j = await r.json();
-        document.getElementById('iv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await loadGallery();
-      } catch (e) {
-        document.getElementById('iv_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    // --- SCRIPT -> VIDEO ---
-    async function scriptToVideo() {
-      const script = document.getElementById('sv_script').value;
-      if (!script) return alert('Script required');
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title', 'ScriptVideo '+new Date().toISOString());
-      fd.append('script', script);
-      fd.append('template', 'Explainer');
-      fd.append('quality', 'HD');
-      document.getElementById('sv_resp').innerText = 'Submitting...';
-      try {
-        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
-        const j = await r.json();
-        document.getElementById('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await loadGallery();
-      } catch (e) {
-        document.getElementById('sv_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    // --- GALLERY ---
-    async function loadGallery() {
-      try {
-        const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
-        const arr = await res.json();
-        const el = document.getElementById('galleryList');
-        if (!Array.isArray(arr) || arr.length===0) { el.innerHTML = '<div class="muted">No videos yet</div>'; return; }
-        el.innerHTML = arr.map(v => `
-          <div class="py-2 border-b border-gray-800 flex justify-between items-center">
-            <div>
-              <strong>${escapeHtml(v.title)}</strong><br/>
-              <small class="muted">${new Date(v.created_at).toLocaleString()}</small>
-            </div>
-            <div class="flex gap-2">
-              ${v.file ? `<a class="text-amber-400" href="${BASE_URL}/outputs/${encodeURIComponent(PathBaseName(v.file))}" target="_blank">Open</a>` : ''}
-              <button class="p-2 border rounded" onclick="selectForEdit(${v.id})">Edit</button>
-            </div>
-          </div>
-        `).join('');
-      } catch (e) {
-        document.getElementById('galleryList').innerText = 'Gallery load error';
-      }
-    }
-
-    // helper to extract base filename (server stores 'outputs/xxx.mp4' or relative)
-    function PathBaseName(p) {
-      try { return p.split('/').pop(); } catch(e){ return p; }
-    }
-
-    // select for edit
-    function selectForEdit(id) {
-      document.getElementById('edit_video_id').value = id;
-      loadVideoForEdit();
-      show('edit');
-    }
-
-    // --- CHARACTERS ---
-    async function uploadCharacter() {
-      const name = document.getElementById('ch_name').value || 'MyChar';
-      const photo = document.getElementById('ch_photo').files[0];
-      const voice = document.getElementById('ch_voice').files[0];
-      if (!photo) return alert('Upload photo');
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('name', name);
-      fd.append('photo', photo, photo.name);
-      if (voice) fd.append('voice', voice, voice.name);
-      document.getElementById('ch_resp').innerText = 'Uploading...';
-      try {
-        const r = await fetch(`${BASE_URL}/character`, { method:'POST', body:fd });
-        const j = await r.json();
-        document.getElementById('ch_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await listCharacters();
-      } catch (e) {
-        document.getElementById('ch_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    async function listCharacters() {
-      try {
-        const res = await fetch(`${BASE_URL}/characters?user_email=demo@visora.com`);
-        const arr = await res.json();
-        const el = document.getElementById('ch_list');
-        el.innerHTML = arr.map(c => `<div class="py-2 border-b border-gray-800 flex gap-3 items-center">
-            <div style="width:56px;height:56px;border-radius:8px;background:#222;overflow:hidden"><img src="${BASE_URL}/uploads/${encodeURIComponent(PathBaseName(c.photo||''))}" alt="" style="width:100%;height:100%;object-fit:cover"/></div>
-            <div><strong>${escapeHtml(c.name)}</strong><div class="muted">${escapeHtml(c.ai_style||'')}</div></div>
-            <div class="ml-auto muted">${c.voice ? 'Has voice' : ''}</div>
-          </div>`).join('') || '<div class="muted">No characters</div>';
-      } catch (e) {
-        document.getElementById('ch_list').innerText = 'Load failed';
-      }
-    }
-
-    // --- EDIT VIDEO ---
-    async function loadVideoForEdit() {
-      const id = document.getElementById('edit_video_id').value;
-      if (!id) return alert('Enter video id');
-      try {
-        // backend doesn't have specific GET /video/:id in our single-file code, so use gallery to find
-        const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
-        const arr = await res.json();
-        const v = arr.find(x=>String(x.id)===String(id));
-        if (!v) return alert('Video not found in gallery');
-        document.getElementById('edit_form').classList.remove('hidden');
-        document.getElementById('edit_resp').innerText = `Loaded: ${v.title}`;
-      } catch (e) {
-        alert('Load error: '+e);
-      }
-    }
-
-    async function submitEdit() {
-      const id = document.getElementById('edit_video_id').value;
-      if (!id) return alert('Video ID required');
-      const fd = new FormData();
-      fd.append('apply_cinematic', 'true');
-      const bg = document.getElementById('edit_bg').files[0];
-      if (bg) fd.append('change_bg_music_file', bg, bg.name);
-      const rv = document.getElementById('edit_voices').files;
-      for (let f of rv) fd.append('replace_voice_files', f, f.name);
-      document.getElementById('edit_resp').innerText = 'Submitting edit...';
-      try {
-        const r = await fetch(`${BASE_URL}/video/edit/${id}`, { method:'POST', body: fd });
-        const j = await r.json();
-        document.getElementById('edit_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await loadGallery();
-      } catch (e) {
-        document.getElementById('edit_resp').innerText = 'Edit failed: '+e;
-      }
-    }
-
-    function openGalleryForSelection() { show('gallery'); }
-
-    // --- ASSISTANT ---
-    async function callAssistant() {
-      const q = document.getElementById('as_q').value;
-      const tone = document.getElementById('as_tone').value;
-      if (!q) return alert('Type your question');
-      try {
-        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:tone, lang:'hi'}) });
-        const j = await r.json();
-        document.getElementById('as_reply').innerText = j.reply || JSON.stringify(j);
-      } catch (e) {
-        document.getElementById('as_reply').innerText = 'Assistant failed: '+e;
-      }
-    }
-
-    // assistant quick (From create page)
-    async function assistantQuick() {
-      const q = document.getElementById('assistant_quick_q').value || 'Short hook for a promo';
-      try {
-        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:'helpful', lang:'hi'}) });
-        const j = await r.json();
-        document.getElementById('assistant_quick_reply').innerText = j.reply || JSON.stringify(j);
-      } catch (e) {
-        document.getElementById('assistant_quick_reply').innerText = 'Fail: '+e;
-      }
-    }
-
-    // --- PAYMENTS (stubs call) ---
-    async function createPaypalOrder() {
-      const amt = document.getElementById('pp_amount').value;
-      if (!amt) return alert('Amount required');
-      try {
-        const r = await fetch(`${BASE_URL}/create_paypal_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: amt, currency: 'USD' }) });
-        const j = await r.json();
-        document.getElementById('pp_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-      } catch (e) {
-=======
-    // ----------------- CONFIG -----------------
-    const BASE_URL = "https://visora.onrender.com"; // <-- अगर बदलना है तो यहीं बदलो
-    document.getElementById('baseUrlShow').innerText = BASE_URL;
-
-    // ----------------- Utilities -----------------
-    function toast(msg, kind='info') {
-      const el = document.createElement('div');
-      el.className = 'card mb-2 p-3';
-      el.style.minWidth = '240px';
-      el.innerHTML = `<strong>${kind.toUpperCase()}</strong><div style="margin-top:6px">${escapeHtml(msg)}</div>`;
-      document.getElementById('toasts').appendChild(el);
-      setTimeout(()=> el.remove(), 6000);
-    }
-    function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replace(/[&<>"'`]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[c]); }
-
-    // Sidebar toggle for small screens
-    function toggleSidebar(open){
-      const sb = document.getElementById('sidebar');
-      if(open===undefined) sb.classList.toggle('open'); else {
-        if(open) sb.classList.add('open'); else sb.classList.remove('open');
-      }
-    }
-
-    // Theme toggle
-    function toggleTheme(){
-      const b = document.body;
-      const cur = b.getAttribute('data-theme') || 'dark';
-      b.setAttribute('data-theme', cur==='dark'?'light':'dark');
-    }
-
-    function show(id){
-      document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-      // close sidebar on mobile
-      toggleSidebar(false);
-    }
-
-    // debounce for search
-    let debounceTimer;
-    function debouncedSearch() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(()=> {
-        renderGallery();
-        listTemplates(); // also refresh templates - for search filter
-      }, 450);
-    }
-
-    // ----------------- App logic -----------------
-    async function refreshAll(){
-      await Promise.all([ loadDashboard(), listTemplates(), loadGallery(), listCharacters(), loadProfile() ]);
-      toast('Refreshed all.', 'info');
-    }
-
-    // DASHBOARD
-    async function loadDashboard(){
-      try {
-        const res = await fetch(`${BASE_URL}/profile/demo@visora.com`);
-        if(!res.ok) throw new Error('profile fetch failed');
-        const j = await res.json();
-        document.getElementById('credits').innerText = j.credits ?? '0';
-      } catch(e){
-        document.getElementById('credits').innerText = 'N/A';
-      }
-
-      // recent jobs handled by gallery
-      await renderGallery();
-    }
-
-    // TEMPLATES
-    async function listTemplates(){
-      try {
-        const res = await fetch(`${BASE_URL}/templates/trending`);
-        const arr = await res.json();
-        const el = document.getElementById('trendingList');
-        el.innerHTML = (arr||[]).map(t=>`<div class="py-1">${escapeHtml(t.name)} <span class="muted">(${escapeHtml(t.category)})</span></div>`).join('') || '<div class="muted">No templates</div>';
-
-        // also populate template select
-        const sel = document.getElementById('cv_template');
-        sel.innerHTML = (arr||[]).map(t=>`<option>${escapeHtml(t.name)}</option>`).join('') || '<option>Default</option>';
-      } catch(e){
-        document.getElementById('trendingList').innerHTML = '<div class="muted">Templates load failed</div>';
-      }
-    }
-
-    // CREATE VIDEO
-    async function createVideo(){
-      const btn = document.getElementById('btn_generate');
-      btn.disabled = true; btn.innerText = 'Generating...';
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title', document.getElementById('cv_title').value || `Video ${new Date().toISOString()}`);
-      fd.append('script', document.getElementById('cv_script').value || '');
-      fd.append('template', document.getElementById('cv_template').value || 'Default');
-      fd.append('quality', document.getElementById('cv_quality').value || 'HD');
-      fd.append('lang', document.getElementById('cv_lang').value || 'hi');
-      fd.append('length_type', document.getElementById('cv_length').value || 'short');
-
-      // files
-      const imgs = document.getElementById('cv_images').files;
-      for (let f of imgs) fd.append('characters', f, f.name);
-      const vs = document.getElementById('cv_voices').files;
-      for (let f of vs) fd.append('character_voice_files', f, f.name);
-      const bg = document.getElementById('cv_bg').files[0];
-      if(bg) fd.append('bg_music_file', bg, bg.name);
-
-      try {
-        const resp = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body:fd });
-        const j = await resp.json();
-        document.getElementById('create_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j, null, 2))}</pre>`;
-        if(j.job_id || j.id || j.file_path || j.download_url){
-          toast('Job submitted. Check Gallery for status.', 'info');
-        } else {
-          toast('Generate response received.', 'info');
-        }
-      } catch(e){
-        document.getElementById('create_resp').innerText = 'Generate failed: ' + e;
-        toast('Generate failed: ' + e, 'error');
-      } finally {
-        btn.disabled = false; btn.innerText = 'Generate';
-        await loadGallery();
-      }
-    }
-
-    function autoFillSample(){
-      document.getElementById('cv_title').value = 'Promo: Visora AI';
-      document.getElementById('cv_script').value = 'C1: Hello! Welcome to Visora.\\nC2: We make cinematic AI videos in seconds.';
-      document.getElementById('cv_template').value = 'Promo';
-    }
-
-    // IMAGE -> VIDEO
-    async function imageToVideo(){
-      const img = document.getElementById('iv_image').files[0];
-      if(!img) return toast('Please upload image','error');
-      const voice = document.getElementById('iv_voice').files[0];
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title','Image to Video ' + new Date().toISOString());
-      fd.append('template','Cinematic');
-      fd.append('quality','HD');
-      fd.append('characters', img, img.name);
-      if(voice) fd.append('character_voice_files', voice, voice.name);
-      document.getElementById('iv_resp').innerText = 'Submitting...';
-      try {
-        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body:fd });
-        const j = await r.json();
-        document.getElementById('iv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await loadGallery();
-        toast('Image→Video submitted', 'info');
-      } catch(e){
-        document.getElementById('iv_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    // SCRIPT -> VIDEO
-    async function scriptToVideo(){
-      const script = document.getElementById('sv_script').value;
-      if(!script) return toast('Script required','error');
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('title','ScriptVideo '+new Date().toISOString());
-      fd.append('script', script);
-      fd.append('template', 'Explainer');
-      fd.append('quality', 'HD');
-      document.getElementById('sv_resp').innerText = 'Submitting...';
-      try {
-        const r = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body:fd });
-        const j = await r.json();
-        document.getElementById('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        await loadGallery();
-        toast('Script→Video submitted','info');
-      } catch(e){
-        document.getElementById('sv_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    // GALLERY & Polling
-    let galleryCache = [];
-    async function loadGallery(){
-      try {
-        const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
-        const arr = await res.json();
-        galleryCache = Array.isArray(arr) ? arr : [];
-        renderGallery();
-      } catch(e){
-        document.getElementById('galleryList').innerText = 'Gallery load error';
-      }
-    }
-    function renderGallery(){
-      const q = (document.getElementById('globalSearch').value || '').toLowerCase();
-      const filter = (document.getElementById('galleryFilter')?.value || '').toLowerCase();
-      const arr = galleryCache.filter(v => {
-        const t = (v.title||'').toLowerCase();
-        const s = (v.status||'').toLowerCase();
-        return (t.includes(q) || s.includes(q)) && (filter? (t.includes(filter) || s.includes(filter)) : true);
-      });
-      const el = document.getElementById('galleryList');
-      if(!arr.length) { el.innerHTML = '<div class="muted">No videos yet</div>'; return; }
-      el.innerHTML = arr.map(v => `
-        <div class="py-2 border-b border-gray-800 flex justify-between items-center">
-          <div>
-            <strong>${escapeHtml(v.title)}</strong><br/>
-            <small class="muted">${new Date(v.created_at).toLocaleString()}</small>
-            <div class="muted">${escapeHtml(v.status || '')}</div>
-          </div>
-          <div class="flex gap-2 items-center">
-            ${v.file ? `<a class="text-amber-400" href="${BASE_URL}/outputs/${encodeURIComponent(PathBaseName(v.file))}" target="_blank">Open</a>` : ''}
-            <button class="p-2 border rounded" onclick="selectForEdit(${v.id})">Edit</button>
-            <button class="p-2 border rounded" onclick="previewVideo(${v.id})">Preview</button>
-            <button class="p-2 border rounded" onclick="copyLink('${v.file || ''}')">Copy</button>
-          </div>
-        </div>
-      `).join('');
-    }
-    function PathBaseName(p){ try { return p.split('/').pop(); } catch(e){ return p; } }
-    function copyLink(filePath){
-      if(!filePath){ toast('No file URL available','error'); return; }
-      const link = `${BASE_URL}/outputs/${encodeURIComponent(PathBaseName(filePath))}`;
-      navigator.clipboard?.writeText(link).then(()=> toast('Link copied','info')).catch(()=> toast('Copy failed','error'));
-    }
-
-    async function previewVideo(id){
-      const v = galleryCache.find(x=>x.id===id);
-      if(!v) return toast('Video not found','error');
-      const area = document.getElementById('previewArea');
-      if(!v.file){ area.innerHTML = '<div class="card p-4">No output file yet.</div>'; return; }
-      const url = `${BASE_URL}/outputs/${encodeURIComponent(PathBaseName(v.file))}`;
-      area.innerHTML = `<div class="card p-4"><h4>${escapeHtml(v.title)}</h4><video controls class="preview-video mt-2" src="${url}"></video></div>`;
-      window.scrollTo({top: area.offsetTop-20, behavior:'smooth'});
-    }
-
-    // POLLING for gallery updates (jobs status)
-    setInterval(() => {
-      // poll only when user is on gallery or dashboard
-      const visible = !document.getElementById('gallery').classList.contains('hidden') || !document.getElementById('dashboard').classList.contains('hidden');
-      if(visible) loadGallery();
-    }, 8000);
-
-    // CHARACTERS
-    async function uploadCharacter(){
-      const name = document.getElementById('ch_name').value || 'My Character';
-      const photoFile = document.getElementById('ch_photo').files[0];
-      const voiceFile = document.getElementById('ch_voice').files[0];
-      const fd = new FormData();
-      fd.append('user_email','demo@visora.com');
-      fd.append('name', name);
-      if(photoFile) fd.append('photo', photoFile, photoFile.name);
-      if(voiceFile) fd.append('voice', voiceFile, voiceFile.name);
-      try {
-        const r = await fetch(`${BASE_URL}/character`, { method:'POST', body:fd });
-        const j = await r.json();
-        document.getElementById('ch_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        toast('Character saved','info');
-        listCharacters();
-      } catch(e){
-        document.getElementById('ch_resp').innerText = 'Upload error: ' + e;
-      }
-    }
-
-    async function listCharacters(){
-      try {
-        const res = await fetch(`${BASE_URL}/characters?user_email=demo@visora.com`);
-        const arr = await res.json();
-        const el = document.getElementById('ch_list');
-        if(!arr.length) { el.innerHTML = '<div class="muted">No characters</div>'; return; }
-        el.innerHTML = arr.map(c=>`<div class="py-2 border-b"><strong>${escapeHtml(c.name)}</strong><div class="muted">${escapeHtml(c.ai_style||'')} · ${escapeHtml(c.mood||'')}</div><div class="file-list"><small>photo: ${escapeHtml(c.photo||'—')}</small><small>voice: ${escapeHtml(c.voice||'—')}</small></div></div>`).join('');
-      } catch(e){
-        document.getElementById('ch_list').innerText = 'Chars load error';
-      }
-    }
-
-    // EDIT VIDEO
-    function openGalleryForSelection(){ show('gallery'); toast('Select a video and click Edit to pick for editing.'); }
-    function selectForEdit(id){
-      document.getElementById('edit_video_id').value = id;
-      loadVideoForEdit();
-      show('edit');
-    }
-    async function loadVideoForEdit(){
-      const id = document.getElementById('edit_video_id').value;
-      if(!id) return toast('Video ID required','error');
-      // find in cache
-      const v = galleryCache.find(x=>String(x.id)===String(id));
-      if(!v) return toast('Video not in gallery cache. Refresh.', 'error');
-      document.getElementById('edit_form').classList.remove('hidden');
-      document.getElementById('edit_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(v,null,2))}</pre>`;
-    }
-    async function submitEdit(){
-      const id = document.getElementById('edit_video_id').value;
-      if(!id) return toast('Video ID required','error');
-      const fd = new FormData();
-      const bg = document.getElementById('edit_bg').files[0];
-      const vs = document.getElementById('edit_voices').files;
-      if(bg) fd.append('change_bg_music_file', bg, bg.name);
-      for(let f of vs) fd.append('replace_voice_files', f, f.name);
-      try {
-        const r = await fetch(`${BASE_URL}/video/edit/${id}`, { method:'POST', body:fd });
-        const j = await r.json();
-        document.getElementById('edit_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        toast('Edit submitted', 'info');
-      } catch(e){
-        document.getElementById('edit_resp').innerText = 'Edit error: ' + e;
-      }
-    }
-
-    // ASSISTANT
-    async function callAssistant(){
-      const q = document.getElementById('as_q').value;
-      const tone = document.getElementById('as_tone').value || 'helpful';
-      if(!q) return toast('Ask something','error');
-      try {
-        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:tone, lang:'hi'})});
-        const j = await r.json();
-        document.getElementById('as_reply').innerHTML = `<pre>${escapeHtml(j.reply||'')}</pre>`;
-        if(j.audio_url) document.getElementById('as_reply').innerHTML += `<div><a href="${j.audio_url}" target="_blank">Assistant Audio</a></div>`;
-      } catch(e){
-        document.getElementById('as_reply').innerText = 'Assistant error: ' + e;
-      }
-    }
-    async function assistantQuick(){
-      const q = document.getElementById('assistant_quick_q').value || 'Give a short hook';
-      document.getElementById('assistant_quick_reply').innerText = 'Thinking...';
-      try {
-        const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:'helpful', lang:'hi'})});
-        const j = await r.json();
-        document.getElementById('assistant_quick_reply').innerHTML = `<pre>${escapeHtml(j.reply||'')}</pre>`;
-      } catch(e){
-        document.getElementById('assistant_quick_reply').innerText = 'Error: ' + e;
-      }
-    }
-
-    // Payments stubs
-    async function createRazorpayOrder(){
-      const amt = document.getElementById('rz_amount').value;
-      if(!amt) return toast('Amount required','error');
-      try {
-        const r = await fetch(`${BASE_URL}/create_razorpay_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount:amt})});
-        const j = await r.json();
-        document.getElementById('rz_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        toast('Razorpay order response shown', 'info');
-      } catch(e){
-        document.getElementById('rz_resp').innerText = 'Error: ' + e;
-      }
-    }
-    async function createPaypalOrder(){
-      const amt = document.getElementById('pp_amount').value;
-      if(!amt) return toast('Amount required','error');
-      try {
-        const r = await fetch(`${BASE_URL}/create_paypal_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount:amt})});
-        const j = await r.json();
-        document.getElementById('pp_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        toast('PayPal order response shown', 'info');
-      } catch(e){
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-        document.getElementById('pp_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-<<<<<<< HEAD
-    async function createRazorpayOrder() {
-      const amt = document.getElementById('rz_amount').value;
-      if (!amt) return alert('Amount required');
-      try {
-        const r = await fetch(`${BASE_URL}/create_razorpay_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: amt }) });
-        const j = await r.json();
-        document.getElementById('rz_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-      } catch (e) {
-        document.getElementById('rz_resp').innerText = 'Error: ' + e;
-      }
-    }
-
-    // --- PROFILE ---
-    async function loadProfile() {
-      try {
-        const r = await fetch(`${BASE_URL}/profile/demo@visora.com`);
-        const j = await r.json();
-        document.getElementById('profileBox').innerText = JSON.stringify(j, null, 2);
-      } catch (e) {
-        document.getElementById('profileBox').innerText = 'Profile load failed';
-      }
-    }
-
-    // --- small helpers ---
-    function escapeHtml(s) { if (!s && s!==0) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-    // --- Initialization ---
-    (async function init(){
-      await refreshAll();
-      show('dashboard');
-    })();
-
-=======
-    // PROFILE
-    async function loadProfile(){
-      try {
-        const res = await fetch(`${BASE_URL}/profile/demo@visora.com`);
-        const j = await res.json();
-        document.getElementById('profileBox').innerText = JSON.stringify(j, null, 2);
-        document.getElementById('p_name').value = j.name || '';
-        document.getElementById('p_country').value = j.country || '';
-      } catch(e){
-        document.getElementById('profileBox').innerText = 'Profile load failed';
-      }
-    }
-    function openProfileEditor(){ document.getElementById('profileEdit').classList.toggle('hidden'); }
-    async function submitProfile(){
-      const data = { email:'demo@visora.com', name: document.getElementById('p_name').value, country: document.getElementById('p_country').value };
-      try {
-        const r = await fetch(`${BASE_URL}/profile`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
-        const j = await r.json();
-        document.getElementById('p_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
-        toast('Profile updated', 'info');
-        await loadProfile();
-      } catch(e){
-        document.getElementById('p_resp').innerText = 'Profile update failed: ' + e;
-      }
-    }
-
-    // Helper: suggest script via assistant
-    function suggestFromAssistant(){
-      const sample = "Promo short: highlight main benefit in 1 line, then CTA";
-      document.getElementById('sv_script').value = sample;
-      toast('Suggested script inserted','info');
-    }
-
-    // simple preview of create response -> if returns download link show quickly
-    // (already shown in createVideo)
-
-    // Init: load data
-    (async function init(){
-      await Promise.all([ listTemplates(), loadProfile(), listCharacters(), loadGallery(), loadDashboard() ]);
-      // small UI tweaks
-      show('dashboard');
-    })();
-
-    // ensure gallery auto-refresh on focus
-    window.addEventListener('focus', loadGallery);
->>>>>>> 48f5ad9 (feat: Final polished frontend (index.html) + backend (app.py) integration with all features)
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
