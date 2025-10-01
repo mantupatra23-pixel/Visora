@@ -1,37 +1,283 @@
-:root{
-  --bg:#0f1115; --card:#121218; --muted:#9aa3b2; --accent:#fbbf24;
-  --text:#e6eef8;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
-.sidebar{width:260px;background:#0c0d10;position:fixed;left:0;top:0;bottom:0;padding:18px;overflow:auto;border-right:1px solid #111}
-.brand h1{margin:0;color:var(--accent);font-size:22px}
-.brand .muted{font-size:12px;color:var(--muted);margin-top:6px}
-nav{margin-top:18px;display:flex;flex-direction:column;gap:6px}
-.nav-btn{background:transparent;border:none;color:var(--text);text-align:left;padding:10px;border-radius:8px;cursor:pointer}
-.nav-btn:hover{background:#0f151b}
-.nav-btn.active{background:#11151b;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02)}
-.base-url{position:fixed;bottom:18px;left:18px;right:18px;color:var(--muted);font-size:12px}
+// Visora frontend JS
+// ⚠️ CHANGE THIS TO YOUR BACKEND URL
+const BASE_URL = "https://visora.onrender.com"; // <-- set your live backend here
+document.getElementById('baseUrlShow').innerText = BASE_URL;
 
-/* content */
-.content{margin-left:260px;padding:20px}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.muted{color:var(--muted)}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:var(--card);padding:14px;border-radius:10px;border:1px solid #15161a}
-.big{font-size:28px;color:#6ee28a}
-.actions{display:flex;gap:8px}
-.btn{padding:8px 12px;border-radius:8px;border:1px solid #232427;background:transparent;color:var(--text);cursor:pointer}
-.btn.primary{background:var(--accent);color:#000;border:none}
-.mt{margin-top:12px}
-.row{display:flex;gap:8px;margin-top:8px}
-input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #232427;background:#0b0c0f;color:var(--text);resize:vertical}
-textarea{min-height:100px}
-.hidden{display:none}
-.resp{margin-top:10px;background:#0b0c0f;padding:8px;border-radius:6px;border:1px solid #15161a;color:var(--muted)}
-@media(max-width:900px){
-  .grid-3,.grid-2{grid-template-columns:1fr}
-  .sidebar{position:relative;width:100%;height:auto;border-right:none}
-  .content{margin-left:0;padding:12px}
+// Page routing
+const pages = document.querySelectorAll('.page');
+function showPage(id){
+  pages.forEach(p=>p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.nav-btn[data-page="${id}"]`)?.classList.add('active');
+  document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase()+id.slice(1);
 }
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click',()=>showPage(b.dataset.page));
+});
+document.querySelectorAll('[data-open]').forEach(btn=>{
+  btn.addEventListener('click',()=>showPage(btn.dataset.open));
+});
+document.getElementById('refreshBtn').addEventListener('click',refreshAll);
+
+// init selects
+const templateSelect = document.getElementById('cv_template');
+const langSelect = document.getElementById('cv_lang');
+const templates = ["Motivation","Promo","Explainer","Cinematic","Meme","Travel","Education"];
+templates.forEach(t=>templateSelect.appendChild(new Option(t,t)));
+const langs = [{k:'hi',n:'Hindi'},{k:'en',n:'English'},{k:'bn',n:'Bengali'},{k:'ta',n:'Tamil'},{k:'te',n:'Telugu'}];
+langs.forEach(l=>langSelect.appendChild(new Option(l.n,l.k)));
+
+// helpers
+function el(id){return document.getElementById(id)}
+function setResp(id,txt){el(id).innerHTML = `<pre>${escapeHtml(JSON.stringify(txt,null,2))}</pre>`}
+function escapeHtml(s){ if(typeof s!=='string') s = String(s); return s.replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+// Dashboard functions
+async function loadDashboard(){
+  // profile -> credits
+  try{
+    const res = await fetch(`${BASE_URL}/profile/demo@visora.com`);
+    if(res.ok){
+      const j = await res.json(); el('credits').innerText = j.credits ?? '0';
+    } else { el('credits').innerText = 'N/A' }
+  }catch(e){ el('credits').innerText = 'N/A' }
+
+  // trending templates
+  try{
+    const res = await fetch(`${BASE_URL}/templates/trending`);
+    const arr = await res.json();
+    el('trendingList').innerHTML = arr.map(t=>`<div>${escapeHtml(t.name)} <span class="muted">(${escapeHtml(t.category)})</span></div>`).join('') || '<div class="muted">No templates</div>';
+  }catch(e){ el('trendingList').innerHTML = '<div class="muted">Templates load failed</div>' }
+
+  // recent jobs (gallery)
+  try{
+    const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
+    const arr = await res.json();
+    if(Array.isArray(arr) && arr.length>0){
+      el('recentJobs').innerHTML = arr.slice(0,6).map(v=>`<div style="padding:8px;border-bottom:1px solid #15161a"><b>${escapeHtml(v.title)}</b> · ${escapeHtml(v.status)} · <small class="muted">${new Date(v.created_at).toLocaleString()}</small></div>`).join('');
+    } else el('recentJobs').innerHTML = '<div class="muted">No jobs yet</div>';
+  }catch(e){ el('recentJobs').innerHTML = '<div class="muted">Error loading jobs</div>' }
+}
+
+// Gallery
+async function loadGallery(){
+  try{
+    const res = await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`);
+    const arr = await res.json();
+    const elg = document.getElementById('galleryList');
+    if(!Array.isArray(arr) || arr.length===0){ elg.innerHTML = '<div class="muted">No videos yet</div>'; return; }
+    elg.innerHTML = arr.map(v=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #15161a">
+        <div><strong>${escapeHtml(v.title)}</strong><br/><small class="muted">${new Date(v.created_at).toLocaleString()}</small></div>
+        <div style="display:flex;gap:8px">
+          ${v.file ? `<a class="btn" target="_blank" href="${BASE_URL}/outputs/${encodeURIComponent(v.file.split('/').pop())}">Open</a>` : ''}
+          <button class="btn" onclick="selectForEdit(${v.id})">Edit</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){ document.getElementById('galleryList').innerText = 'Gallery load error' }
+}
+
+// Create video (quick)
+document.getElementById('btn_generate').addEventListener('click', async ()=>{
+  const btn = document.getElementById('btn_generate'); btn.disabled = true; btn.innerText = 'Generating...';
+  const fd = new FormData();
+  fd.append('user_email','demo@visora.com');
+  fd.append('title', el('cv_title').value || `Video ${new Date().toISOString()}`);
+  fd.append('script', el('cv_script').value || '');
+  fd.append('template', el('cv_template').value);
+  fd.append('quality', el('cv_quality').value);
+  fd.append('lang', el('cv_lang').value);
+  fd.append('length_type', el('cv_length').value);
+
+  for(let f of el('cv_images').files) fd.append('characters', f, f.name);
+  for(let f of el('cv_voices').files) fd.append('character_voice_files', f, f.name);
+  if(el('cv_bg').files[0]) fd.append('bg_music_file', el('cv_bg').files[0], el('cv_bg').files[0].name);
+
+  try{
+    const res = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await res.json();
+    el('create_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    // If queueing returns job id, we can poll /job/:id (backend must implement)
+  }catch(e){
+    el('create_resp').innerText = 'Generate failed: ' + e;
+  }finally{ btn.disabled=false; btn.innerText='Generate'; await loadGallery(); await loadDashboard(); }
+});
+document.getElementById('btn_autofill').addEventListener('click', ()=>{
+  el('cv_title').value = 'Promo: Visora AI';
+  el('cv_script').value = 'C1: Hello! Welcome to Visora. C2: We make cinematic AI videos in seconds.';
+  el('cv_template').value = 'Promo';
+});
+
+// Image -> Video
+document.getElementById('btn_image2video').addEventListener('click', async ()=>{
+  const img = el('iv_image').files[0];
+  if(!img) return alert('Upload image');
+  const fd = new FormData();
+  fd.append('user_email','demo@visora.com');
+  fd.append('title', 'Image2Video ' + new Date().toISOString());
+  fd.append('template','Cinematic'); fd.append('quality','HD');
+  fd.append('characters', img, img.name);
+  if(el('iv_voice').files[0]) fd.append('character_voice_files', el('iv_voice').files[0], el('iv_voice').files[0].name);
+  el('iv_resp').innerText = 'Submitting...';
+  try{
+    const res = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await res.json();
+    el('iv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await loadGallery(); await loadDashboard();
+  }catch(e){ el('iv_resp').innerText = 'Error: '+e }
+});
+
+// Script -> Video
+document.getElementById('btn_script2video').addEventListener('click', async ()=>{
+  const script = el('sv_script').value;
+  if(!script) return alert('Script required');
+  const fd = new FormData();
+  fd.append('user_email','demo@visora.com');
+  fd.append('title','ScriptVideo '+new Date().toISOString());
+  fd.append('script', script); fd.append('template','Explainer'); fd.append('quality','HD');
+  el('sv_resp').innerText = 'Submitting...';
+  try {
+    const res = await fetch(`${BASE_URL}/generate_video`, { method:'POST', body: fd });
+    const j = await res.json();
+    el('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await loadGallery();
+  } catch(e) { el('sv_resp').innerText = 'Error: '+e }
+});
+
+// Assistant quick
+document.getElementById('assistantBtn').addEventListener('click', async ()=>{
+  const q = el('assistant_quick_q').value || 'Give me a hook';
+  try {
+    const res = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, lang:'hi', tone: 'helpful'})});
+    const j = await res.json();
+    el('assistant_quick_reply').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  } catch(e) { el('assistant_quick_reply').innerText = 'Assistant error: '+e }
+});
+
+// Full Assistant (page)
+document.getElementById('btn_assistant')?.addEventListener('click', async ()=>{
+  const q = el('as_q').value || 'Help me with script';
+  const tone = el('as_tone').value;
+  try{
+    const res = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone})});
+    const j = await res.json();
+    el('as_reply').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  }catch(e){ el('as_reply').innerText = 'Error: '+e }
+});
+
+// Characters
+document.getElementById('btn_save_character').addEventListener('click', async ()=>{
+  const name = el('ch_name').value || 'Char';
+  const fd = new FormData();
+  fd.append('user_email','demo@visora.com'); fd.append('name', name);
+  if(el('ch_photo').files[0]) fd.append('photo', el('ch_photo').files[0], el('ch_photo').files[0].name);
+  if(el('ch_voice').files[0]) fd.append('voice', el('ch_voice').files[0], el('ch_voice').files[0].name);
+  el('ch_resp').innerText = 'Saving...';
+  try{
+    const res = await fetch(`${BASE_URL}/character`, { method:'POST', body: fd });
+    const j = await res.json();
+    el('ch_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+    await listCharacters();
+  }catch(e){ el('ch_resp').innerText = 'Error: '+e }
+});
+document.getElementById('btn_list_char').addEventListener('click', listCharacters);
+async function listCharacters(){
+  try{
+    const res = await fetch(`${BASE_URL}/characters?user_email=demo@visora.com`);
+    const arr = await res.json(); const elc = el('ch_list');
+    if(!Array.isArray(arr) || arr.length===0){ elc.innerHTML = '<div class="muted">No characters</div>'; return; }
+    elc.innerHTML = arr.map(c=>`<div style="padding:8px;border-bottom:1px solid #15161a"><b>${escapeHtml(c.name)}</b><br/><small class="muted">${escapeHtml(c.ai_style||'')}</small><div style="margin-top:6px">${c.photo?`<img src="${BASE_URL}/uploads/${c.photo.split('/').pop()}" style="height:40px;border-radius:6px"/>` : ''} ${c.voice?`<a href="${BASE_URL}/uploads/${c.voice.split('/').pop()}" target="_blank" class="btn">Voice</a>`:''}</div></div>`).join('');
+  }catch(e){ el('ch_list').innerText = 'Error loading characters' }
+}
+
+// Edit video
+document.getElementById('btn_load_edit').addEventListener('click', loadVideoForEdit);
+function selectForEdit(id){
+  el('edit_video_id').value = id; loadVideoForEdit();
+}
+async function loadVideoForEdit(){
+  const id = el('edit_video_id').value;
+  if(!id) return alert('Put video id');
+  // load video meta from gallery / backend
+  try{
+    const arr = await (await fetch(`${BASE_URL}/gallery?user_email=demo@visora.com`)).json();
+    const v = arr.find(x=>String(x.id)===String(id));
+    if(!v) return alert('Video not found in gallery');
+    el('edit_form').classList.remove('hidden');
+    el('edit_resp').innerText = `Loaded: ${v.title}`;
+  }catch(e){ el('edit_resp').innerText = 'Load error: '+e }
+}
+document.getElementById('btn_submit_edit').addEventListener('click', async ()=>{
+  const id = el('edit_video_id').value; if(!id) return alert('Video id required');
+  const fd = new FormData();
+  fd.append('apply_cinematic','false');
+  if(el('edit_bg').files[0]) fd.append('change_bg_music_file', el('edit_bg').files[0], el('edit_bg').files[0].name);
+  for(let f of el('edit_voices').files) fd.append('replace_voice_files', f, f.name);
+  el('edit_resp').innerText = 'Applying...';
+  try{
+    const res = await fetch(`${BASE_URL}/video/edit/${id}`, { method:'POST', body: fd });
+    const j = await res.json(); el('edit_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  }catch(e){ el('edit_resp').innerText = 'Error: '+e }
+});
+
+// Payments (stubs)
+document.getElementById('btn_rz').addEventListener('click', async ()=>{
+  const amt = el('rz_amount').value || '499';
+  try{
+    const r = await fetch(`${BASE_URL}/create_razorpay_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount: amt})});
+    const j = await r.json(); el('rz_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  }catch(e){ el('rz_resp').innerText = 'Error: '+e }
+});
+document.getElementById('btn_pp').addEventListener('click', async ()=>{
+  const amt = el('pp_amount').value || '5';
+  try{
+    const r = await fetch(`${BASE_URL}/create_paypal_order`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({amount: amt})});
+    const j = await r.json(); el('pp_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  }catch(e){ el('pp_resp').innerText = 'Error: '+e }
+});
+
+// Profile
+document.getElementById('btn_profile_refresh').addEventListener('click', loadProfile);
+async function loadProfile(){
+  try{
+    const r = await fetch(`${BASE_URL}/profile/demo@visora.com`);
+    const j = await r.json(); el('profileBox').innerText = JSON.stringify(j,null,2);
+  }catch(e){ el('profileBox').innerText = 'Error: '+e }
+}
+
+// assistant helper
+document.getElementById('btn_suggest_script').addEventListener('click', async ()=>{
+  const q = el('sv_script').value || 'Suggest a script';
+  try{
+    const r = await fetch(`${BASE_URL}/assistant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone:'helpful', lang:'hi'})});
+    const j = await r.json();
+    el('sv_resp').innerHTML = `<pre>${escapeHtml(JSON.stringify(j,null,2))}</pre>`;
+  }catch(e){ el('sv_resp').innerText = 'Error: '+e }
+});
+
+// utility to poll job status if backend returns job_id
+async function pollJob(jobId, onUpdate){
+  try{
+    const res = await fetch(`${BASE_URL}/job_status?job_id=${encodeURIComponent(jobId)}`);
+    if(!res.ok) return onUpdate({status:'error',detail:await res.text()});
+    const j = await res.json(); onUpdate(j);
+    if(j.status && (j.status==='pending' || j.status==='rendering')) setTimeout(()=>pollJob(jobId,onUpdate),3000);
+  }catch(e){ onUpdate({status:'error',detail:String(e)}) }
+}
+
+// initial load
+async function refreshAll(){
+  await Promise.all([loadDashboard(), listCharacters(), loadGallery(), listTemplates()]);
+}
+async function listTemplates(){
+  try{
+    const r = await fetch(`${BASE_URL}/templates`);
+    const arr = await r.json();
+    // already filled main template select; ensure trending shown
+    // nothing else for now
+  }catch(e){}
+}
+function init(){ showPage('dashboard'); refreshAll(); }
+init();
