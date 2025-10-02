@@ -635,6 +635,28 @@ def chat_assistant():
     except Exception as e:
         return jsonify({"error": str(e)})
 # ------------- Run -------------
+from flask import send_from_directory
+
+# Root → Dashboard
+@app.route("/")
+def root():
+    return send_from_directory("frontend/dashboard", "index.html")
+
+# Dynamic pages → Templates, Voices, Gallery, Profile
+@app.route("/<page>")
+def render_page(page):
+    try:
+        return send_from_directory(f"frontend/{page}", "index.html")
+    except:
+        return "Not Found", 404
+
+# Static assets (CSS/JS/images) serve
+@app.route("/<page>/<path:filename>")
+def serve_static(page, filename):
+    try:
+        return send_from_directory(f"frontend/{page}", filename)
+    except:
+        return "Not Found", 404
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
