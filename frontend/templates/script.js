@@ -1,49 +1,44 @@
-const templates = [
-  { name: "Motivation Reel", img: "https://picsum.photos/200/120?1", category: "ads" },
-  { name: "Educational Explainer", img: "https://picsum.photos/200/120?2", category: "education" },
-  { name: "Gaming Intro", img: "https://picsum.photos/200/120?3", category: "gaming" },
-  { name: "Meme Clip", img: "https://picsum.photos/200/120?4", category: "meme" },
-  { name: "Diwali Special", img: "https://picsum.photos/200/120?5", category: "festival" }
-];
+const API_BASE = "https://visora.onrender.com";
 
-const grid = document.getElementById("templateGrid");
-const searchBox = document.getElementById("searchBox");
-const filter = document.getElementById("categoryFilter");
-const modal = document.getElementById("modal");
-const modalImg = document.getElementById("modalImg");
-const modalTitle = document.getElementById("modalTitle");
-const modalCategory = document.getElementById("modalCategory");
+window.onload = () => {
+  loadTemplates();
+  document.getElementById("searchBox").addEventListener("input", loadTemplates);
+  document.getElementById("categoryFilter").addEventListener("change", loadTemplates);
+};
 
-function renderTemplates(list) {
-  grid.innerHTML = "";
-  list.forEach(t => {
-    const img = document.createElement("img");
-    img.src = t.img;
-    img.alt = t.name;
-    img.onclick = () => openModal(t);
-    grid.appendChild(img);
-  });
+async function loadTemplates() {
+  try {
+    const res = await fetch(`${API_BASE}/templates/all`);
+    const arr = await res.json();
+    const search = document.getElementById("searchBox").value.toLowerCase();
+    const cat = document.getElementById("categoryFilter").value;
+
+    const el = document.getElementById("templateGrid");
+    el.innerHTML = arr
+      .filter(t => (!search || t.name.toLowerCase().includes(search)) &&
+                   (!cat || t.category.toLowerCase()===cat))
+      .map(t =>
+        `<div class="template-item" onclick="openPreview('${t.name}','${t.preview_url}')">
+          <img src="${t.thumbnail}" alt="${t.name}">
+          <h4>${t.name}</h4>
+        </div>`
+      ).join("") || "<div>No templates found</div>";
+  } catch (e) { console.error(e); }
 }
 
-function openModal(template) {
-  modalImg.src = template.img;
-  modalTitle.innerText = template.name;
-  modalCategory.innerText = "Category: " + template.category;
-  modal.classList.remove("hidden");
+function openPreview(name, url) {
+  document.getElementById("previewTitle").innerText = name;
+  const video = document.getElementById("previewVideo");
+  video.src = url;
+  document.getElementById("previewModal").classList.remove("hidden");
+  document.getElementById("useTemplateBtn").onclick = () => useTemplate(name);
 }
 
-document.getElementById("closeModal").onclick = () => modal.classList.add("hidden");
+function closePreview() {
+  document.getElementById("previewModal").classList.add("hidden");
+}
 
-searchBox.addEventListener("input", () => {
-  const term = searchBox.value.toLowerCase();
-  const filtered = templates.filter(t => t.name.toLowerCase().includes(term));
-  renderTemplates(filtered);
-});
-
-filter.addEventListener("change", () => {
-  const cat = filter.value;
-  const filtered = (cat === "all") ? templates : templates.filter(t => t.category === cat);
-  renderTemplates(filtered);
-});
-
-renderTemplates(templates);
+function useTemplate(name) {
+  alert("Template selected: " + name);
+  closePreview();
+}

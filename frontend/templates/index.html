@@ -7,40 +7,41 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">🏠 Dashboard</a>
-    <a href="index.html" class="active">🎬 Templates</a>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="./index.html" class="active">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Content -->
   <main class="content">
     <header class="topbar">
-      <h1>🎬 Templates</h1>
-      <input id="searchBox" type="text" placeholder="Search templates..." />
+      <h2>📂 Templates Library</h2>
+      <input id="searchBox" placeholder="Search templates..." />
       <select id="categoryFilter">
-        <option value="all">All Categories</option>
-        <option value="ads">Ads</option>
+        <option value="">All Categories</option>
+        <option value="cinematic">Cinematic</option>
+        <option value="ads">Ads / Promo</option>
         <option value="education">Education</option>
-        <option value="gaming">Gaming</option>
-        <option value="meme">Meme</option>
+        <option value="meme">Meme / Comedy</option>
         <option value="festival">Festival</option>
       </select>
     </header>
 
-    <section id="templateGrid" class="template-grid"></section>
+    <section id="templateGrid" class="template-grid">Loading...</section>
   </main>
 
-  <!-- Modal -->
-  <div id="modal" class="modal hidden">
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal hidden">
     <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <img id="modalImg" src="" alt="Template Preview">
-      <h2 id="modalTitle"></h2>
-      <p id="modalCategory"></p>
-      <button id="useTemplateBtn" class="btn primary">Use Template</button>
+      <span class="close" onclick="closePreview()">&times;</span>
+      <h3 id="previewTitle">Template</h3>
+      <video id="previewVideo" controls autoplay></video>
+      <button class="btn primary" id="useTemplateBtn">Use This Template</button>
     </div>
   </div>
 </body>

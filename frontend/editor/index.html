@@ -9,59 +9,72 @@
 <body>
   <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">🏠 Dashboard</a>
-    <a href="../templates/index.html">🎬 Templates</a>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
-    <a href="index.html" class="active">✂️ Editor</a>
+    <a href="./index.html" class="active">✂️ Editor</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
   <main class="content">
-    <header class="topbar">
-      <h1>✂️ Video Editor</h1>
+    <header>
+      <h2>✂️ Video Editor</h2>
+      <p class="muted small">Upload a video and apply edits directly in cloud</p>
     </header>
 
-    <section class="editor-section">
-      <div class="card">
-        <h3>Upload Video</h3>
-        <input id="videoFile" type="file" accept="video/*">
-        <video id="preview" controls></video>
+    <section class="card">
+      <h3>Upload Video</h3>
+      <input type="file" id="videoFile" accept="video/*" />
+      <button id="uploadBtn" class="btn primary">Upload</button>
+      <div id="uploadResp" class="mt small muted"></div>
+    </section>
+
+    <section class="card mt">
+      <h3>Edit Tools</h3>
+      <div class="grid-2 gap">
+        <div>
+          <label>⏳ Trim (start - end sec)</label>
+          <input type="number" id="trimStart" placeholder="Start sec">
+          <input type="number" id="trimEnd" placeholder="End sec">
+          <button class="btn" onclick="trimVideo()">Trim</button>
+        </div>
+
+        <div>
+          <label>🔗 Merge</label>
+          <input type="file" id="mergeFile" accept="video/*" />
+          <button class="btn" onclick="mergeVideo()">Merge</button>
+        </div>
+
+        <div>
+          <label>💬 Subtitles</label>
+          <button class="btn" onclick="autoSubtitles()">Auto Generate</button>
+          <button class="btn" onclick="uploadSubtitles()">Upload .srt</button>
+        </div>
+
+        <div>
+          <label>🎵 Background Music</label>
+          <input type="file" id="musicFile" accept="audio/*" />
+          <button class="btn" onclick="addMusic()">Add Music</button>
+        </div>
+
+        <div>
+          <label>🎨 Filters</label>
+          <select id="filterType">
+            <option value="cinematic">Cinematic</option>
+            <option value="bw">Black & White</option>
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+          </select>
+          <button class="btn" onclick="applyFilter()">Apply</button>
+        </div>
+
+        <div>
+          <label>🖼 Watermark</label>
+          <input type="file" id="wmFile" accept="image/*" />
+          <button class="btn" onclick="addWatermark()">Add Watermark</button>
+        </div>
       </div>
-
-      <div class="card">
-        <h3>Editing Options</h3>
-
-        <label>⏱ Trim Video</label>
-        <input id="trimStart" type="number" placeholder="Start (sec)" />
-        <input id="trimEnd" type="number" placeholder="End (sec)" />
-        <button onclick="trimVideo()" class="btn primary">Trim</button>
-
-        <label class="mt">➕ Merge with Another Video</label>
-        <input id="mergeFile" type="file" accept="video/*">
-        <button onclick="mergeVideo()" class="btn primary">Merge</button>
-
-        <label class="mt">💬 Add Subtitles</label>
-        <textarea id="subsText" placeholder="Write subtitles here..."></textarea>
-        <select id="subsLang">
-          <option value="en">English</option>
-          <option value="hi">Hindi</option>
-          <option value="bn">Bengali</option>
-        </select>
-        <button onclick="addSubtitles()" class="btn primary">Add Subs</button>
-
-        <label class="mt">🌍 Translate Subtitles</label>
-        <select id="translateLang">
-          <option value="en">English</option>
-          <option value="hi">Hindi</option>
-          <option value="bn">Bengali</option>
-        </select>
-        <button onclick="translateSubtitles()" class="btn primary">Translate</button>
-      </div>
-
-      <div class="card">
-        <h3>Output</h3>
-        <div id="editorResp" class="muted small">No action yet</div>
-      </div>
+      <div id="editorResp" class="mt small muted"></div>
     </section>
   </main>
 </body>

@@ -9,27 +9,27 @@
 <body>
   <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">🏠 Dashboard</a>
-    <a href="../templates/index.html">🎬 Templates</a>
-    <a href="index.html" class="active">🎤 Voices</a>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="./index.html" class="active">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
   <main class="content">
-    <header class="topbar">
-      <h1>🎤 Voices</h1>
-      <input id="searchVoice" type="text" placeholder="Search voices..." />
-      <select id="langFilter">
-        <option value="all">All Languages</option>
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-        <option value="bn">Bengali</option>
-        <option value="ta">Tamil</option>
-      </select>
+    <header>
+      <h2>🎤 Voices Library</h2>
+      <input id="searchBox" type="text" placeholder="Search voices..." />
     </header>
 
-    <section id="voicesGrid" class="voices-grid"></section>
+    <div id="voicesGrid" class="grid"></div>
+
+    <section class="card mt">
+      <h3>🎙 Upload Your Voice (AI Clone)</h3>
+      <input type="file" id="voiceUpload" accept="audio/*" />
+      <button id="uploadBtn" class="btn primary">Upload & Clone</button>
+      <div id="uploadResp" class="small muted mt"></div>
+    </section>
   </main>
 </body>
 </html>

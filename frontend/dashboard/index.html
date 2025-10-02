@@ -7,59 +7,47 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="index.html" class="active">🏠 Dashboard</a>
-    <a href="../templates/index.html">🎬 Templates</a>
+    <a href="./index.html" class="active">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Content -->
   <main class="content">
     <header class="topbar">
-      <h1>Dashboard</h1>
-      <button class="btn primary">Upgrade Plan</button>
-    </header>
-
-    <section class="grid-2 gap">
-      <!-- Profile Card -->
-      <div class="card profile">
-        <img src="https://i.pravatar.cc/100" class="avatar">
+      <div class="user-info">
+        <img id="profile_pic" src="../assets/user.png" class="avatar"/>
         <div>
-          <h3 id="userName">AIMANTUVYA</h3>
-          <p id="userPlan" class="muted">Plan: Free</p>
-          <p id="userCredits" class="muted">Credits: —</p>
+          <h3 id="user_name">User Name</h3>
+          <p id="user_plan" class="muted">Free Plan</p>
         </div>
       </div>
+      <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+    </header>
 
-      <!-- Notifications -->
+    <section class="cards">
       <div class="card">
-        <h3>🔔 Notifications</h3>
-        <ul id="notifList">
-          <li>No new notifications</li>
-        </ul>
+        <h3>Credits</h3>
+        <div id="credits" class="big">—</div>
       </div>
-    </section>
-
-    <section class="grid-2 gap mt">
-      <!-- Usage -->
       <div class="card">
-        <h3>📊 Usage Analytics</h3>
-        <p>Total Videos: <span id="totalVideos">0</span></p>
-        <p>Storage Used: <span id="storageUsed">0 MB</span></p>
+        <h3>Recent Jobs</h3>
+        <div id="recentJobs">Loading...</div>
       </div>
-
-      <!-- Trending Templates -->
       <div class="card">
-        <h3>🔥 Trending Templates</h3>
-        <div id="trendingGrid" class="template-grid"></div>
+        <h3>Notifications</h3>
+        <div id="notifications">No new notifications</div>
       </div>
     </section>
 
     <section class="card mt">
-      <h3>🕒 Recent Jobs</h3>
-      <ul id="jobsList"></ul>
+      <h3>🔥 Trending Templates</h3>
+      <div id="trendingList" class="template-grid"></div>
     </section>
   </main>
 </body>
