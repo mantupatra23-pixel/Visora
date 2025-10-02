@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="./index.html" class="active">🤖 Assistant</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <main class="content">
+    <header>
+      <h2>🤖 AI Assistant</h2>
+      <p class="muted small">Script help, captions, SEO, video hooks, marketing ideas</p>
+    </header>
+
+    <!-- Quick Script Generator -->
+    <div class="card">
+      <h3>📝 Generate Script</h3>
+      <input id="script_topic" placeholder="Enter topic (e.g. Fitness Motivation)" />
+      <select id="script_tone">
+        <option value="helpful">Helpful</option>
+        <option value="funny">Funny</option>
+        <option value="motivational">Motivational</option>
+        <option value="professional">Professional</option>
+      </select>
+      <button id="script_btn" class="btn primary">Generate</button>
+      <div id="script_resp" class="mt small muted"></div>
+    </div>
+
+    <!-- Captions / Hooks -->
+    <div class="card">
+      <h3>💡 Captions & Hooks</h3>
+      <input id="caption_topic" placeholder="Enter video idea (e.g. Startup Pitch)" />
+      <button id="caption_btn" class="btn primary">Generate Captions</button>
+      <div id="caption_resp" class="mt small muted"></div>
+    </div>
+
+    <!-- SEO -->
+    <div class="card">
+      <h3>🔎 SEO (Title, Tags, Description)</h3>
+      <input id="seo_topic" placeholder="Enter video subject" />
+      <button id="seo_btn" class="btn primary">Generate SEO</button>
+      <div id="seo_resp" class="mt small muted"></div>
+    </div>
+
+    <!-- Thumbnail Ideas -->
+    <div class="card">
+      <h3>🖼 Thumbnail Ideas</h3>
+      <input id="thumb_topic" placeholder="Enter video subject" />
+      <button id="thumb_btn" class="btn primary">Suggest Thumbnails</button>
+      <div id="thumb_resp" class="mt small muted"></div>
+    </div>
+  </main>
+</body>
+</html>

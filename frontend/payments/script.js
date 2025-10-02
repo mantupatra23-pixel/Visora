@@ -1,52 +1,57 @@
 const API_BASE = "https://visora.onrender.com";
 
-// Razorpay Order
-document.getElementById("rz_btn").onclick = async () => {
-  const amount = document.getElementById("rz_amount").value;
-  if (!amount) return alert("Enter amount");
+// Load Profile
+async function loadProfile() {
   try {
-    const res = await fetch(`${API_BASE}/payments/razorpay`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_email: "demo@visora.com", amount })
-    });
+    const res = await fetch(`${API_BASE}/profile`);
     const data = await res.json();
-    document.getElementById("rz_resp").innerText = "Order created: " + JSON.stringify(data);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("rz_resp").innerText = "❌ Error creating Razorpay order";
-  }
-};
-
-// PayPal Order
-document.getElementById("pp_btn").onclick = async () => {
-  const amount = document.getElementById("pp_amount").value;
-  if (!amount) return alert("Enter amount");
-  try {
-    const res = await fetch(`${API_BASE}/payments/paypal`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_email: "demo@visora.com", amount })
-    });
-    const data = await res.json();
-    document.getElementById("pp_resp").innerText = "Order created: " + JSON.stringify(data);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("pp_resp").innerText = "❌ Error creating PayPal order";
-  }
-};
-
-// Upgrade Plan
-async function upgradePlan(plan) {
-  try {
-    const res = await fetch(`${API_BASE}/upgrade-plan`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_email: "demo@visora.com", plan })
-    });
-    const data = await res.json();
-    alert("✅ Plan upgraded to " + plan);
+    document.getElementById("profile_name").innerText = data.name;
+    document.getElementById("profile_email").innerText = data.email;
+    document.getElementById("profile_plan").innerText = data.plan;
+    document.getElementById("profile_credits").innerText = data.credits;
+    if (data.photo_url) {
+      document.getElementById("profile_pic").src = data.photo_url;
+    }
   } catch (err) {
     console.error(err);
   }
 }
+loadProfile();
+
+// Update Profile Pic
+document.getElementById("btn_update_pic").addEventListener("click", async ()=>{
+  const file = document.getElementById("upload_pic").files[0];
+  if (!file) return alert("Select a picture!");
+  const formData = new FormData();
+  formData.append("photo", file);
+  const res = await fetch(`${API_BASE}/update-photo`, { method: "POST", body: formData });
+  const data = await res.json();
+  alert("✅ Photo updated!");
+  loadProfile();
+});
+
+// Refresh
+document.getElementById("btn_refresh").addEventListener("click", loadProfile);
+
+// Payments (stub integration)
+document.getElementById("btn_pay_razor").addEventListener("click", async ()=>{
+  const plan = document.getElementById("plan_select").value;
+  document.getElementById("pay_resp").innerText = "⏳ Creating Razorpay order...";
+  const res = await fetch(`${API_BASE}/create-order`, { 
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ plan })
+  });
+  const data = await res.json();
+  document.getElementById("pay_resp").innerText = "✅ Order created: " + data.order_id;
+});
+
+document.getElementById("btn_pay_paypal").addEventListener("click", async ()=>{
+  const plan = document.getElementById("plan_select").value;
+  document.getElementById("pay_resp").innerText = "⏳ Redirecting to PayPal...";
+  const res = await fetch(`${API_BASE}/create-paypal`, { 
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ plan })
+  });
+  const data = await res.json();
+  window.location.href = data.redirect_url;
+});

@@ -13,23 +13,46 @@
     <a href="../templates/index.html">📂 Templates</a>
     <a href="./index.html" class="active">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
   <main class="content">
     <header>
-      <h2>🎤 Voices Library</h2>
-      <input id="searchBox" type="text" placeholder="Search voices..." />
+      <h2>🎤 Voices</h2>
+      <p class="muted small">Choose from 1000+ AI voices, preview & customize</p>
     </header>
 
-    <div id="voicesGrid" class="grid"></div>
+    <!-- Search + Filter -->
+    <div class="row gap mt">
+      <input id="searchVoice" placeholder="Search voices (eg. Hindi Female)" />
+      <select id="langFilter">
+        <option value="">All Languages</option>
+        <option value="hi">Hindi</option>
+        <option value="en">English</option>
+        <option value="bn">Bengali</option>
+        <option value="ta">Tamil</option>
+        <option value="te">Telugu</option>
+      </select>
+      <select id="genderFilter">
+        <option value="">All</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="child">Child</option>
+      </select>
+    </div>
 
-    <section class="card mt">
-      <h3>🎙 Upload Your Voice (AI Clone)</h3>
-      <input type="file" id="voiceUpload" accept="audio/*" />
-      <button id="uploadBtn" class="btn primary">Upload & Clone</button>
-      <div id="uploadResp" class="small muted mt"></div>
-    </section>
+    <!-- Voices List -->
+    <div id="voicesList" class="grid mt"></div>
+
+    <!-- Voice Cloning -->
+    <div class="card mt">
+      <h3>🎙 Voice Cloning</h3>
+      <p class="muted small">Upload your voice sample (30 sec audio) and create your AI voice.</p>
+      <input id="clone_audio" type="file" accept="audio/*" />
+      <button id="cloneBtn" class="btn primary mt">Upload & Clone</button>
+      <div id="cloneResp" class="mt small muted"></div>
+    </div>
   </main>
 </body>
 </html>

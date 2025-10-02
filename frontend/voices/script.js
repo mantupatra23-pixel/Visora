@@ -1,64 +1,82 @@
 const API_BASE = "https://visora.onrender.com";
-let allVoices = [];
 
-window.onload = () => {
-  loadVoices();
-  document.getElementById("searchBox").addEventListener("input", filterVoices);
-  document.getElementById("uploadBtn").onclick = uploadVoice;
-};
+// Sample voices (later connect backend for 1000+)
+const voices = [
+  { id:1, name:"Ravi (Male, Hindi)", category:"male", sample:"https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav" },
+  { id:2, name:"Anita (Female, English)", category:"female", sample:"https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav" },
+  { id:3, name:"Child Voice (Cute)", category:"child", sample:"https://www2.cs.uic.edu/~i101/SoundFiles/gettysburg.wav" },
+  { id:4, name:"Amitabh-like", category:"celebrity", sample:"https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav" }
+];
 
-async function loadVoices() {
-  try {
-    const res = await fetch(`${API_BASE}/voices/all`);
-    allVoices = await res.json();
-    renderVoices(allVoices);
-  } catch (e) {
-    console.error(e);
-    document.getElementById("voicesGrid").innerHTML = "<p class='muted'>Failed to load voices.</p>";
-  }
-}
-
-function renderVoices(voices) {
-  const el = document.getElementById("voicesGrid");
-  el.innerHTML = voices.map(v => `
-    <div class="voice">
-      <h4>${v.name} <span class="muted">(${v.gender}, ${v.lang})</span></h4>
-      <div class="controls">
-        <button onclick="previewVoice('${v.preview_url}')">▶️ Play</button>
-        <label>Pitch</label><input type="range" min="-10" max="10" value="0" oninput="adjustVoice('${v.id}',this.value,'pitch')">
-        <label>Speed</label><input type="range" min="50" max="150" value="100" oninput="adjustVoice('${v.id}',this.value,'speed')">
+// Load voices
+function loadVoices(list) {
+  const grid = document.getElementById("voicesList");
+  grid.innerHTML = "";
+  list.forEach(v => {
+    const div = document.createElement("div");
+    div.className = "voice-card";
+    div.innerHTML = `
+      <h4>${v.name}</h4>
+      <audio controls src="${v.sample}"></audio>
+      <div class="voice-controls">
+        <label>Pitch</label>
+        <input type="range" min="0.5" max="2" step="0.1" value="1" onchange="setPitch(this, ${v.id})"/>
+        <label>Speed</label>
+        <input type="range" min="0.5" max="2" step="0.1" value="1" onchange="setSpeed(this, ${v.id})"/>
       </div>
-    </div>
-  `).join("");
+      <button class="btn primary" onclick="useVoice(${v.id})">Use Voice</button>
+    `;
+    grid.appendChild(div);
+  });
 }
 
-function filterVoices(e) {
-  const term = e.target.value.toLowerCase();
-  const filtered = allVoices.filter(v => v.name.toLowerCase().includes(term) || v.lang.toLowerCase().includes(term));
-  renderVoices(filtered);
+// Voice Pitch/Speed (demo only, real backend apply later)
+function setPitch(slider, id) {
+  console.log("Pitch changed", id, slider.value);
+}
+function setSpeed(slider, id) {
+  console.log("Speed changed", id, slider.value);
 }
 
-function previewVoice(url) {
-  const audio = new Audio(url);
-  audio.play();
+// Use Voice
+async function useVoice(id) {
+  alert("✅ Using Voice: " + id);
+  // send to backend later
 }
 
-async function adjustVoice(id, value, type) {
-  console.log(`Adjust ${type} for voice ${id} → ${value}`);
-  // future: send to backend for live preview
+// Search & Filter
+document.getElementById("searchVoice").addEventListener("input", filterVoices);
+document.getElementById("voiceCategory").addEventListener("change", filterVoices);
+
+function filterVoices() {
+  const val = document.getElementById("searchVoice").value.toLowerCase();
+  const cat = document.getElementById("voiceCategory").value;
+  const filtered = voices.filter(v =>
+    (v.name.toLowerCase().includes(val)) &&
+    (!cat || v.category===cat)
+  );
+  loadVoices(filtered);
 }
 
-async function uploadVoice() {
-  const file = document.getElementById("voiceUpload").files[0];
-  if (!file) return alert("Please upload an audio file");
+// Clone Voice
+document.getElementById("cloneBtn").addEventListener("click", async ()=>{
+  const name = document.getElementById("voiceName").value;
+  const file = document.getElementById("voiceFile").files[0];
+  if(!name || !file) return alert("⚠️ Name + File required");
+
   const fd = new FormData();
+  fd.append("voice_name", name);
   fd.append("file", file);
+
+  document.getElementById("cloneResp").innerText = "Uploading...";
   try {
-    const res = await fetch(`${API_BASE}/voices/upload`, { method:"POST", body:fd });
-    const j = await res.json();
-    document.getElementById("uploadResp").innerText = "✅ Uploaded: " + j.status;
-    await loadVoices();
-  } catch (e) {
-    document.getElementById("uploadResp").innerText = "❌ Upload failed";
+    const res = await fetch(`${API_BASE}/clone-voice`, { method:"POST", body:fd });
+    const data = await res.json();
+    document.getElementById("cloneResp").innerText = "✅ Voice cloned: " + data.voice_id;
+  } catch (err) {
+    document.getElementById("cloneResp").innerText = "❌ Error cloning voice";
   }
-}
+});
+
+// Init
+loadVoices(voices);

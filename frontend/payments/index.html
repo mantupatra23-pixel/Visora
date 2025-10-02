@@ -2,57 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Visora - Payments</title>
+  <title>Visora - Profile</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="script.js"></script>
 </head>
 <body>
   <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">Dashboard</a>
-    <a href="../gallery/index.html">Gallery</a>
-    <a href="../profile/index.html">Profile</a>
-    <a href="index.html" class="active">Payments</a>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
+    <a href="./index.html" class="active">👤 Profile</a>
   </aside>
 
   <main class="content">
-    <h1>Payments & Credits</h1>
-    <p class="muted">Buy credits or upgrade your subscription.</p>
+    <header>
+      <h2>👤 Profile & Subscription</h2>
+      <p class="muted small">Manage your profile, credits and upgrade plans</p>
+    </header>
 
-    <div class="grid-2 gap">
-      <div class="card">
-        <h3>💳 Buy Credits (Razorpay)</h3>
-        <input id="rz_amount" placeholder="Amount (INR)" />
-        <button id="rz_btn" class="btn primary">Pay with Razorpay</button>
-        <div id="rz_resp" class="muted small mt"></div>
+    <!-- Profile -->
+    <div class="card">
+      <h3>Profile</h3>
+      <div class="profile-box">
+        <img id="profile_pic" src="../assets/default-user.png" class="avatar"/>
+        <div>
+          <p><b>Name:</b> <span id="profile_name">Loading...</span></p>
+          <p><b>Email:</b> <span id="profile_email">Loading...</span></p>
+          <p><b>Plan:</b> <span id="profile_plan">Loading...</span></p>
+          <p><b>Credits Left:</b> <span id="profile_credits">Loading...</span></p>
+        </div>
       </div>
-
-      <div class="card">
-        <h3>💵 Buy Credits (PayPal)</h3>
-        <input id="pp_amount" placeholder="Amount (USD)" />
-        <button id="pp_btn" class="btn primary">Pay with PayPal</button>
-        <div id="pp_resp" class="muted small mt"></div>
+      <div class="row gap mt">
+        <input type="file" id="upload_pic" accept="image/*" />
+        <button id="btn_update_pic" class="btn">Update Picture</button>
+        <button id="btn_refresh" class="btn primary">Refresh Profile</button>
       </div>
     </div>
 
-    <div class="card mt">
-      <h3>📦 Subscription Plans</h3>
-      <div class="plans">
-        <div class="plan">
-          <h4>Free</h4>
-          <p>✔ 5 credits / month</p>
-        </div>
-        <div class="plan">
-          <h4>Pro</h4>
-          <p>✔ 500 credits / month<br/>✔ 1080p export</p>
-          <button class="btn primary" onclick="upgradePlan('Pro')">Upgrade</button>
-        </div>
-        <div class="plan">
-          <h4>Enterprise</h4>
-          <p>✔ Unlimited credits<br/>✔ 4K export<br/>✔ Team features</p>
-          <button class="btn primary" onclick="upgradePlan('Enterprise')">Upgrade</button>
-        </div>
+    <!-- Payments -->
+    <div class="card">
+      <h3>💳 Upgrade Plan</h3>
+      <p>Select a subscription plan and pay securely.</p>
+      <select id="plan_select">
+        <option value="free">Free (0 INR)</option>
+        <option value="pro">Pro (499 INR / month)</option>
+        <option value="enterprise">Enterprise (1999 INR / month)</option>
+      </select>
+      <div class="row gap mt">
+        <button id="btn_pay_razor" class="btn primary">Pay with Razorpay</button>
+        <button id="btn_pay_paypal" class="btn">Pay with PayPal</button>
       </div>
+      <div id="pay_resp" class="mt small muted"></div>
     </div>
   </main>
 </body>

@@ -13,69 +13,94 @@
     <a href="../templates/index.html">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
     <a href="./index.html" class="active">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
   <main class="content">
     <header>
       <h2>✂️ Video Editor</h2>
-      <p class="muted small">Upload a video and apply edits directly in cloud</p>
+      <p class="muted small">Trim, merge, add subtitles, music, watermark, filters</p>
     </header>
 
-    <section class="card">
-      <h3>Upload Video</h3>
-      <input type="file" id="videoFile" accept="video/*" />
-      <button id="uploadBtn" class="btn primary">Upload</button>
-      <div id="uploadResp" class="mt small muted"></div>
-    </section>
-
-    <section class="card mt">
-      <h3>Edit Tools</h3>
-      <div class="grid-2 gap">
-        <div>
-          <label>⏳ Trim (start - end sec)</label>
-          <input type="number" id="trimStart" placeholder="Start sec">
-          <input type="number" id="trimEnd" placeholder="End sec">
-          <button class="btn" onclick="trimVideo()">Trim</button>
-        </div>
-
-        <div>
-          <label>🔗 Merge</label>
-          <input type="file" id="mergeFile" accept="video/*" />
-          <button class="btn" onclick="mergeVideo()">Merge</button>
-        </div>
-
-        <div>
-          <label>💬 Subtitles</label>
-          <button class="btn" onclick="autoSubtitles()">Auto Generate</button>
-          <button class="btn" onclick="uploadSubtitles()">Upload .srt</button>
-        </div>
-
-        <div>
-          <label>🎵 Background Music</label>
-          <input type="file" id="musicFile" accept="audio/*" />
-          <button class="btn" onclick="addMusic()">Add Music</button>
-        </div>
-
-        <div>
-          <label>🎨 Filters</label>
-          <select id="filterType">
-            <option value="cinematic">Cinematic</option>
-            <option value="bw">Black & White</option>
-            <option value="warm">Warm</option>
-            <option value="cool">Cool</option>
-          </select>
-          <button class="btn" onclick="applyFilter()">Apply</button>
-        </div>
-
-        <div>
-          <label>🖼 Watermark</label>
-          <input type="file" id="wmFile" accept="image/*" />
-          <button class="btn" onclick="addWatermark()">Add Watermark</button>
-        </div>
+    <div class="editor-sections">
+      <!-- Trim -->
+      <div class="card">
+        <h3>✂️ Trim Video</h3>
+        <input id="trim_video" type="file" accept="video/*" />
+        <input id="trim_start" type="number" placeholder="Start (sec)" />
+        <input id="trim_end" type="number" placeholder="End (sec)" />
+        <button id="trim_btn" class="btn primary">Trim</button>
+        <div id="trim_resp" class="mt small muted"></div>
       </div>
-      <div id="editorResp" class="mt small muted"></div>
-    </section>
+
+      <!-- Merge -->
+      <div class="card">
+        <h3>➕ Merge Videos</h3>
+        <input id="merge_videos" type="file" accept="video/*" multiple />
+        <button id="merge_btn" class="btn primary">Merge</button>
+        <div id="merge_resp" class="mt small muted"></div>
+      </div>
+
+      <!-- Subtitles -->
+      <div class="card">
+        <h3>💬 Subtitles</h3>
+        <input id="subs_video" type="file" accept="video/*" />
+        <textarea id="subs_text" placeholder="Enter subtitles here..."></textarea>
+        <select id="subs_lang">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+        </select>
+        <button id="subs_btn" class="btn primary">Add Subtitles</button>
+        <div id="subs_resp" class="mt small muted"></div>
+      </div>
+
+      <!-- Background Music -->
+      <div class="card">
+        <h3>🎶 Add / Replace Background Music</h3>
+        <input id="bg_video" type="file" accept="video/*" />
+        <input id="bg_audio" type="file" accept="audio/*" />
+        <button id="bg_btn" class="btn primary">Add Music</button>
+        <div id="bg_resp" class="mt small muted"></div>
+      </div>
+
+      <!-- Watermark -->
+      <div class="card">
+        <h3>🔖 Watermark / Logo</h3>
+        <input id="wm_video" type="file" accept="video/*" />
+        <input id="wm_logo" type="file" accept="image/*" />
+        <button id="wm_btn" class="btn primary">Apply Watermark</button>
+        <div id="wm_resp" class="mt small muted"></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card">
+        <h3>🎨 Filters & FX</h3>
+        <input id="fx_video" type="file" accept="video/*" />
+        <select id="fx_filter">
+          <option value="cinematic">Cinematic</option>
+          <option value="bw">Black & White</option>
+          <option value="vintage">Vintage</option>
+          <option value="vivid">Vivid</option>
+        </select>
+        <button id="fx_btn" class="btn primary">Apply Filter</button>
+        <div id="fx_resp" class="mt small muted"></div>
+      </div>
+
+      <!-- Aspect Ratio -->
+      <div class="card">
+        <h3>📱 Aspect Ratio</h3>
+        <input id="ar_video" type="file" accept="video/*" />
+        <select id="ar_select">
+          <option value="9:16">Vertical (Shorts/Reels)</option>
+          <option value="16:9">YouTube</option>
+          <option value="1:1">Instagram</option>
+        </select>
+        <button id="ar_btn" class="btn primary">Change Aspect Ratio</button>
+        <div id="ar_resp" class="mt small muted"></div>
+      </div>
+    </div>
   </main>
 </body>
 </html>
