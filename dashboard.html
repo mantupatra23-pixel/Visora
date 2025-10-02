@@ -1,0 +1,231 @@
+<!doctype html>
+
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora — Dashboard (Polished)</title>
+  <style>
+    /* ====== Visora Dashboard - embedded style (dark theme) ====== */
+    :root{
+      --bg:#0f1113; --card:#0f1416; --muted:#9aa3ad; --accent:#ffbf2e; --glass:rgba(255,255,255,0.03);
+      --radius:14px; --pad:16px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#0b0c0d 0%, #0f1113 100%);color:#eaf0f6}
+    .app{display:flex;min-height:100vh}
+    /* Sidebar */
+    .sidebar{width:260px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px 18px;box-shadow:inset -4px 0 16px rgba(0,0,0,0.6)}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .brand h1{color:var(--accent);margin:0;font-size:22px}
+    .muted{color:var(--muted);font-size:13px}
+    nav .nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:10px;border:none;background:transparent;color:inherit;margin:6px 0;cursor:pointer}
+    nav .nav-btn svg, nav .nav-btn .ico{width:20px;height:20px}
+    nav .nav-btn.active{background:linear-gradient(90deg, rgba(255,191,46,0.12), rgba(255,191,46,0.04));box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .base-url{font-size:12px;color:var(--muted);margin-top:18px}/* Content area */
+.content{flex:1;padding:24px;}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px}
+header h2{font-size:40px;margin:0;text-transform:lowercase;letter-spacing:1px}
+header .muted{font-size:13px}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:var(--card);padding:var(--pad);border-radius:var(--radius);box-shadow:0 6px 24px rgba(2,6,8,0.6)}
+.card.wide{grid-column:span 2}
+.small{font-size:13px}
+.big{font-size:20px;font-weight:700}
+.row{display:flex;gap:10px;align-items:center}
+.btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;background:transparent;color:inherit}
+.btn.primary{background:var(--accent);color:#0b0c0d;font-weight:700;box-shadow:0 6px 18px rgba(255,191,46,0.12)}
+
+/* Carousel (trending templates) */
+.carousel{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+.template-card{min-width:220px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;cursor:pointer}
+.template-card img{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px}
+.template-card h4{margin:0;font-size:15px}
+
+/* Recent jobs */
+.job-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;margin-bottom:8px;background:var(--glass)}
+.job-thumb{width:72px;height:48px;border-radius:8px;background:linear-gradient(90deg,#0b0c0d,#121416);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+.status{font-size:13px;padding:6px 8px;border-radius:8px}
+.status.pending{background:rgba(255,191,46,0.12);color:var(--accent)}
+.status.done{background:rgba(16,185,129,0.08);color:#10b981}
+.status.fail{background:rgba(239,68,68,0.06);color:#ef4444}
+
+/* Responsive */
+@media (max-width:900px){.cards{grid-template-columns:1fr} .sidebar{display:none} .content{padding:18px} header h2{font-size:28px}}
+
+/* small util */
+.mt{margin-top:14px}
+.gap{gap:8px}
+
+/* subtle animations */
+.card, .template-card, .job-item{transition:transform .18s ease, box-shadow .18s ease}
+.card:hover, .template-card:hover{transform:translateY(-6px)}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" role="navigation">
+      <div class="brand"><h1>Visora</h1><div class="muted small">Cloud-first AI Video Studio</div></div>
+      <nav>
+        <button class="nav-btn active" data-page="dashboard">🏠 Dashboard</button>
+        <button class="nav-btn" data-page="create">🎬 Create Video</button>
+        <button class="nav-btn" data-page="templates">📁 Templates</button>
+        <button class="nav-btn" data-page="voices">🗣 Voices</button>
+        <button class="nav-btn" data-page="gallery">🖼 Gallery</button>
+        <button class="nav-btn" data-page="assistant">🤖 Assistant</button>
+        <button class="nav-btn" data-page="payments">💳 Payments</button>
+        <button class="nav-btn" data-page="profile">👤 Profile</button>
+      </nav>
+      <div class="base-url" id="baseUrlShow">https://visora.onrender.com</div>
+    </aside><main class="content">
+  <header>
+    <div>
+      <h2 id="pageTitle">dashboard</h2>
+      <div class="muted">Visora — Cloud-only. All rendering runs on server.</div>
+    </div>
+    <div class="row">
+      <button id="refreshBtn" class="btn primary">Refresh</button>
+    </div>
+  </header>
+
+  <section id="dashboardPage">
+    <div class="cards mt">
+      <div class="card">
+        <div class="muted small">Plan</div>
+        <div id="planName" class="big">Free</div>
+        <div class="mt small muted">Expires in <strong id="planDays">—</strong> days</div>
+        <div class="mt"><button id="upgradeBtn" class="btn primary">Upgrade</button></div>
+      </div>
+
+      <div class="card">
+        <div class="muted small">Credits</div>
+        <div id="credits" class="big">0</div>
+        <div class="mt small muted">Estimated renders left: <span id="estRenders">0</span></div>
+      </div>
+
+      <div class="card">
+        <div class="muted small">Quick Actions</div>
+        <div class="row mt">
+          <button class="btn primary" data-action="create">Create Video</button>
+          <button class="btn" data-action="templates">Open Templates</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt wide">
+      <h3 class="small">Trending Templates</h3>
+      <div id="trendingCarousel" class="carousel mt">
+        <!-- JS will populate templates -->
+      </div>
+    </div>
+
+    <div class="card mt">
+      <h3>Recent jobs</h3>
+      <div id="recentJobs">Loading...</div>
+    </div>
+  </section>
+
+  <!-- Hidden pages stubs (for nav) -->
+  <section id="createPage" class="card mt hidden" style="display:none">Create area — (open Create Video)</section>
+  <section id="templatesPage" class="card mt hidden" style="display:none">Templates list — (open Templates)</section>
+  <section id="voicesPage" class="card mt hidden" style="display:none">Voices list — (open Voices)</section>
+
+</main>
+
+  </div>  <script>
+    // ======= Dashboard JS hooks =======
+    const API_BASE = (typeof window !== 'undefined' && window.__API_BASE__) || 'https://visora.onrender.com';
+
+    // sample data fallback (if backend not ready)
+    const sampleTemplates = [
+      {id:1,title:'Motivation - Cinematic',thumb:'https://picsum.photos/id/1011/400/240'},
+      {id:2,title:'Startup Pitch',thumb:'https://picsum.photos/id/1015/400/240'},
+      {id:3,title:'Festival Greetings',thumb:'https://picsum.photos/id/1003/400/240'},
+      {id:4,title:'Explainer - Whiteboard',thumb:'https://picsum.photos/id/1025/400/240'},
+      {id:5,title:'Social Reel - Quick',thumb:'https://picsum.photos/id/1035/400/240'}
+    ];
+
+    const sampleJobs = [
+      {id:'job_001',title:'Promo - AI Studio',status:'pending',thumb:null},
+      {id:'job_002',title:'Hindi Short - Travel',status:'done',thumb:null},
+      {id:'job_003',title:'Explainer - App',status:'failed',thumb:null}
+    ];
+
+    // utility to create template cards
+    function renderTrending(templates){
+      const el = document.getElementById('trendingCarousel'); el.innerHTML='';
+      templates.forEach(t => {
+        const card = document.createElement('div'); card.className='template-card';
+        card.innerHTML = `<img src="${t.thumb}" alt="${t.title}" /><h4>${t.title}</h4><div class=\"mt row\"><button class=\"btn primary\" data-use="${t.id}\">Use</button><button class=\"btn\" data-preview="${t.id}\">Preview</button></div>`;
+        el.appendChild(card);
+      });
+    }
+
+    function renderJobs(jobs){
+      const el = document.getElementById('recentJobs'); el.innerHTML='';
+      jobs.forEach(j => {
+        const item = document.createElement('div'); item.className='job-item';
+        item.innerHTML = `<div class='job-thumb'>VID</div><div style='flex:1'><strong>${j.title}</strong><div class='muted small'>${j.id}</div></div><div><div class='status ${j.status==='pending'? 'pending': j.status==='done'?'done':'fail'}'>${j.status}</div></div>`;
+        el.appendChild(item);
+      });
+    }
+
+    // load data (try backend, fallback to sample)
+    async function loadDashboard(){
+      try{
+        const res = await fetch(API_BASE + '/status');
+        if(!res.ok) throw new Error('no backend');
+        const json = await res.json();
+        // expected: {app:'Visora', status:'ok', user:{plan:'Free',credits:10}, templates:[...], jobs:[...]}
+        document.getElementById('planName').textContent = (json.user && json.user.plan) || 'Free';
+        document.getElementById('credits').textContent = (json.user && json.user.credits!=null)? json.user.credits : '—';
+        document.getElementById('estRenders').textContent = Math.floor(((json.user && json.user.credits)||0) / 5);
+        renderTrending(json.templates && json.templates.length? json.templates : sampleTemplates);
+        renderJobs(json.jobs && json.jobs.length? json.jobs : sampleJobs);
+      }catch(err){
+        // backend not available — use local samples
+        console.warn('Backend unreachable, using sample data', err);
+        document.getElementById('planName').textContent = 'Free';
+        document.getElementById('credits').textContent = 0;
+        document.getElementById('estRenders').textContent = 0;
+        renderTrending(sampleTemplates);
+        renderJobs(sampleJobs);
+      }
+    }
+
+    // nav & quick actions
+    document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click', e=>{
+      document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      const page = e.currentTarget.dataset.page;
+      document.getElementById('pageTitle').textContent = page;
+      // show/hide sections (simple)
+      ['dashboardPage','createPage','templatesPage','voicesPage'].forEach(id=>{
+        const el=document.getElementById(id); if(!el) return;
+        el.style.display = (id.toLowerCase().includes(page))? 'block' : ((id==='dashboardPage' && page==='dashboard')? 'block' : 'none');
+      });
+    }));
+
+    document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click', e=>{
+      const a = e.currentTarget.dataset.action;
+      if(a==='create') document.querySelector('[data-page="create"]').click();
+      if(a==='templates') document.querySelector('[data-page="templates"]').click();
+    }));
+
+    // trending card events (delegate)
+    document.getElementById('trendingCarousel').addEventListener('click', e=>{
+      const use = e.target.closest('[data-use]');
+      const prev = e.target.closest('[data-preview]');
+      if(use){ alert('Using template ' + use.dataset.use); /* implement create flow */ }
+      if(prev){ alert('Preview template ' + prev.dataset.preview); /* open modal preview */ }
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', ()=>{loadDashboard()});
+
+    // initial load
+    loadDashboard();
+    setInterval(loadDashboard, 15000); // refresh every 15s
+
+  </script></body>
+</html>
