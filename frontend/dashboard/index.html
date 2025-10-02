@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="index.html" class="active">🏠 Dashboard</a>
+    <a href="../templates/index.html">🎬 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>Dashboard</h1>
+      <button class="btn primary">Upgrade Plan</button>
+    </header>
+
+    <section class="grid-2 gap">
+      <!-- Profile Card -->
+      <div class="card profile">
+        <img src="https://i.pravatar.cc/100" class="avatar">
+        <div>
+          <h3 id="userName">AIMANTUVYA</h3>
+          <p id="userPlan" class="muted">Plan: Free</p>
+          <p id="userCredits" class="muted">Credits: —</p>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card">
+        <h3>🔔 Notifications</h3>
+        <ul id="notifList">
+          <li>No new notifications</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid-2 gap mt">
+      <!-- Usage -->
+      <div class="card">
+        <h3>📊 Usage Analytics</h3>
+        <p>Total Videos: <span id="totalVideos">0</span></p>
+        <p>Storage Used: <span id="storageUsed">0 MB</span></p>
+      </div>
+
+      <!-- Trending Templates -->
+      <div class="card">
+        <h3>🔥 Trending Templates</h3>
+        <div id="trendingGrid" class="template-grid"></div>
+      </div>
+    </section>
+
+    <section class="card mt">
+      <h3>🕒 Recent Jobs</h3>
+      <ul id="jobsList"></ul>
+    </section>
+  </main>
+</body>
+</html>

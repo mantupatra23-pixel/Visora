@@ -4,22 +4,32 @@
   <meta charset="UTF-8">
   <title>Visora - Voices</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="sidebar">
+  <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">Dashboard</a>
-    <a href="../templates/index.html">Templates</a>
-    <a href="index.html" class="active">Voices</a>
-    <a href="../gallery/index.html">Gallery</a>
-    <a href="../profile/index.html">Profile</a>
-  </div>
+    <a href="../dashboard/index.html">🏠 Dashboard</a>
+    <a href="../templates/index.html">🎬 Templates</a>
+    <a href="index.html" class="active">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
 
-  <div class="main">
-    <h1>AI Voices</h1>
-    <div id="voices-list" class="list"></div>
-  </div>
+  <main class="content">
+    <header class="topbar">
+      <h1>🎤 Voices</h1>
+      <input id="searchVoice" type="text" placeholder="Search voices..." />
+      <select id="langFilter">
+        <option value="all">All Languages</option>
+        <option value="hi">Hindi</option>
+        <option value="en">English</option>
+        <option value="bn">Bengali</option>
+        <option value="ta">Tamil</option>
+      </select>
+    </header>
 
-  <script src="script.js"></script>
+    <section id="voicesGrid" class="voices-grid"></section>
+  </main>
 </body>
 </html>

@@ -5,74 +5,55 @@ body {
   background: #121212;
   color: #fff;
 }
-
 .sidebar {
   width: 220px;
   background: #1e1e1e;
   padding: 20px;
   height: 100vh;
 }
-
 .sidebar h2 { color: #ffcc00; }
-
 .sidebar a {
   display: block;
   padding: 10px;
+  margin: 5px 0;
   color: #ddd;
   text-decoration: none;
-  margin: 5px 0;
   border-radius: 6px;
 }
 .sidebar a.active,
 .sidebar a:hover { background: #ffcc00; color: #000; }
-
 .content { flex: 1; padding: 30px; }
-
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+.topbar { margin-bottom: 20px; }
+.editor-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
-
-input, select {
+.card {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+}
+video {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 8px;
+}
+textarea, input, select {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 10px;
   padding: 8px;
   border-radius: 6px;
   border: none;
 }
-
-.voices-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 15px;
-}
-
-.voice-card {
-  background: #1e1e1e;
-  padding: 15px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.voice-card h3 { margin: 0; color: #ffcc00; }
-.voice-card p { margin: 0; color: #aaa; }
-
-.controls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
 button {
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
   background: #ffcc00;
   color: #000;
   font-weight: bold;
 }
-.range-slider {
-  width: 100px;
-}
+.mt { margin-top: 15px; display: block; }

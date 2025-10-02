@@ -13,9 +13,7 @@ body {
   height: 100vh;
 }
 
-.sidebar h2 {
-  color: #ffcc00;
-}
+.sidebar h2 { color: #ffcc00; }
 
 .sidebar a {
   display: block;
@@ -25,57 +23,60 @@ body {
   margin: 5px 0;
   border-radius: 6px;
 }
-
 .sidebar a.active,
-.sidebar a:hover {
-  background: #ffcc00;
-  color: #000;
+.sidebar a:hover { background: #ffcc00; color: #000; }
+
+.content { flex: 1; padding: 30px; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.main {
-  flex: 1;
-  padding: 20px;
+input, select {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
 }
 
-.grid {
+.template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 15px;
 }
-
-.card {
-  background: #1f1f1f;
-  padding: 10px;
+.template-grid img {
+  width: 100%;
   border-radius: 8px;
   cursor: pointer;
-  text-align: center;
   transition: transform 0.2s;
 }
+.template-grid img:hover { transform: scale(1.05); }
 
-.card:hover {
-  transform: scale(1.05);
-}
-
+/* Modal */
 .modal {
-  display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(0,0,0,0.8);
-  justify-content: center;
-  align-items: center;
+  display: flex; justify-content: center; align-items: center;
 }
-
+.modal.hidden { display: none; }
 .modal-content {
-  background: #222;
+  background: #1e1e1e;
   padding: 20px;
   border-radius: 10px;
+  width: 400px;
   text-align: center;
 }
-
-.modal-content img {
-  max-width: 100%;
-  border-radius: 8px;
+.modal-content img { width: 100%; border-radius: 8px; }
+#closeModal { float: right; cursor: pointer; font-size: 20px; }
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #333; color: #fff;
 }
+.btn.primary { background: #ffcc00; color: #000; }

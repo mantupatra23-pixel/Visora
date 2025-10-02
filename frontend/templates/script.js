@@ -1,35 +1,49 @@
-window.onload = function() {
-  let grid = document.getElementById("templates-grid");
-  let templates = [
-    { title: "YouTube Intro", image: "https://via.placeholder.com/300x150?text=YouTube+Intro" },
-    { title: "Business Promo", image: "https://via.placeholder.com/300x150?text=Business+Promo" },
-    { title: "Instagram Reel", image: "https://via.placeholder.com/300x150?text=Instagram+Reel" },
-    { title: "Festival Greeting", image: "https://via.placeholder.com/300x150?text=Festival+Greeting" }
-  ];
+const templates = [
+  { name: "Motivation Reel", img: "https://picsum.photos/200/120?1", category: "ads" },
+  { name: "Educational Explainer", img: "https://picsum.photos/200/120?2", category: "education" },
+  { name: "Gaming Intro", img: "https://picsum.photos/200/120?3", category: "gaming" },
+  { name: "Meme Clip", img: "https://picsum.photos/200/120?4", category: "meme" },
+  { name: "Diwali Special", img: "https://picsum.photos/200/120?5", category: "festival" }
+];
 
-  templates.forEach(tt => {
-    let card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `<img src="${tt.image}" alt="${tt.title}"><p>${tt.title}</p>`;
-    card.onclick = () => openPreview(tt);
-    grid.appendChild(card);
+const grid = document.getElementById("templateGrid");
+const searchBox = document.getElementById("searchBox");
+const filter = document.getElementById("categoryFilter");
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modalImg");
+const modalTitle = document.getElementById("modalTitle");
+const modalCategory = document.getElementById("modalCategory");
+
+function renderTemplates(list) {
+  grid.innerHTML = "";
+  list.forEach(t => {
+    const img = document.createElement("img");
+    img.src = t.img;
+    img.alt = t.name;
+    img.onclick = () => openModal(t);
+    grid.appendChild(img);
   });
-};
-
-// Modal Logic
-function openPreview(template) {
-  document.getElementById("previewModal").style.display = "flex";
-  document.getElementById("templateTitle").innerText = template.title;
-  document.getElementById("templateImage").src = template.image;
 }
 
-function closeModal() {
-  document.getElementById("previewModal").style.display = "none";
+function openModal(template) {
+  modalImg.src = template.img;
+  modalTitle.innerText = template.name;
+  modalCategory.innerText = "Category: " + template.category;
+  modal.classList.remove("hidden");
 }
 
-function useTemplate() {
-  alert("Template applied!");
-  closeModal();
-}
+document.getElementById("closeModal").onclick = () => modal.classList.add("hidden");
 
-document.querySelector(".close").onclick = closeModal;
+searchBox.addEventListener("input", () => {
+  const term = searchBox.value.toLowerCase();
+  const filtered = templates.filter(t => t.name.toLowerCase().includes(term));
+  renderTemplates(filtered);
+});
+
+filter.addEventListener("change", () => {
+  const cat = filter.value;
+  const filtered = (cat === "all") ? templates : templates.filter(t => t.category === cat);
+  renderTemplates(filtered);
+});
+
+renderTemplates(templates);

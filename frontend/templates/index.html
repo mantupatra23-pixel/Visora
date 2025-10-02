@@ -4,32 +4,44 @@
   <meta charset="UTF-8">
   <title>Visora - Templates</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="sidebar">
+  <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="../dashboard/index.html">Dashboard</a>
-    <a href="index.html" class="active">Templates</a>
-    <a href="../voices/index.html">Voices</a>
-    <a href="../gallery/index.html">Gallery</a>
-    <a href="../profile/index.html">Profile</a>
-  </div>
+    <a href="../dashboard/index.html">🏠 Dashboard</a>
+    <a href="index.html" class="active">🎬 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
 
-  <div class="main">
-    <h1>Templates</h1>
-    <div id="templates-grid" class="grid"></div>
-  </div>
+  <main class="content">
+    <header class="topbar">
+      <h1>🎬 Templates</h1>
+      <input id="searchBox" type="text" placeholder="Search templates..." />
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="ads">Ads</option>
+        <option value="education">Education</option>
+        <option value="gaming">Gaming</option>
+        <option value="meme">Meme</option>
+        <option value="festival">Festival</option>
+      </select>
+    </header>
 
-  <!-- Preview Modal -->
-  <div id="previewModal" class="modal">
+    <section id="templateGrid" class="template-grid"></section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden">
     <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 id="templateTitle"></h2>
-      <img id="templateImage" src="" alt="Preview" />
-      <button onclick="useTemplate()">Use Template</button>
+      <span id="closeModal">&times;</span>
+      <img id="modalImg" src="" alt="Template Preview">
+      <h2 id="modalTitle"></h2>
+      <p id="modalCategory"></p>
+      <button id="useTemplateBtn" class="btn primary">Use Template</button>
     </div>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>

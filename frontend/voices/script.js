@@ -1,45 +1,59 @@
-window.onload = function() {
-  let list = document.getElementById("voices-list");
-  let voices = [
-    { name: "Arjun", lang: "Hindi", style: "Casual", preview: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-    { name: "Maya", lang: "English", style: "Formal", preview: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-    { name: "Ravi", lang: "Hinglish", style: "Energetic", preview: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
-  ];
+const voices = [
+  { name: "Aarav (Male, Hindi)", lang: "hi", preview: "https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav" },
+  { name: "Ananya (Female, Hindi)", lang: "hi", preview: "https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav" },
+  { name: "John (Male, English)", lang: "en", preview: "https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav" },
+  { name: "Emily (Female, English)", lang: "en", preview: "https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther60.wav" },
+];
 
-  voices.forEach(v => {
-    let card = document.createElement("div");
+const grid = document.getElementById("voicesGrid");
+const search = document.getElementById("searchVoice");
+const filter = document.getElementById("langFilter");
+
+function renderVoices(list) {
+  grid.innerHTML = "";
+  list.forEach(v => {
+    const card = document.createElement("div");
     card.className = "voice-card";
-
-    let info = document.createElement("div");
-    info.className = "voice-info";
-    info.innerHTML = `<strong>${v.name}</strong> • ${v.lang} • ${v.style}`;
-
-    let controls = document.createElement("div");
-    let playBtn = document.createElement("button");
-    playBtn.innerText = "▶️ Play";
-    let audio = new Audio(v.preview);
-    playBtn.onclick = () => audio.play();
-
-    let pitch = document.createElement("input");
-    pitch.type = "range";
-    pitch.min = 0.5;
-    pitch.max = 2;
-    pitch.step = 0.1;
-    pitch.value = 1;
-    pitch.oninput = () => {
-      audio.playbackRate = pitch.value;
-    };
-
-    let selectBtn = document.createElement("button");
-    selectBtn.innerText = "✅ Select";
-    selectBtn.onclick = () => alert(`${v.name} selected!`);
-
-    controls.appendChild(playBtn);
-    controls.appendChild(pitch);
-    controls.appendChild(selectBtn);
-
-    card.appendChild(info);
-    card.appendChild(controls);
-    list.appendChild(card);
+    card.innerHTML = `
+      <h3>${v.name}</h3>
+      <p>Language: ${v.lang.toUpperCase()}</p>
+      <div class="controls">
+        <button onclick="playVoice('${v.preview}')">▶ Play</button>
+        <label>Pitch</label>
+        <input type="range" min="0.5" max="2" value="1" step="0.1" class="range-slider" onchange="setPitch(this.value)">
+      </div>
+    `;
+    grid.appendChild(card);
   });
-};
+}
+
+let audio = new Audio();
+let pitch = 1;
+
+function playVoice(src) {
+  audio.pause();
+  audio = new Audio(src);
+  audio.playbackRate = pitch;
+  audio.play();
+}
+
+function setPitch(val) {
+  pitch = parseFloat(val);
+  if (!audio.paused) {
+    audio.playbackRate = pitch;
+  }
+}
+
+search.addEventListener("input", () => {
+  const term = search.value.toLowerCase();
+  const filtered = voices.filter(v => v.name.toLowerCase().includes(term));
+  renderVoices(filtered);
+});
+
+filter.addEventListener("change", () => {
+  const lang = filter.value;
+  const filtered = (lang === "all") ? voices : voices.filter(v => v.lang === lang);
+  renderVoices(filtered);
+});
+
+renderVoices(voices);

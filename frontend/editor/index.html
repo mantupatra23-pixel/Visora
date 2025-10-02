@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Editor</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">🏠 Dashboard</a>
+    <a href="../templates/index.html">🎬 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="index.html" class="active">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>✂️ Video Editor</h1>
+    </header>
+
+    <section class="editor-section">
+      <div class="card">
+        <h3>Upload Video</h3>
+        <input id="videoFile" type="file" accept="video/*">
+        <video id="preview" controls></video>
+      </div>
+
+      <div class="card">
+        <h3>Editing Options</h3>
+
+        <label>⏱ Trim Video</label>
+        <input id="trimStart" type="number" placeholder="Start (sec)" />
+        <input id="trimEnd" type="number" placeholder="End (sec)" />
+        <button onclick="trimVideo()" class="btn primary">Trim</button>
+
+        <label class="mt">➕ Merge with Another Video</label>
+        <input id="mergeFile" type="file" accept="video/*">
+        <button onclick="mergeVideo()" class="btn primary">Merge</button>
+
+        <label class="mt">💬 Add Subtitles</label>
+        <textarea id="subsText" placeholder="Write subtitles here..."></textarea>
+        <select id="subsLang">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+        </select>
+        <button onclick="addSubtitles()" class="btn primary">Add Subs</button>
+
+        <label class="mt">🌍 Translate Subtitles</label>
+        <select id="translateLang">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+        </select>
+        <button onclick="translateSubtitles()" class="btn primary">Translate</button>
+      </div>
+
+      <div class="card">
+        <h3>Output</h3>
+        <div id="editorResp" class="muted small">No action yet</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
