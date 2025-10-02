@@ -5,15 +5,18 @@ body {
   background: #121212;
   color: #fff;
 }
+
 .sidebar {
   width: 220px;
   background: #1e1e1e;
   padding: 20px;
   height: 100vh;
 }
+
 .sidebar h2 {
   color: #ffcc00;
 }
+
 .sidebar a {
   display: block;
   padding: 10px;
@@ -22,17 +25,50 @@ body {
   margin: 5px 0;
   border-radius: 6px;
 }
+
+.sidebar a.active,
 .sidebar a:hover {
   background: #ffcc00;
   color: #000;
 }
+
 .main {
   flex: 1;
   padding: 20px;
 }
-.card {
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.voice-card {
   background: #1f1f1f;
   padding: 15px;
-  margin-bottom: 15px;
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.voice-info {
+  flex: 1;
+}
+
+button {
+  background: #ffcc00;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ffaa00;
+}
+
+input[type=range] {
+  width: 100px;
+  margin-left: 10px;
 }
