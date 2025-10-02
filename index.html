@@ -1,131 +1,214 @@
 <!doctype html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Visora • AI Video Studio</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora - Cloud AI Video Studio</title>
+  <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
 <body>
-<div class="layout">
-  <!-- Sidebar -->
   <aside class="sidebar">
-    <h1 class="brand">Visora</h1>
-    <nav class="nav">
-      <button data-page="dashboard" class="active">🏠 Dashboard</button>
-      <button data-page="create">🎬 Create Video</button>
-      <button data-page="templates">📂 Templates</button>
-      <button data-page="voices">🎙 Voices</button>
-      <button data-page="editor">✂️ Editor</button>
-      <button data-page="assistant">🤖 Assistant</button>
-      <button data-page="gallery">🖼 Gallery</button>
-      <button data-page="profile">👤 Profile</button>
-      <button data-page="payments">💳 Payments</button>
-      <button data-page="admin">🛡 Admin Panel</button>
+    <div class="brand">
+      <h1>Visora</h1>
+      <div class="muted small">Cloud-first AI Video Studio</div>
+    </div>
+    <nav id="nav">
+      <button data-page="dashboard" class="nav-btn active">🏠 Dashboard</button>
+      <button data-page="create" class="nav-btn">🎬 Create Video</button>
+      <button data-page="image2video" class="nav-btn">🖼 Image → Video</button>
+      <button data-page="script2video" class="nav-btn">✍ Script → Video</button>
+      <button data-page="templates" class="nav-btn">📂 Templates</button>
+      <button data-page="voices" class="nav-btn">🗣 Voices</button>
+      <button data-page="editor" class="nav-btn">✂️ Editor</button>
+      <button data-page="assistant" class="nav-btn">🤖 Assistant</button>
+      <button data-page="gallery" class="nav-btn">🖼 Gallery</button>
+      <button data-page="jobs" class="nav-btn">📌 Jobs</button>
+      <button data-page="profile" class="nav-btn">👤 Profile</button>
+      <button data-page="payments" class="nav-btn">💳 Payments</button>
+      <button data-page="admin" class="nav-btn">🛡 Admin</button>
     </nav>
-    <div id="baseUrlShow" class="muted small"></div>
+    <div class="base-url" id="baseUrlShow"></div>
   </aside>
 
-  <!-- Content -->
   <main class="content">
-    <header>
-      <h2 id="pageTitle">Dashboard</h2>
-      <button id="refreshBtn" class="btn primary">Refresh</button>
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <div class="muted">Visora — Cloud-only. All rendering runs on server.</div>
+      </div>
+      <div class="top-actions">
+        <button id="refreshBtn" class="btn primary">Refresh</button>
+        <button id="toggleTheme" class="btn">Theme</button>
+      </div>
     </header>
 
-    <!-- Dashboard -->
+    <!-- Pages -->
     <section id="dashboard" class="page">
-      <div class="grid cols3">
-        <div class="card"><div class="muted small">Plan</div><div id="planName" class="big">—</div></div>
-        <div class="card"><div class="muted small">Credits</div><div id="credits" class="big">—</div></div>
-        <div class="card"><div class="muted small">Notifications</div><div id="notifyBox">—</div></div>
+      <div class="cards">
+        <div class="card stat">
+          <div class="muted small">Plan</div>
+          <div id="plan" class="big">—</div>
+        </div>
+        <div class="card stat">
+          <div class="muted small">Credits</div>
+          <div id="credits" class="big">—</div>
+        </div>
+        <div class="card">
+          <div class="muted small">Trending Templates</div>
+          <div id="trendingList" class="template-grid"></div>
+        </div>
       </div>
-      <div class="card mt"><h3>Trending Templates</h3><div id="trendingList">Loading…</div></div>
-      <div class="card mt"><h3>Recent Jobs</h3><div id="recentJobs">Loading…</div></div>
+
+      <div class="card mt">
+        <h3>Recent jobs</h3>
+        <ul id="recentJobs">Loading...</ul>
+      </div>
     </section>
 
-    <!-- Create Video -->
     <section id="create" class="page hidden">
-      <div class="card">
-        <h3>Quick Create Video</h3>
-        <input id="cv_title" placeholder="Title"/>
-        <textarea id="cv_script" placeholder="Script"></textarea>
-        <select id="cv_template"></select>
-        <select id="cv_voice"></select>
-        <select id="cv_quality"><option>HD</option><option>4K</option></select>
-        <button id="btn_generate" class="btn primary mt">Generate</button>
-        <div id="create_resp" class="mt small muted"></div>
+      <div class="panel">
+        <div class="card wide">
+          <h3>Quick Create</h3>
+          <input id="cv_title" placeholder="Title" />
+          <textarea id="cv_script" placeholder="Script (optional)"></textarea>
+
+          <div class="row gap">
+            <select id="cv_template"><option>Motivation</option><option>Promo</option><option>Explainer</option></select>
+            <select id="cv_quality"><option>HD</option><option>FULLHD</option><option>4K</option></select>
+            <select id="cv_lang"><option value="hi">Hindi</option><option value="en">English</option></select>
+            <select id="cv_length"><option value="short">Short</option><option value="long">Long</option></select>
+          </div>
+
+          <label>Characters images (1..4)</label>
+          <input id="cv_images" type="file" accept="image/*" multiple />
+
+          <label>Voice files (optional)</label>
+          <input id="cv_voices" type="file" accept="audio/*" multiple />
+
+          <label>Background music (optional)</label>
+          <input id="cv_bg" type="file" accept="audio/*" />
+
+          <div class="row gap mt">
+            <button id="btn_generate" class="btn primary">Generate</button>
+            <button id="btn_auto" class="btn">Auto-fill sample</button>
+          </div>
+
+          <div id="create_resp" class="mt small muted"></div>
+        </div>
+
+        <div class="card narrow">
+          <h3>Assistant & Preview</h3>
+          <input id="assistant_quick_q" placeholder="Need a hook or opening line?" />
+          <div class="row gap mt">
+            <select id="assistant_tone">
+              <option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="funny">Funny</option>
+            </select>
+            <button id="assistant_quick_btn" class="btn primary">Ask Assistant</button>
+          </div>
+          <div id="assistant_quick_reply" class="mt small"></div>
+        </div>
       </div>
     </section>
 
-    <!-- Templates -->
+    <section id="image2video" class="page hidden">
+      <div class="card">
+        <h3>Image → Video</h3>
+        <input id="iv_image" type="file" accept="image/*" />
+        <input id="iv_voice" type="file" accept="audio/*" />
+        <div class="row mt gap"><button id="iv_submit" class="btn primary">Create from Image</button></div>
+        <div id="iv_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
+    <section id="script2video" class="page hidden">
+      <div class="card">
+        <h3>Script → Video</h3>
+        <textarea id="sv_script" placeholder="Paste script and mark [C1], [C2]"></textarea>
+        <div class="row gap mt">
+          <button id="sv_submit" class="btn primary">Auto Generate</button>
+          <button id="sv_suggest" class="btn">Suggest Script</button>
+        </div>
+        <div id="sv_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
     <section id="templates" class="page hidden">
       <div class="card">
-        <h3>500+ Templates</h3>
-        <input id="tpl_search" placeholder="Search template…"/>
-        <div id="tpl_list">Loading…</div>
+        <h3>Templates</h3>
+        <div id="templatesGrid" class="template-grid">Loading templates...</div>
       </div>
     </section>
 
-    <!-- Voices -->
     <section id="voices" class="page hidden">
       <div class="card">
-        <h3>1000+ Voices</h3>
-        <input id="voice_search" placeholder="Search voice…"/>
-        <div id="voice_list">Loading…</div>
+        <h3>Voices</h3>
+        <div id="voicesList">Loading voices...</div>
       </div>
     </section>
 
-    <!-- Editor -->
     <section id="editor" class="page hidden">
-      <div class="card"><h3>Video Editor</h3>
-        <button class="btn">Trim</button>
-        <button class="btn">Merge</button>
-        <button class="btn">Add Subtitles</button>
-        <button class="btn">Translate Subs</button>
-        <button class="btn">Watermark</button>
-        <button class="btn">Filters</button>
+      <div class="card">
+        <h3>Editor</h3>
+        <div class="muted small">Timeline editor (preview stub). Full editor is cloud heavy — open in desktop for best experience.</div>
+        <div id="editorCanvas" style="height:250px;background:#111;border-radius:8px;margin-top:12px;padding:12px;color:#ddd">Editor preview</div>
       </div>
     </section>
 
-    <!-- Assistant -->
     <section id="assistant" class="page hidden">
-      <div class="card"><h3>Assistant (ChatGPT)</h3>
-        <input id="as_q" placeholder="Ask script idea…"/>
-        <button id="as_call" class="btn primary">Ask</button>
-        <div id="as_reply" class="mt small muted"></div>
+      <div class="card">
+        <h3>Assistant (ChatGPT)</h3>
+        <input id="as_q" placeholder="Describe tone / what you want" />
+        <div class="row gap mt">
+          <select id="as_tone"><option value="helpful">Helpful</option><option value="friendly">Friendly</option></select>
+          <button id="as_call" class="btn primary">Ask</button>
+        </div>
+        <pre id="as_reply" class="mt small muted"></pre>
       </div>
     </section>
 
-    <!-- Gallery -->
     <section id="gallery" class="page hidden">
-      <div class="card"><h3>Gallery</h3><div id="galleryList">Loading…</div></div>
-    </section>
-
-    <!-- Profile -->
-    <section id="profile" class="page hidden">
-      <div class="card"><h3>Profile</h3><pre id="profileBox">Loading…</pre></div>
-    </section>
-
-    <!-- Payments -->
-    <section id="payments" class="page hidden">
-      <div class="card"><h3>Payments</h3>
-        <button class="btn">Razorpay</button>
-        <button class="btn">PayPal</button>
+      <div class="card">
+        <h3>Your Videos</h3>
+        <div id="galleryList">Loading...</div>
       </div>
     </section>
 
-    <!-- Admin -->
+    <section id="jobs" class="page hidden">
+      <div class="card">
+        <h3>Jobs</h3>
+        <ul id="jobs-list">Loading jobs...</ul>
+      </div>
+    </section>
+
+    <section id="profile" class="page hidden">
+      <div class="card">
+        <h3>Profile</h3>
+        <div id="profileBox">Loading profile...</div>
+        <div class="row gap mt"><button id="profile_refresh" class="btn primary">Refresh</button></div>
+      </div>
+    </section>
+
+    <section id="payments" class="page hidden">
+      <div class="card">
+        <h3>Payments</h3>
+        <div class="muted small">Use server endpoints for Razorpay / PayPal integration.</div>
+        <input id="rz_amount" placeholder="Amount (INR)" />
+        <div class="row gap mt"><button id="rz_create" class="btn primary">Create Razorpay Order</button></div>
+        <div id="rz_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
     <section id="admin" class="page hidden">
-      <div class="card"><h3>Admin Panel</h3>
-        <button class="btn">Manage Users</button>
-        <button class="btn">Manage Templates</button>
-        <button class="btn">Analytics</button>
+      <div class="card">
+        <h3>Admin Panel</h3>
+        <div class="muted small">Admin controls (user management, templates, credits)</div>
+        <div id="adminArea">Admin actions</div>
       </div>
     </section>
 
   </main>
-</div>
+
+  <footer class="footer muted">Visora • Cloud-only studio • UI connected to backend</footer>
 </body>
 </html>
