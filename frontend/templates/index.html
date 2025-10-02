@@ -10,6 +10,7 @@
   <aside class="sidebar">
     <h2>Visora</h2>
     <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
     <a href="./index.html" class="active">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
@@ -20,36 +21,38 @@
   <main class="content">
     <header>
       <h2>📂 Templates</h2>
-      <p class="muted small">Choose from 500+ ready templates</p>
+      <p class="muted small">Choose from 500+ ready-to-use video templates</p>
     </header>
 
-    <!-- Search + Filter -->
-    <div class="row gap mt">
-      <input id="searchBox" placeholder="Search templates..." />
+    <!-- Search & Filter -->
+    <div class="card">
+      <input id="searchBox" placeholder="🔍 Search templates (e.g. wedding, gaming, ads)" />
       <select id="categoryFilter">
-        <option value="">All Categories</option>
-        <option value="motivation">Motivation</option>
+        <option value="all">All Categories</option>
+        <option value="cinematic">Cinematic</option>
+        <option value="ads">Ads & Promo</option>
         <option value="education">Education</option>
-        <option value="ads">Ads</option>
         <option value="gaming">Gaming</option>
         <option value="festival">Festival</option>
-        <option value="wedding">Wedding</option>
         <option value="business">Business</option>
+        <option value="wedding">Wedding</option>
+        <option value="fitness">Fitness</option>
+        <option value="meme">Meme</option>
       </select>
     </div>
 
     <!-- Templates Grid -->
-    <div id="templatesGrid" class="grid mt"></div>
-  </main>
+    <div id="templatesGrid" class="grid"></div>
 
-  <!-- Preview Modal -->
-  <div id="previewModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <h3 id="templateTitle"></h3>
-      <video id="templatePreviewVideo" controls></video>
-      <button id="useTemplateBtn" class="btn primary mt">Use This Template</button>
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal hidden">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h3 id="modalTitle"></h3>
+        <video id="modalVideo" controls></video>
+        <button id="useTemplateBtn" class="btn primary">Use This Template</button>
+      </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

@@ -1,70 +1,82 @@
 const API_BASE = "https://visora.onrender.com";
 
-// Helper
-async function postForm(endpoint, formData, respEl) {
-  document.getElementById(respEl).innerText = "⏳ Processing...";
-  try {
-    const res = await fetch(`${API_BASE}${endpoint}`, { method:"POST", body:formData });
-    const data = await res.json();
-    document.getElementById(respEl).innerText = "✅ Done! Job: " + (data.job_id || JSON.stringify(data));
-  } catch (e) {
-    document.getElementById(respEl).innerText = "❌ Error: " + e;
-  }
-}
+let uploadedVideo = null;
 
-// Trim
-document.getElementById("trim_btn").addEventListener("click", ()=>{
+// Load video preview
+document.getElementById("btn_load").addEventListener("click", ()=>{
+  const file = document.getElementById("video_upload").files[0];
+  if (!file) return alert("Select a video");
+  uploadedVideo = file;
+  const url = URL.createObjectURL(file);
+  const preview = document.getElementById("video_preview");
+  preview.src = url;
+  preview.classList.remove("hidden");
+});
+
+// Trim video
+document.getElementById("btn_trim").addEventListener("click", async ()=>{
+  if (!uploadedVideo) return alert("Upload video first!");
   const fd = new FormData();
-  fd.append("video", document.getElementById("trim_video").files[0]);
+  fd.append("video", uploadedVideo);
   fd.append("start", document.getElementById("trim_start").value);
   fd.append("end", document.getElementById("trim_end").value);
-  postForm("/video-trim", fd, "trim_resp");
+  const res = await fetch(`${API_BASE}/video-trim`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("trim_resp").innerText = "Job: " + JSON.stringify(data);
 });
 
 // Merge
-document.getElementById("merge_btn").addEventListener("click", ()=>{
+document.getElementById("btn_merge").addEventListener("click", async ()=>{
+  const files = document.getElementById("merge_files").files;
+  if (!files.length) return alert("Select videos!");
   const fd = new FormData();
-  for(let f of document.getElementById("merge_videos").files) fd.append("videos", f);
-  postForm("/video-merge", fd, "merge_resp");
+  for (let f of files) fd.append("videos", f);
+  const res = await fetch(`${API_BASE}/video-merge`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("merge_resp").innerText = "Job: " + JSON.stringify(data);
 });
 
 // Subtitles
-document.getElementById("subs_btn").addEventListener("click", ()=>{
+document.getElementById("btn_subs").addEventListener("click", async ()=>{
+  const file = document.getElementById("subs_file").files[0];
+  if (!file) return alert("Upload subtitle file!");
   const fd = new FormData();
-  fd.append("video", document.getElementById("subs_video").files[0]);
-  fd.append("subtitles", document.getElementById("subs_text").value);
+  fd.append("video", uploadedVideo);
+  fd.append("subs", file);
   fd.append("lang", document.getElementById("subs_lang").value);
-  postForm("/video-add-subs", fd, "subs_resp");
+  const res = await fetch(`${API_BASE}/video-add-subs`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("subs_resp").innerText = "Job: " + JSON.stringify(data);
 });
 
-// Background Music
-document.getElementById("bg_btn").addEventListener("click", ()=>{
+document.getElementById("btn_trans").addEventListener("click", async ()=>{
   const fd = new FormData();
-  fd.append("video", document.getElementById("bg_video").files[0]);
-  fd.append("audio", document.getElementById("bg_audio").files[0]);
-  postForm("/video-add-music", fd, "bg_resp");
+  fd.append("video", uploadedVideo);
+  fd.append("target_lang", document.getElementById("subs_lang").value);
+  const res = await fetch(`${API_BASE}/video-translate-subs`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("subs_resp").innerText = "Translated: " + JSON.stringify(data);
 });
 
-// Watermark
-document.getElementById("wm_btn").addEventListener("click", ()=>{
+// BG Music
+document.getElementById("btn_bg").addEventListener("click", async ()=>{
+  const file = document.getElementById("bg_music").files[0];
+  if (!file) return alert("Upload music!");
   const fd = new FormData();
-  fd.append("video", document.getElementById("wm_video").files[0]);
-  fd.append("logo", document.getElementById("wm_logo").files[0]);
-  postForm("/video-watermark", fd, "wm_resp");
+  fd.append("video", uploadedVideo);
+  fd.append("music", file);
+  const res = await fetch(`${API_BASE}/video-add-music`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("bg_resp").innerText = "Job: " + JSON.stringify(data);
 });
 
-// Filters
-document.getElementById("fx_btn").addEventListener("click", ()=>{
+// Effects
+document.getElementById("btn_effect").addEventListener("click", async ()=>{
+  const effect = document.getElementById("effect_select").value;
   const fd = new FormData();
-  fd.append("video", document.getElementById("fx_video").files[0]);
-  fd.append("filter", document.getElementById("fx_filter").value);
-  postForm("/video-fx", fd, "fx_resp");
-});
-
-// Aspect Ratio
-document.getElementById("ar_btn").addEventListener("click", ()=>{
-  const fd = new FormData();
-  fd.append("video", document.getElementById("ar_video").files[0]);
-  fd.append("ratio", document.getElementById("ar_select").value);
-  postForm("/video-aspect", fd, "ar_resp");
+  fd.append("video", uploadedVideo);
+  fd.append("effect", effect);
+  const res = await fetch(`${API_BASE}/video-effect`, { method:"POST", body:fd });
+  const data = await res.json();
+  document.getElementById("effect_resp").innerText = "Applied: " + JSON.stringify(data);
 });

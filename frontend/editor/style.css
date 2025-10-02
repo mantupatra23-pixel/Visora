@@ -8,4 +8,4 @@ header { margin-bottom:20px; }
 .btn { padding:8px 14px; background:#444; color:#fff; border:none; border-radius:6px; cursor:pointer; }
 .btn.primary { background:#ffcc00; color:#000; }
 .mt { margin-top:10px; }
-textarea, input, select { width:100%; padding:8px; margin:6px 0; border:none; border-radius:6px; }
+.preview { margin-top:10px; max-width:100%; border-radius:10px; }
