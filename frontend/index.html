@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora - Studio</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>Visora</h1>
+      <div class="muted small">Cloud-first AI Video Studio</div>
+    </div>
+
+    <nav class="nav-list">
+      <button data-page="dashboard" class="nav-btn active">🏠 Dashboard</button>
+      <button data-page="create" class="nav-btn">🎬 Create Video</button>
+      <button data-page="image2video" class="nav-btn">🖼 Image → Video</button>
+      <button data-page="script2video" class="nav-btn">✍ Script → Video</button>
+      <button data-page="characters" class="nav-btn">👥 Characters / Voices</button>
+      <button data-page="gallery" class="nav-btn">📂 Gallery</button>
+      <button data-page="assistant" class="nav-btn">🤖 Assistant</button>
+      <button data-page="payments" class="nav-btn">💳 Payments</button>
+      <button data-page="profile" class="nav-btn">👤 Profile</button>
+    </nav>
+
+    <div class="base-url" id="baseUrlShow"></div>
+  </aside>
+
+  <main class="content">
+    <header class="header-row">
+      <div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <div class="muted">Visora — Cloud-only. Server पर rendering होगा</div>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" class="btn primary">Refresh</button>
+      </div>
+    </header>
+
+    <!-- Pages -->
+    <section id="dashboard" class="page">
+      <div class="cards">
+        <div class="card">
+          <div class="muted small">Credits</div>
+          <div id="credits" class="big">—</div>
+        </div>
+        <div class="card">
+          <div class="muted small">Trending Templates</div>
+          <div id="trendingList" class="muted small"></div>
+        </div>
+        <div class="card">
+          <div class="muted small">Quick Actions</div>
+          <div class="row">
+            <button class="btn primary" data-open="create">Create Video</button>
+            <button class="btn" data-open="gallery">Open Gallery</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <h3>Recent jobs</h3>
+        <div id="recentJobs">Loading...</div>
+      </div>
+    </section>
+
+    <section id="create" class="page hidden">
+      <div class="panel">
+        <div class="card wide">
+          <h3>New Video (Quick)</h3>
+          <input id="cv_title" placeholder="Title" />
+          <textarea id="cv_script" placeholder="Script (optional)"></textarea>
+
+          <div class="row gap">
+            <select id="cv_template">
+              <option>Motivation</option><option>Promo</option><option>Explainer</option><option>Cinematic</option>
+            </select>
+            <select id="cv_quality">
+              <option>HD</option><option>FULLHD</option><option>4K</option>
+            </select>
+            <select id="cv_lang">
+              <option value="hi">Hindi</option><option value="en">English</option><option value="bn">Bengali</option><option value="ta">Tamil</option>
+            </select>
+            <select id="cv_length">
+              <option value="short">Short</option><option value="long">Long</option>
+            </select>
+          </div>
+
+          <label>Upload character images (1..4)</label>
+          <input id="cv_images" type="file" accept="image/*" multiple />
+
+          <label>Upload voice files (optional)</label>
+          <input id="cv_voices" type="file" accept="audio/*" multiple />
+
+          <label>Background music (optional)</label>
+          <input id="cv_bg" type="file" accept="audio/*" />
+
+          <div class="row gap mt">
+            <button id="btn_generate" class="btn primary">Generate</button>
+            <button id="btn_auto" class="btn">Auto-fill sample</button>
+          </div>
+
+          <div id="create_resp" class="mt small muted"></div>
+        </div>
+
+        <div class="card narrow">
+          <h3>Preview & Assistant</h3>
+          <div id="templatePreview" class="muted small">Template preview here.</div>
+
+          <input id="assistant_quick_q" placeholder="Need a hook or opening line?" />
+          <div class="row gap mt">
+            <select id="assistant_tone">
+              <option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="funny">Funny</option>
+            </select>
+            <button id="assistant_quick_btn" class="btn primary">Ask Assistant</button>
+          </div>
+
+          <div id="assistant_quick_reply" class="mt small"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="image2video" class="page hidden">
+      <div class="card">
+        <h3>Image → Video</h3>
+        <input id="iv_image" type="file" accept="image/*" />
+        <input id="iv_voice" type="file" accept="audio/*" />
+        <div class="row gap mt">
+          <button id="iv_submit" class="btn primary">Create from Image</button>
+        </div>
+        <div id="iv_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
+    <section id="script2video" class="page hidden">
+      <div class="card">
+        <h3>Script → Video</h3>
+        <textarea id="sv_script" placeholder="Paste script and mark [C1], [C2] for characters"></textarea>
+        <div class="row gap mt">
+          <button id="sv_submit" class="btn primary">Auto Generate</button>
+          <button id="sv_suggest" class="btn">Suggest Script</button>
+        </div>
+        <div id="sv_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
+    <section id="characters" class="page hidden">
+      <div class="grid-2 gap">
+        <div class="card">
+          <h3>Add Character</h3>
+          <input id="ch_name" placeholder="Character name" />
+          <input id="ch_photo" type="file" accept="image/*" />
+          <input id="ch_voice" type="file" accept="audio/*" />
+          <div class="row gap mt">
+            <button id="ch_save" class="btn primary">Save Character</button>
+            <button id="ch_list_btn" class="btn">Refresh</button>
+          </div>
+          <div id="ch_resp" class="mt small muted"></div>
+        </div>
+        <div class="card">
+          <h3>Saved Characters</h3>
+          <div id="ch_list">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="page hidden">
+      <div class="card">
+        <h3>Your Videos</h3>
+        <div id="galleryList">Loading...</div>
+      </div>
+    </section>
+
+    <section id="assistant" class="page hidden">
+      <div class="card">
+        <h3>Assistant</h3>
+        <input id="as_q" placeholder="Describe tone / what you want" />
+        <div class="row gap mt">
+          <select id="as_tone">
+            <option value="helpful">Helpful</option><option value="friendly">Friendly</option><option value="funny">Funny</option>
+          </select>
+          <button id="as_call" class="btn primary">Ask</button>
+        </div>
+        <div id="as_reply" class="mt small muted"></div>
+      </div>
+    </section>
+
+    <section id="payments" class="page hidden">
+      <div class="card">
+        <h3>Payments (stub)</h3>
+        <div class="muted small">Use server endpoints for Razorpay / PayPal integration.</div>
+        <input id="rz_amount" placeholder="Amount (INR)" />
+        <div class="row gap mt"><button id="rz_create" class="btn primary">Create Razorpay Order</button></div>
+        <div id="rz_resp" class="mt small muted"></div>
+      </div>
+    </section>
+
+    <section id="profile" class="page hidden">
+      <div class="card">
+        <h3>Profile</h3>
+        <pre id="profileBox">Loading...</pre>
+        <div class="row gap mt"><button id="profile_refresh" class="btn primary">Refresh</button></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer muted">Visora • Cloud-only studio • UI connected to backend</footer>
+</body>
+</html>
