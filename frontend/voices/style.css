@@ -4,17 +4,11 @@ body { margin:0; font-family:Arial,sans-serif; display:flex; background:#121212;
 .sidebar a.active, .sidebar a:hover { background:#ffcc00; color:#000; }
 .content { flex:1; padding:30px; }
 header { margin-bottom:20px; }
-.row { display:flex; }
-.gap { gap:10px; }
-.mt { margin-top:15px; }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
-.card { background:#1e1e1e; border-radius:12px; padding:15px; }
-.btn { padding:8px 14px; background:#444; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-.btn.primary { background:#ffcc00; color:#000; }
-
-/* Voice Item */
-.voice-card { background:#222; padding:12px; border-radius:10px; }
-.voice-card h4 { margin:0; }
-.voice-card audio { width:100%; margin-top:8px; }
-.voice-controls { display:flex; align-items:center; gap:8px; margin-top:10px; }
-.voice-controls label { font-size:12px; }
+.card { background:#1e1e1e; padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid #333; }
+.btn { padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+.btn.primary { background:#ffcc00; color:#000; font-weight:bold; }
+.grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; }
+.voice-card { background:#222; padding:15px; border-radius:8px; }
+.voice-card h4 { margin:0 0 10px; }
+input, select { width:100%; padding:8px; border-radius:6px; margin:6px 0; border:none; }
+.muted { color:#aaa; }

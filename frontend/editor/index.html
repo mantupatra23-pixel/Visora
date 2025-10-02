@@ -7,81 +7,84 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
     <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
     <a href="../templates/index.html">📂 Templates</a>
-    <a href="../voices/index.html">🎤 Voices</a>
     <a href="./index.html" class="active">✂️ Editor</a>
+    <a href="../voices/index.html">🎤 Voices</a>
     <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Main content -->
   <main class="content">
     <header>
       <h2>✂️ Video Editor</h2>
-      <p class="muted small">Edit existing videos: trim, merge, add subtitles, effects</p>
+      <p class="muted">Trim, Merge, Add Subtitles, Background Music, Filters & More</p>
     </header>
 
-    <!-- Upload Video -->
-    <div class="card">
-      <h3>🎬 Upload Video</h3>
-      <input type="file" id="video_upload" accept="video/*"/>
-      <button id="btn_load" class="btn primary">Load Video</button>
-      <video id="video_preview" controls class="preview hidden"></video>
-    </div>
+    <!-- Upload Section -->
+    <section class="card">
+      <h3>Upload Video</h3>
+      <input id="edit_video" type="file" accept="video/*" />
+    </section>
 
-    <!-- Trim -->
-    <div class="card">
-      <h3>✂️ Trim Video</h3>
-      <label>Start (sec): <input type="number" id="trim_start" value="0"></label>
-      <label>End (sec): <input type="number" id="trim_end" value="10"></label>
-      <button id="btn_trim" class="btn primary">Trim</button>
-      <div id="trim_resp" class="mt small muted"></div>
-    </div>
+    <!-- Tools -->
+    <section class="grid-2">
+      <div class="card">
+        <h3>Trim Video</h3>
+        <label>Start (sec)</label>
+        <input id="trim_start" type="number" min="0" />
+        <label>End (sec)</label>
+        <input id="trim_end" type="number" min="0" />
+        <button id="trim_btn" class="btn primary">Trim</button>
+      </div>
 
-    <!-- Merge -->
-    <div class="card">
-      <h3>🔗 Merge Videos</h3>
-      <input type="file" id="merge_files" accept="video/*" multiple/>
-      <button id="btn_merge" class="btn primary">Merge</button>
-      <div id="merge_resp" class="mt small muted"></div>
-    </div>
+      <div class="card">
+        <h3>Merge Videos</h3>
+        <input id="merge_videos" type="file" accept="video/*" multiple />
+        <button id="merge_btn" class="btn primary">Merge</button>
+      </div>
 
-    <!-- Subtitles -->
-    <div class="card">
-      <h3>📝 Add Subtitles</h3>
-      <input type="file" id="subs_file" accept=".srt,.txt"/>
-      <select id="subs_lang">
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-        <option value="bn">Bengali</option>
-      </select>
-      <button id="btn_subs" class="btn primary">Add Subtitles</button>
-      <button id="btn_trans" class="btn">Translate Subtitles</button>
-      <div id="subs_resp" class="mt small muted"></div>
-    </div>
+      <div class="card">
+        <h3>Subtitles</h3>
+        <textarea id="sub_text" placeholder="Enter subtitle text"></textarea>
+        <select id="sub_lang">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+        </select>
+        <button id="sub_btn" class="btn primary">Add Subtitles</button>
+      </div>
 
-    <!-- BG Music -->
-    <div class="card">
-      <h3>🎶 Add / Replace Background Music</h3>
-      <input type="file" id="bg_music" accept="audio/*"/>
-      <button id="btn_bg" class="btn primary">Apply Music</button>
-      <div id="bg_resp" class="mt small muted"></div>
-    </div>
+      <div class="card">
+        <h3>Background Music</h3>
+        <input id="bg_music" type="file" accept="audio/*" />
+        <button id="bg_btn" class="btn primary">Add Music</button>
+      </div>
 
-    <!-- Effects -->
-    <div class="card">
-      <h3>🎨 Filters & Effects</h3>
-      <select id="effect_select">
-        <option value="none">None</option>
-        <option value="bw">Black & White</option>
-        <option value="vintage">Vintage</option>
-        <option value="cinematic">Cinematic</option>
-      </select>
-      <button id="btn_effect" class="btn primary">Apply Effect</button>
-      <div id="effect_resp" class="mt small muted"></div>
-    </div>
+      <div class="card">
+        <h3>Filters</h3>
+        <select id="filter_type">
+          <option value="cinematic">Cinematic</option>
+          <option value="bw">Black & White</option>
+          <option value="vintage">Vintage</option>
+          <option value="cartoon">Cartoon</option>
+        </select>
+        <button id="filter_btn" class="btn primary">Apply Filter</button>
+      </div>
+
+      <div class="card">
+        <h3>Watermark</h3>
+        <input id="watermark" type="file" accept="image/*" />
+        <button id="wm_btn" class="btn primary">Add Watermark</button>
+      </div>
+    </section>
+
+    <div id="edit_resp" class="mt small muted"></div>
   </main>
 </body>
 </html>

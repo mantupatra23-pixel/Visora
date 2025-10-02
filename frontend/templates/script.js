@@ -1,68 +1,63 @@
 const API_BASE = "https://visora.onrender.com";
-
-const templatesGrid = document.getElementById("templatesGrid");
-const searchBox = document.getElementById("searchBox");
-const categoryFilter = document.getElementById("categoryFilter");
+const grid = document.getElementById("templateGrid");
 const modal = document.getElementById("previewModal");
-const closeModal = document.getElementById("closeModal");
-const modalTitle = document.getElementById("modalTitle");
 const modalVideo = document.getElementById("modalVideo");
-const useTemplateBtn = document.getElementById("useTemplateBtn");
+const modalTitle = document.getElementById("modalTitle");
+const useBtn = document.getElementById("useTemplate");
+const closeModal = document.getElementById("closeModal");
 
-let templates = [];
-
-// Fetch templates from backend
+// Load templates
 async function loadTemplates() {
   try {
-    const res = await fetch(`${API_BASE}/templates/all`);
-    templates = await res.json();
-    renderTemplates(templates);
+    const res = await fetch(`${API_BASE}/templates`);
+    const data = await res.json();
+    renderTemplates(data.templates);
   } catch (err) {
     console.error(err);
-    templatesGrid.innerHTML = "<div class='muted'>❌ Failed to load templates</div>";
   }
 }
 
+// Render templates grid
 function renderTemplates(list) {
-  templatesGrid.innerHTML = "";
+  grid.innerHTML = "";
   list.forEach(t => {
-    const card = document.createElement("div");
+    let card = document.createElement("div");
     card.className = "template-card";
     card.innerHTML = `
       <img src="${t.thumbnail}" alt="${t.name}">
       <h4>${t.name}</h4>
-      <p>${t.category}</p>
     `;
-    card.addEventListener("click", ()=>openPreview(t));
-    templatesGrid.appendChild(card);
+    card.onclick = () => openPreview(t);
+    grid.appendChild(card);
   });
 }
 
-// Open modal preview
-function openPreview(template) {
-  modalTitle.innerText = template.name;
-  modalVideo.src = template.preview_url;
+// Open preview modal
+function openPreview(t) {
   modal.classList.remove("hidden");
-
-  useTemplateBtn.onclick = ()=>{
-    alert(`🎬 Template "${template.name}" selected! Redirecting to Create Video...`);
-    window.location.href = "../create/index.html?template=" + encodeURIComponent(template.name);
+  modalTitle.innerText = t.name;
+  modalVideo.src = t.preview_url;
+  useBtn.onclick = () => {
+    alert("✅ Template selected: " + t.name);
+    modal.classList.add("hidden");
   };
 }
 
-closeModal.onclick = ()=>modal.classList.add("hidden");
+// Close modal
+closeModal.onclick = () => modal.classList.add("hidden");
 
-// Search & filter
-searchBox.addEventListener("input", ()=>{
-  const q = searchBox.value.toLowerCase();
-  const filtered = templates.filter(t => t.name.toLowerCase().includes(q));
-  renderTemplates(filtered);
+// Search + Filter
+document.getElementById("search").addEventListener("input", async (e) => {
+  const q = e.target.value.toLowerCase();
+  const res = await fetch(`${API_BASE}/templates?q=${q}`);
+  const data = await res.json();
+  renderTemplates(data.templates);
 });
-
-categoryFilter.addEventListener("change", ()=>{
-  const cat = categoryFilter.value;
-  const filtered = cat==="all" ? templates : templates.filter(t=>t.category.toLowerCase()===cat);
-  renderTemplates(filtered);
+document.getElementById("filter").addEventListener("change", async (e) => {
+  const cat = e.target.value;
+  const res = await fetch(`${API_BASE}/templates?cat=${cat}`);
+  const data = await res.json();
+  renderTemplates(data.templates);
 });
 
 // Init

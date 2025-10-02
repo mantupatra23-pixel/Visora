@@ -4,8 +4,9 @@ body { margin:0; font-family:Arial,sans-serif; display:flex; background:#121212;
 .sidebar a.active, .sidebar a:hover { background:#ffcc00; color:#000; }
 .content { flex:1; padding:30px; }
 header { margin-bottom:20px; }
-.card { background:#1e1e1e; padding:20px; border-radius:12px; margin-bottom:20px; }
-.btn { padding:8px 14px; background:#444; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-.btn.primary { background:#ffcc00; color:#000; }
-.mt { margin-top:10px; }
-.preview { margin-top:10px; max-width:100%; border-radius:10px; }
+.card { background:#1e1e1e; padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid #333; }
+.btn { padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+.btn.primary { background:#ffcc00; color:#000; font-weight:bold; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+textarea, input, select { width:100%; padding:8px; border-radius:6px; margin:6px 0; border:none; }
+.muted { color:#aaa; }

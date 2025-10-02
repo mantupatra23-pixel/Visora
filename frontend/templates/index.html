@@ -7,6 +7,7 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
     <a href="../dashboard/index.html">📊 Dashboard</a>
@@ -18,31 +19,32 @@
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Main -->
   <main class="content">
     <header>
       <h2>📂 Templates</h2>
-      <p class="muted small">Choose from 500+ ready-to-use video templates</p>
+      <p class="muted">Browse 500+ templates by category, preview and apply</p>
     </header>
 
-    <!-- Search & Filter -->
-    <div class="card">
-      <input id="searchBox" placeholder="🔍 Search templates (e.g. wedding, gaming, ads)" />
-      <select id="categoryFilter">
-        <option value="all">All Categories</option>
-        <option value="cinematic">Cinematic</option>
-        <option value="ads">Ads & Promo</option>
-        <option value="education">Education</option>
-        <option value="gaming">Gaming</option>
-        <option value="festival">Festival</option>
-        <option value="business">Business</option>
-        <option value="wedding">Wedding</option>
-        <option value="fitness">Fitness</option>
-        <option value="meme">Meme</option>
+    <!-- Search + Filter -->
+    <section class="card">
+      <input id="search" placeholder="🔍 Search templates..." />
+      <select id="filter">
+        <option value="all">All</option>
+        <option value="cinematic">🎥 Cinematic</option>
+        <option value="promo">🚀 Promo / Ads</option>
+        <option value="education">🎓 Education</option>
+        <option value="meme">😂 Meme</option>
+        <option value="festival">🎉 Festival</option>
+        <option value="travel">✈️ Travel</option>
+        <option value="fitness">🏋 Fitness</option>
       </select>
-    </div>
+    </section>
 
-    <!-- Templates Grid -->
-    <div id="templatesGrid" class="grid"></div>
+    <!-- Grid -->
+    <section class="card">
+      <div id="templateGrid" class="grid"></div>
+    </section>
 
     <!-- Preview Modal -->
     <div id="previewModal" class="modal hidden">
@@ -50,7 +52,7 @@
         <span id="closeModal" class="close">&times;</span>
         <h3 id="modalTitle"></h3>
         <video id="modalVideo" controls></video>
-        <button id="useTemplateBtn" class="btn primary">Use This Template</button>
+        <button id="useTemplate" class="btn primary mt">✅ Use This Template</button>
       </div>
     </div>
   </main>

@@ -7,52 +7,39 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
     <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
     <a href="../templates/index.html">📂 Templates</a>
-    <a href="./index.html" class="active">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
+    <a href="./index.html" class="active">🎤 Voices</a>
     <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Main -->
   <main class="content">
     <header>
       <h2>🎤 Voices</h2>
-      <p class="muted small">Choose from 1000+ AI voices, preview & customize</p>
+      <p class="muted">Preview 1000+ voices, adjust pitch & speed, or clone your own voice</p>
     </header>
 
-    <!-- Search + Filter -->
-    <div class="row gap mt">
-      <input id="searchVoice" placeholder="Search voices (eg. Hindi Female)" />
-      <select id="langFilter">
-        <option value="">All Languages</option>
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-        <option value="bn">Bengali</option>
-        <option value="ta">Tamil</option>
-        <option value="te">Telugu</option>
-      </select>
-      <select id="genderFilter">
-        <option value="">All</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="child">Child</option>
-      </select>
-    </div>
+    <!-- Voices Grid -->
+    <section class="card">
+      <h3>Available Voices</h3>
+      <div id="voiceGrid" class="grid"></div>
+    </section>
 
-    <!-- Voices List -->
-    <div id="voicesList" class="grid mt"></div>
-
-    <!-- Voice Cloning -->
-    <div class="card mt">
-      <h3>🎙 Voice Cloning</h3>
-      <p class="muted small">Upload your voice sample (30 sec audio) and create your AI voice.</p>
-      <input id="clone_audio" type="file" accept="audio/*" />
-      <button id="cloneBtn" class="btn primary mt">Upload & Clone</button>
-      <div id="cloneResp" class="mt small muted"></div>
-    </div>
+    <!-- Upload Voice -->
+    <section class="card">
+      <h3>Clone Your Voice</h3>
+      <input id="clone_name" placeholder="Voice Name" />
+      <input id="clone_file" type="file" accept="audio/*" />
+      <button id="clone_btn" class="btn primary">Upload & Clone</button>
+      <div id="clone_resp" class="mt small muted"></div>
+    </section>
   </main>
 </body>
 </html>
