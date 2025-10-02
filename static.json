@@ -1,0 +1,11 @@
+{
+  "root": "frontend",
+  "routes": {
+    "/assistant": "assistant/index.html",
+    "/editor": "editor/index.html",
+    "/templates": "templates/index.html",
+    "/voices": "voices/index.html",
+    "/gallery": "gallery/index.html",
+    "/profile": "profile/index.html"
+  }
+}
