@@ -7,59 +7,52 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Visora</h2>
     <a href="../dashboard/index.html">📊 Dashboard</a>
-    <a href="../templates/index.html">📂 Templates</a>
-    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../create/index.html">🎬 Create Video</a>
     <a href="../editor/index.html">✂️ Editor</a>
     <a href="./index.html" class="active">🤖 Assistant</a>
+    <a href="../templates/index.html">📂 Templates</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
+  <!-- Main -->
   <main class="content">
     <header>
-      <h2>🤖 AI Assistant</h2>
-      <p class="muted small">Script help, captions, SEO, video hooks, marketing ideas</p>
+      <h2>🤖 Script Assistant</h2>
+      <p class="muted">Get hooks, script polish, captions & ideas using ChatGPT.</p>
     </header>
 
-    <!-- Quick Script Generator -->
-    <div class="card">
-      <h3>📝 Generate Script</h3>
-      <input id="script_topic" placeholder="Enter topic (e.g. Fitness Motivation)" />
-      <select id="script_tone">
-        <option value="helpful">Helpful</option>
-        <option value="funny">Funny</option>
-        <option value="motivational">Motivational</option>
-        <option value="professional">Professional</option>
-      </select>
-      <button id="script_btn" class="btn primary">Generate</button>
-      <div id="script_resp" class="mt small muted"></div>
-    </div>
+    <section class="card">
+      <h3>Ask Assistant</h3>
+      <textarea id="as_input" placeholder="Write your idea, script or request..."></textarea>
 
-    <!-- Captions / Hooks -->
-    <div class="card">
-      <h3>💡 Captions & Hooks</h3>
-      <input id="caption_topic" placeholder="Enter video idea (e.g. Startup Pitch)" />
-      <button id="caption_btn" class="btn primary">Generate Captions</button>
-      <div id="caption_resp" class="mt small muted"></div>
-    </div>
+      <div class="row gap mt">
+        <label for="as_tone">Tone:</label>
+        <select id="as_tone">
+          <option value="helpful">Helpful</option>
+          <option value="funny">Funny</option>
+          <option value="friendly">Friendly</option>
+          <option value="motivational">Motivational</option>
+          <option value="cinematic">Cinematic</option>
+        </select>
+        <button id="as_submit" class="btn primary">Ask</button>
+      </div>
 
-    <!-- SEO -->
-    <div class="card">
-      <h3>🔎 SEO (Title, Tags, Description)</h3>
-      <input id="seo_topic" placeholder="Enter video subject" />
-      <button id="seo_btn" class="btn primary">Generate SEO</button>
-      <div id="seo_resp" class="mt small muted"></div>
-    </div>
+      <div id="as_reply" class="mt card muted small">No response yet</div>
+    </section>
 
-    <!-- Thumbnail Ideas -->
-    <div class="card">
-      <h3>🖼 Thumbnail Ideas</h3>
-      <input id="thumb_topic" placeholder="Enter video subject" />
-      <button id="thumb_btn" class="btn primary">Suggest Thumbnails</button>
-      <div id="thumb_resp" class="mt small muted"></div>
-    </div>
+    <section class="card">
+      <h3>Quick Prompts</h3>
+      <div class="row gap wrap">
+        <button class="btn" onclick="quickPrompt('Give me a catchy YouTube short intro')">🎬 Hook</button>
+        <button class="btn" onclick="quickPrompt('Write a motivational script in Hindi')">💪 Hindi Motivation</button>
+        <button class="btn" onclick="quickPrompt('Make a funny reel script about exams')">😂 Funny Exam</button>
+        <button class="btn" onclick="quickPrompt('Suggest 5 trending Instagram reel ideas')">🔥 Trending Ideas</button>
+      </div>
+    </section>
   </main>
 </body>
 </html>

@@ -14,77 +14,34 @@
     <a href="../create/index.html">🎬 Create Video</a>
     <a href="../templates/index.html">📂 Templates</a>
     <a href="./index.html" class="active">✂️ Editor</a>
-    <a href="../voices/index.html">🎤 Voices</a>
-    <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
-  <!-- Main content -->
+  <!-- Main -->
   <main class="content">
     <header>
       <h2>✂️ Video Editor</h2>
-      <p class="muted">Trim, Merge, Add Subtitles, Background Music, Filters & More</p>
+      <p class="muted">Trim, merge, add subtitles, filters, bg music & more.</p>
     </header>
 
-    <!-- Upload Section -->
-    <section class="card">
-      <h3>Upload Video</h3>
-      <input id="edit_video" type="file" accept="video/*" />
+    <section class="editor-panel">
+      <label>Upload Video</label>
+      <input id="videoFile" type="file" accept="video/*" />
+      <video id="videoPreview" controls></video>
+
+      <div class="tools">
+        <button onclick="trimVideo()" class="btn">✂️ Trim</button>
+        <button onclick="mergeVideos()" class="btn">➕ Merge</button>
+        <button onclick="addSubtitles()" class="btn">💬 Subtitles</button>
+        <button onclick="translateSubtitles()" class="btn">🌍 Translate Subs</button>
+        <button onclick="addBackgroundMusic()" class="btn">🎶 Background Music</button>
+        <button onclick="applyFilter()" class="btn">🎨 Filters</button>
+        <button onclick="addWatermark()" class="btn">© Watermark</button>
+        <button onclick="changeAspectRatio()" class="btn">📱 Aspect Ratio</button>
+      </div>
+
+      <div id="editor_resp" class="muted small mt"></div>
     </section>
-
-    <!-- Tools -->
-    <section class="grid-2">
-      <div class="card">
-        <h3>Trim Video</h3>
-        <label>Start (sec)</label>
-        <input id="trim_start" type="number" min="0" />
-        <label>End (sec)</label>
-        <input id="trim_end" type="number" min="0" />
-        <button id="trim_btn" class="btn primary">Trim</button>
-      </div>
-
-      <div class="card">
-        <h3>Merge Videos</h3>
-        <input id="merge_videos" type="file" accept="video/*" multiple />
-        <button id="merge_btn" class="btn primary">Merge</button>
-      </div>
-
-      <div class="card">
-        <h3>Subtitles</h3>
-        <textarea id="sub_text" placeholder="Enter subtitle text"></textarea>
-        <select id="sub_lang">
-          <option value="en">English</option>
-          <option value="hi">Hindi</option>
-          <option value="bn">Bengali</option>
-        </select>
-        <button id="sub_btn" class="btn primary">Add Subtitles</button>
-      </div>
-
-      <div class="card">
-        <h3>Background Music</h3>
-        <input id="bg_music" type="file" accept="audio/*" />
-        <button id="bg_btn" class="btn primary">Add Music</button>
-      </div>
-
-      <div class="card">
-        <h3>Filters</h3>
-        <select id="filter_type">
-          <option value="cinematic">Cinematic</option>
-          <option value="bw">Black & White</option>
-          <option value="vintage">Vintage</option>
-          <option value="cartoon">Cartoon</option>
-        </select>
-        <button id="filter_btn" class="btn primary">Apply Filter</button>
-      </div>
-
-      <div class="card">
-        <h3>Watermark</h3>
-        <input id="watermark" type="file" accept="image/*" />
-        <button id="wm_btn" class="btn primary">Add Watermark</button>
-      </div>
-    </section>
-
-    <div id="edit_resp" class="mt small muted"></div>
   </main>
 </body>
 </html>

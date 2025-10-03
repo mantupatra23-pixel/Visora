@@ -1,69 +1,65 @@
 const API_BASE = "https://visora.onrender.com";
 
+// Upload user voice
+async function uploadVoice() {
+  const file = document.getElementById("user_voice").files[0];
+  if (!file) return alert("Upload an audio file");
+  const fd = new FormData();
+  fd.append("voice", file);
+  try {
+    const res = await fetch(`${API_BASE}/voices/upload`, { method: "POST", body: fd });
+    const data = await res.json();
+    document.getElementById("uv_resp").innerText = "✅ Uploaded! ID: " + data.voice_id;
+  } catch (err) {
+    console.error(err);
+    document.getElementById("uv_resp").innerText = "❌ Error uploading";
+  }
+}
+
 // Load voices from backend
 async function loadVoices() {
+  const gender = document.getElementById("voice_gender").value;
+  const lang = document.getElementById("voice_lang").value;
   try {
-    const res = await fetch(`${API_BASE}/voices`);
+    const res = await fetch(`${API_BASE}/voices?gender=${gender}&lang=${lang}`);
     const data = await res.json();
-    const grid = document.getElementById("voiceGrid");
-    grid.innerHTML = "";
-
-    data.voices.forEach(v => {
-      let card = document.createElement("div");
-      card.className = "voice-card";
-      card.innerHTML = `
-        <h4>${v.name}</h4>
-        <p class="muted">${v.lang} · ${v.gender}</p>
-        <audio controls src="${v.preview_url}"></audio>
-        <label>Pitch</label>
-        <input type="range" min="0.5" max="2" step="0.1" value="1" 
-               oninput="previewVoice('${v.id}', this.value, 1)">
-        <label>Speed</label>
-        <input type="range" min="0.5" max="2" step="0.1" value="1" 
-               oninput="previewVoice('${v.id}', 1, this.value)">
-        <button onclick="selectVoice('${v.id}')" class="btn primary mt">Use This Voice</button>
-      `;
-      grid.appendChild(card);
-    });
+    renderVoices(data.voices || []);
   } catch (err) {
     console.error(err);
+    document.getElementById("voicesList").innerHTML = "<li>Error loading voices</li>";
   }
 }
 
-// Preview with pitch/speed
-async function previewVoice(id, pitch, speed) {
-  try {
-    const res = await fetch(`${API_BASE}/voice-preview/${id}?pitch=${pitch}&speed=${speed}`);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    new Audio(url).play();
-  } catch (err) {
-    console.error(err);
-  }
+// Render voices
+function renderVoices(voices) {
+  const ul = document.getElementById("voicesList");
+  ul.innerHTML = "";
+  voices.forEach(v => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${v.name} (${v.lang}, ${v.gender})</span>
+      <div class="voice-controls">
+        <button onclick="playVoice('${v.sample_url}')">▶ Play</button>
+        <label>Pitch</label><input type="range" min="0.5" max="2" step="0.1" value="1" oninput="setPitch(this.value)">
+        <label>Speed</label><input type="range" min="0.5" max="2" step="0.1" value="1" oninput="setSpeed(this.value)">
+      </div>
+    `;
+    ul.appendChild(li);
+  });
 }
 
-// Select voice for project
-function selectVoice(id) {
-  alert("✅ Voice selected: " + id);
+// Play preview voice
+function playVoice(url) {
+  const audio = new Audio(url);
+  audio.play();
 }
 
-// Clone voice
-document.getElementById("clone_btn").onclick = async () => {
-  const name = document.getElementById("clone_name").value;
-  const file = document.getElementById("clone_file").files[0];
-  const fd = new FormData();
-  fd.append("name", name);
-  fd.append("file", file);
+function setPitch(val) {
+  console.log("Pitch set to", val);
+}
+function setSpeed(val) {
+  console.log("Speed set to", val);
+}
 
-  try {
-    const res = await fetch(`${API_BASE}/clone-voice`, { method: "POST", body: fd });
-    const data = await res.json();
-    document.getElementById("clone_resp").innerText = "✅ Voice cloned: " + data.id;
-    loadVoices();
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-// Init
+// Initial load
 loadVoices();

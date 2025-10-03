@@ -15,49 +15,50 @@
     <a href="../templates/index.html">📂 Templates</a>
     <a href="../voices/index.html">🎤 Voices</a>
     <a href="../editor/index.html">✂️ Editor</a>
-    <a href="../assistant/index.html">🤖 Assistant</a>
     <a href="../profile/index.html">👤 Profile</a>
   </aside>
 
-  <!-- Main content -->
+  <!-- Main -->
   <main class="content">
     <header>
-      <div class="user-info">
-        <img id="profilePhoto" src="../assets/default-avatar.png" alt="Profile">
-        <div>
-          <h2 id="userName">User</h2>
-          <p id="userPlan">Plan: Free</p>
-        </div>
-      </div>
-      <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+      <h2>📊 Dashboard</h2>
+      <p class="muted">Welcome back to your AI Studio</p>
     </header>
 
-    <!-- Stats -->
-    <section class="stats">
-      <div class="card">
-        <p class="muted">Credits Left</p>
+    <!-- User Info -->
+    <section class="card profile">
+      <img id="profilePic" src="../assets/user.png" alt="Profile" />
+      <div>
+        <h3 id="userName">Loading...</h3>
+        <p id="userPlan" class="muted">Plan: —</p>
+        <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+      </div>
+      <div class="credits">
+        <span class="muted">Credits Left</span>
         <h2 id="credits">—</h2>
       </div>
-      <div class="card">
-        <p class="muted">Videos Created</p>
-        <h2 id="videosCount">—</h2>
-      </div>
-      <div class="card">
-        <p class="muted">Storage Used</p>
-        <h2 id="storage">—</h2>
-      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="card">
+      <h3>🔔 Notifications</h3>
+      <ul id="notifications">
+        <li>Loading...</li>
+      </ul>
+    </section>
+
+    <!-- Recent Jobs -->
+    <section class="card">
+      <h3>🎬 Recent Jobs</h3>
+      <ul id="recentJobs">
+        <li>Loading...</li>
+      </ul>
     </section>
 
     <!-- Trending Templates -->
     <section class="card">
       <h3>🔥 Trending Templates</h3>
       <div id="trendingGrid" class="grid"></div>
-    </section>
-
-    <!-- Recent Jobs -->
-    <section class="card">
-      <h3>🕑 Recent Jobs</h3>
-      <div id="recentJobs">Loading...</div>
     </section>
   </main>
 </body>
