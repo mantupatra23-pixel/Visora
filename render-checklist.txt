@@ -1,0 +1,35 @@
+# ==== RENDER DEPLOY VERIFY ====
+
+# 1. Git branch aur commit check karo
+git branch -vv
+# -> origin/main aur local dono ka hash same hai? ✅
+
+# 2. Commit ka message yaad rakho
+# Example: "fix: updated dashboard, editor, templates, and voices modules"
+
+# 3. Render dashboard kholna
+# https://dashboard.render.com
+
+# 4. Deploys tab me jao
+# - Latest Deploy ka hash aur message dekho
+# - Ye tumhare push wale hash se match karna chahiye
+
+# 5. Agar Deploy trigger nahi hua:
+# - Deploys tab me -> Manual Deploy -> Deploy latest commit
+
+# 6. Settings -> Publish Directory check karo
+# - Agar frontend folder hai:
+#   Publish Directory = frontend/
+# - Agar sab root me hai:
+#   Publish Directory = (blank)
+
+# 7. Browser cache clear karo
+# - Incognito mode use karo
+# - Ya URL ke end me ?v=2 jod do
+#   https://visora.onrender.com?v=2
+
+# 8. Deploy success hone ke baad:
+# - Visora UI check karo
+# - Dashboard, Templates, Voices sab update dikhe to ✅
+
+# ==== END ====

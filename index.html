@@ -4,28 +4,61 @@
   <meta charset="UTF-8">
   <title>Visora - Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar">
     <h2>Visora</h2>
-    <a href="#">Dashboard</a>
-    <a href="../templates/templates.html">Templates</a>
-    <a href="../voices/voices.html">Voices</a>
-    <a href="../gallery/gallery.html">Gallery</a>
-    <a href="../profile/profile.html">Profile</a>
-  </div>
+    <a href="./index.html" class="active">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
 
-  <div class="main">
-    <h1>Dashboard</h1>
-    <div id="stats">
-      <div class="card">Plan: Free</div>
-      <div class="card">Credits: 0</div>
-    </div>
+  <!-- Main content -->
+  <main class="content">
+    <header>
+      <div class="user-info">
+        <img id="profilePhoto" src="../assets/default-avatar.png" alt="Profile">
+        <div>
+          <h2 id="userName">User</h2>
+          <p id="userPlan">Plan: Free</p>
+        </div>
+      </div>
+      <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+    </header>
 
-    <h2>Recent Jobs</h2>
-    <ul id="recent-jobs"></ul>
-  </div>
+    <!-- Stats -->
+    <section class="stats">
+      <div class="card">
+        <p class="muted">Credits Left</p>
+        <h2 id="credits">—</h2>
+      </div>
+      <div class="card">
+        <p class="muted">Videos Created</p>
+        <h2 id="videosCount">—</h2>
+      </div>
+      <div class="card">
+        <p class="muted">Storage Used</p>
+        <h2 id="storage">—</h2>
+      </div>
+    </section>
 
-  <script src="script.js"></script>
+    <!-- Trending Templates -->
+    <section class="card">
+      <h3>🔥 Trending Templates</h3>
+      <div id="trendingGrid" class="grid"></div>
+    </section>
+
+    <!-- Recent Jobs -->
+    <section class="card">
+      <h3>🕑 Recent Jobs</h3>
+      <div id="recentJobs">Loading...</div>
+    </section>
+  </main>
 </body>
 </html>
