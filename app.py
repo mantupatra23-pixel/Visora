@@ -649,14 +649,96 @@ def render_page(page):
         return send_from_directory(f"frontend/{page}", "index.html")
     except:
         return "Not Found", 404
+# ---------------- AI Assistant Routes ---------------- #
 
-# Static assets (CSS/JS/images) serve
-@app.route("/<page>/<path:filename>")
-def serve_static(page, filename):
+from flask import request, jsonify
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Script Generator
+@app.route("/assistant/script", methods=["POST"])
+def assistant_script():
+    data = request.json
+    prompt = data.get("prompt", "")
+    tone = data.get("tone", "neutral")
+
     try:
-        return send_from_directory(f"frontend/{page}", filename)
-    except:
-        return "Not Found", 404
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # ya gpt-4 agar enable hai
+            messages=[
+                {"role": "system", "content": f"You are a helpful assistant for video script writing. Tone: {tone}"},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=400
+        )
+        reply = response["choices"][0]["message"]["content"]
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
+
+
+# Captions Generator
+@app.route("/assistant/captions", methods=["POST"])
+def assistant_captions():
+    data = request.json
+    idea = data.get("idea", "")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You generate catchy captions & hooks for videos."},
+                {"role": "user", "content": f"Generate captions for: {idea}"}
+            ],
+            max_tokens=150
+        )
+        reply = response["choices"][0]["message"]["content"]
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
+
+
+# SEO Generator
+@app.route("/assistant/seo", methods=["POST"])
+def assistant_seo():
+    data = request.json
+    subject = data.get("subject", "")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You generate SEO title, tags, and descriptions for YouTube videos."},
+                {"role": "user", "content": f"Generate SEO (title, tags, description) for: {subject}"}
+            ],
+            max_tokens=200
+        )
+        reply = response["choices"][0]["message"]["content"]
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
+
+
+# Thumbnail Ideas
+@app.route("/assistant/thumbnail", methods=["POST"])
+def assistant_thumbnail():
+    data = request.json
+    subject = data.get("subject", "")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You suggest eye-catching thumbnail ideas for YouTube videos."},
+                {"role": "user", "content": f"Suggest 5 thumbnail ideas for: {subject}"}
+            ],
+            max_tokens=150
+        )
+        reply = response["choices"][0]["message"]["content"]
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
