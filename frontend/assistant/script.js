@@ -1,85 +1,94 @@
-const API_BASE = "https://visora.onrender.com";  // apna backend URL
+// ✅ Backend Connection
+const API_BASE = "https://visora.onrender.com";  // Apna backend Render URL
 
-// ---------------- Script Generator ---------------- //
+// --------------- Script Generator ----------------
 document.getElementById("as_submit").onclick = async () => {
-    const text = document.getElementById("as_input").value;
-    const tone = document.getElementById("as_tone").value;
-    if (!text) return alert("Enter a prompt first");
+  const text = document.getElementById("as_input").value.trim();
+  const tone = document.getElementById("as_tone").value.trim() || "neutral";
+  const replyBox = document.getElementById("as_reply");
 
-    document.getElementById("as_reply").innerText = "⏳ Thinking...";
+  if (!text) return alert("⚠️ Enter a prompt first");
+  replyBox.innerText = "🤖 Thinking...";
 
-    try {
-        const res = await fetch(`${API_BASE}/assistant/script`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: text, tone })
-        });
-        const data = await res.json();
-        document.getElementById("as_reply").innerText = data.reply || "⚠️ No reply";
-    } catch (err) {
-        document.getElementById("as_reply").innerText = "❌ Error contacting assistant.";
-    }
+  try {
+    const res = await fetch(`${API_BASE}/assistant/script`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: text, tone })
+    });
+
+    const data = await res.json();
+    replyBox.innerText = data.reply || "⚠️ No reply from assistant";
+  } catch (err) {
+    replyBox.innerText = "❌ Error contacting assistant.";
+  }
 };
 
 
-// ---------------- Captions Generator ---------------- //
+// --------------- Captions Generator ----------------
 document.getElementById("captions_generate").onclick = async () => {
-    const idea = document.getElementById("captions_input").value;
-    if (!idea) return alert("Enter an idea first");
+  const idea = document.getElementById("captions_input").value.trim();
+  const replyBox = document.getElementById("captions_reply");
 
-    document.getElementById("captions_reply").innerText = "⏳ Thinking...";
+  if (!idea) return alert("⚠️ Enter an idea first");
+  replyBox.innerText = "🤖 Thinking...";
 
-    try {
-        const res = await fetch(`${API_BASE}/assistant/captions`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idea })
-        });
-        const data = await res.json();
-        document.getElementById("captions_reply").innerText = data.reply || "⚠️ No reply";
-    } catch (err) {
-        document.getElementById("captions_reply").innerText = "❌ Error contacting assistant.";
-    }
+  try {
+    const res = await fetch(`${API_BASE}/assistant/captions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea })
+    });
+
+    const data = await res.json();
+    replyBox.innerText = data.reply || "⚠️ No reply from captions generator";
+  } catch (err) {
+    replyBox.innerText = "❌ Error contacting captions API.";
+  }
 };
 
 
-// ---------------- SEO Generator ---------------- //
+// --------------- SEO Generator ----------------
 document.getElementById("seo_generate").onclick = async () => {
-    const subject = document.getElementById("seo_input").value;
-    if (!subject) return alert("Enter subject first");
+  const subject = document.getElementById("seo_input").value.trim();
+  const replyBox = document.getElementById("seo_reply");
 
-    document.getElementById("seo_reply").innerText = "⏳ Thinking...";
+  if (!subject) return alert("⚠️ Enter a subject first");
+  replyBox.innerText = "🤖 Generating SEO...";
 
-    try {
-        const res = await fetch(`${API_BASE}/assistant/seo`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subject })
-        });
-        const data = await res.json();
-        document.getElementById("seo_reply").innerText = data.reply || "⚠️ No reply";
-    } catch (err) {
-        document.getElementById("seo_reply").innerText = "❌ Error contacting assistant.";
-    }
+  try {
+    const res = await fetch(`${API_BASE}/assistant/seo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject })
+    });
+
+    const data = await res.json();
+    replyBox.innerText = data.reply || "⚠️ No SEO result";
+  } catch (err) {
+    replyBox.innerText = "❌ Error contacting SEO API.";
+  }
 };
 
 
-// ---------------- Thumbnail Generator ---------------- //
+// --------------- Thumbnail Generator ----------------
 document.getElementById("thumbnail_generate").onclick = async () => {
-    const subject = document.getElementById("thumbnail_input").value;
-    if (!subject) return alert("Enter subject first");
+  const subject = document.getElementById("thumbnail_input").value.trim();
+  const replyBox = document.getElementById("thumbnail_reply");
 
-    document.getElementById("thumbnail_reply").innerText = "⏳ Thinking...";
+  if (!subject) return alert("⚠️ Enter a topic first");
+  replyBox.innerText = "🤖 Creating thumbnail ideas...";
 
-    try {
-        const res = await fetch(`${API_BASE}/assistant/thumbnail`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subject })
-        });
-        const data = await res.json();
-        document.getElementById("thumbnail_reply").innerText = data.reply || "⚠️ No reply";
-    } catch (err) {
-        document.getElementById("thumbnail_reply").innerText = "❌ Error contacting assistant.";
-    }
+  try {
+    const res = await fetch(`${API_BASE}/assistant/thumbnail`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject })
+    });
+
+    const data = await res.json();
+    replyBox.innerText = data.reply || "⚠️ No thumbnail ideas";
+  } catch (err) {
+    replyBox.innerText = "❌ Error contacting thumbnail API.";
+  }
 };
