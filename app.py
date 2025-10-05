@@ -651,11 +651,31 @@ def render_page(page):
         return "Not Found", 404
 # ---------------- AI Assistant Routes ---------------- #
 
-from flask import request, jsonify
-import openai
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from openai import OpenAI
+import os
+
+app = Flask(__name__)
 CORS(app)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# ---------------- Root & Dashboard ----------------
+@app.route("/")
+def root():
+    return send_from_directory("frontend/dashboard", "index.html")
+
+# ---------------- Dynamic Pages ----------------
+@app.route("/<page>")
+def render_page(page):
+    try:
+        return send_from_directory(f"frontend/{page}", "index.html")
+    except:
+        return "Not Found", 404
+
+
+# ---------------- AI Assistant Routes ----------------
 
 # Script Generator
 @app.route("/assistant/script", methods=["POST"])
@@ -665,15 +685,15 @@ def assistant_script():
     tone = data.get("tone", "neutral")
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # ya gpt-4 agar enable hai
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": f"You are a helpful assistant for video script writing. Tone: {tone}"},
+                {"role": "system", "content": f"You are a helpful assistant for video creation. Tone: {tone}"},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=400
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
@@ -686,15 +706,15 @@ def assistant_captions():
     idea = data.get("idea", "")
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You generate catchy captions & hooks for videos."},
+                {"role": "system", "content": "You generate catchy captions & hooks for social media videos."},
                 {"role": "user", "content": f"Generate captions for: {idea}"}
             ],
             max_tokens=150
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
@@ -707,39 +727,42 @@ def assistant_seo():
     subject = data.get("subject", "")
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You generate SEO title, tags, and descriptions for YouTube videos."},
-                {"role": "user", "content": f"Generate SEO (title, tags, description) for: {subject}"}
+                {"role": "system", "content": "You generate SEO titles, tags, and descriptions for YouTube videos."},
+                {"role": "user", "content": f"Generate SEO for: {subject}"}
             ],
             max_tokens=200
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
 
 
-# Thumbnail Ideas
+# Thumbnail Ideas Generator
 @app.route("/assistant/thumbnail", methods=["POST"])
 def assistant_thumbnail():
     data = request.json
     subject = data.get("subject", "")
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You suggest eye-catching thumbnail ideas for YouTube videos."},
+                {"role": "system", "content": "You suggest eye-catching thumbnail ideas for videos."},
                 {"role": "user", "content": f"Suggest 5 thumbnail ideas for: {subject}"}
             ],
             max_tokens=150
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
+
+
+# ---------------- Run Flask ----------------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
