@@ -677,92 +677,101 @@ def render_page(page):
 
 # ---------------- AI Assistant Routes ----------------
 
-# Script Generator
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from openai import OpenAI
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+# ✅ Initialize OpenAI client (New SDK Compatible)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# ✅ Root route
+@app.route("/")
+def root():
+    return jsonify({"app": "Visora", "status": "ok"})
+
+# ✅ Serve frontend pages dynamically
+@app.route("/<page>")
+def serve_page(page):
+    try:
+        return send_from_directory(f"frontend/{page}", "index.html")
+    except:
+        return "Page Not Found", 404
+
+
+# ✅ Common AI function
+def get_ai_reply(system_msg, user_msg, tokens=400):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
+            ],
+            max_tokens=tokens,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+
+# ✅ Script Assistant
 @app.route("/assistant/script", methods=["POST"])
 def assistant_script():
     data = request.json
     prompt = data.get("prompt", "")
     tone = data.get("tone", "neutral")
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": f"You are a helpful assistant for video creation. Tone: {tone}"},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=400
-        )
-        reply = response.choices[0].message.content
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
+    system_msg = f"You are a helpful assistant for creating YouTube scripts in a {tone} tone."
+    reply = get_ai_reply(system_msg, prompt)
+    return jsonify({"reply": reply})
 
 
-# Captions Generator
+# ✅ Captions Generator
 @app.route("/assistant/captions", methods=["POST"])
 def assistant_captions():
     data = request.json
     idea = data.get("idea", "")
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You generate catchy captions & hooks for social media videos."},
-                {"role": "user", "content": f"Generate captions for: {idea}"}
-            ],
-            max_tokens=150
-        )
-        reply = response.choices[0].message.content
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
+    system_msg = "You generate catchy captions and hooks for videos."
+    reply = get_ai_reply(system_msg, f"Generate captions for: {idea}", 200)
+    return jsonify({"reply": reply})
 
 
-# SEO Generator
+# ✅ SEO Generator
 @app.route("/assistant/seo", methods=["POST"])
 def assistant_seo():
     data = request.json
     subject = data.get("subject", "")
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You generate SEO titles, tags, and descriptions for YouTube videos."},
-                {"role": "user", "content": f"Generate SEO for: {subject}"}
-            ],
-            max_tokens=200
-        )
-        reply = response.choices[0].message.content
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
+    system_msg = "You generate SEO titles, tags, and descriptions for YouTube videos."
+    reply = get_ai_reply(system_msg, f"Generate SEO for: {subject}", 200)
+    return jsonify({"reply": reply})
 
 
-# Thumbnail Ideas Generator
+# ✅ Thumbnail Generator
 @app.route("/assistant/thumbnail", methods=["POST"])
 def assistant_thumbnail():
     data = request.json
     subject = data.get("subject", "")
+    system_msg = "You generate 5 catchy YouTube thumbnail ideas."
+    reply = get_ai_reply(system_msg, f"Suggest thumbnails for: {subject}", 150)
+    return jsonify({"reply": reply})
 
+
+# ✅ Upload Fix (Voice Upload)
+@app.route("/upload", methods=["POST"])
+def upload_file():
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You suggest eye-catching thumbnail ideas for videos."},
-                {"role": "user", "content": f"Suggest 5 thumbnail ideas for: {subject}"}
-            ],
-            max_tokens=150
-        )
-        reply = response.choices[0].message.content
-        return jsonify({"reply": reply})
+        file = request.files["file"]
+        os.makedirs("uploads", exist_ok=True)
+        file.save(os.path.join("uploads", file.filename))
+        return jsonify({"status": "ok", "file": file.filename})
     except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
+        return jsonify({"status": "error", "message": str(e)})
 
 
-# ---------------- Run Flask ----------------
+# ✅ Run server
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
