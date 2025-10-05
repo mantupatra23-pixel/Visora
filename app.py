@@ -653,7 +653,8 @@ def render_page(page):
 
 from flask import request, jsonify
 import openai
-
+from flask_cors import CORS
+CORS(app)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Script Generator
