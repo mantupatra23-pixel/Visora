@@ -1,52 +1,86 @@
-const API_BASE = "https://visora.onrender.com";
+// ---------- CONFIG ----------
+const API_URL = "https://visora.onrender.com"; // ← backend ka live URL (Render)
 
-// Load templates
-async function loadTemplates(category="all") {
-  try {
-    const res = await fetch(`${API_BASE}/templates`);
-    let data = await res.json();
+// ---------- ELEMENTS ----------
+const generateBtn = document.getElementById("generateBtn");
+const createBtn = document.getElementById("createBtn");
+const statusBox = document.getElementById("status");
+const scriptInput = document.getElementById("scriptInput");
+const voiceSelect = document.getElementById("voiceSelect");
+const templateSelect = document.getElementById("templateSelect");
+const bgMusicSelect = document.getElementById("bgMusicSelect");
 
-    if (category !== "all") {
-      data = data.filter(t => t.category === category);
-    }
+// ---------- UPDATE STATUS ----------
+function updateStatus(msg, type = "info") {
+  statusBox.innerHTML = `Status: ${
+    type === "error" ? "⚠️" : type === "success" ? "✅" : "ℹ️"
+  } ${msg}`;
+}
 
-    const grid = document.getElementById("templateGrid");
-    grid.innerHTML = "";
-    data.forEach(t => {
-      let card = document.createElement("div");
-      card.className = "template-card";
-      card.innerHTML = `
-        <img src="${t.thumbnail}" alt="${t.name}">
-        <div>${t.name}</div>
-      `;
-      card.onclick = () => openPreview(t);
-      grid.appendChild(card);
-    });
-  } catch (err) {
-    console.error(err);
+// ---------- GENERATE SCRIPT (AI) ----------
+generateBtn.addEventListener("click", async () => {
+  const prompt = scriptInput.value.trim();
+  if (!prompt) {
+    updateStatus("Please enter a topic first!", "error");
+    return;
   }
-}
 
-// Open Preview Modal
-function openPreview(template) {
-  document.getElementById("modalTitle").innerText = template.name;
-  document.getElementById("modalVideo").src = template.preview_url;
-  document.getElementById("previewModal").classList.remove("hidden");
+  updateStatus("Generating script... please wait ⏳");
 
-  document.getElementById("useTemplate").onclick = () => {
-    window.location.href = `../create/index.html?template=${template.id}`;
-  };
-}
+  try {
+    const res = await fetch(`${API_URL}/assistant`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: prompt,
+        tone: "helpful",
+        lang: "hi",
+      }),
+    });
 
-// Close modal
-document.getElementById("closeModal").onclick = () => {
-  document.getElementById("previewModal").classList.add("hidden");
-};
-
-// Filter
-document.getElementById("filterCategory").addEventListener("change", (e) => {
-  loadTemplates(e.target.value);
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+    scriptInput.value = data.reply || "AI didn’t return a response.";
+    updateStatus("Script generated successfully ✅", "success");
+  } catch (err) {
+    updateStatus(`Network error: ${err.message}`, "error");
+  }
 });
 
-// Run
-loadTemplates();
+// ---------- CREATE VIDEO ----------
+createBtn.addEventListener("click", async () => {
+  const script = scriptInput.value.trim();
+  if (!script) {
+    updateStatus("Please generate or write a script first!", "error");
+    return;
+  }
+
+  updateStatus("Creating video... ⏳");
+
+  try {
+    const formData = new FormData();
+    formData.append("title", "AI Generated Video");
+    formData.append("script", script);
+    formData.append("template", templateSelect.value);
+    formData.append("quality", "HD");
+    formData.append("length_type", "short");
+    formData.append("lang", "hi");
+    formData.append("bg_music", bgMusicSelect.value);
+
+    const res = await fetch(`${API_URL}/generate_video`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+
+    if (data.status === "queued" || data.job_id) {
+      updateStatus("Video generation started... 🚀", "success");
+    } else {
+      updateStatus("Failed to start video generation.", "error");
+    }
+  } catch (err) {
+    updateStatus(`Network error: ${err.message}`, "error");
+  }
+});
