@@ -27,3 +27,4 @@ psycopg2-binary==2.9.9
 
 # === Typing / Utility ===
 typing-extensions==4.12.2
+Flask-SQLAlchemy==3.1.1
