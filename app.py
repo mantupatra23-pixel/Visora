@@ -886,15 +886,17 @@ def upload_file():
         return jsonify({"status": "error", "message": str(e)})
 
 # === Import Dependencies ===
+import os
+import openai
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import openai
-import os
 
 app = Flask(__name__)
 CORS(app)
 
+# Set your API key (Render environment variable se lega)
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 def get_ai_reply(system_msg, user_msg, max_tokens=200):
     try:
@@ -909,7 +911,6 @@ def get_ai_reply(system_msg, user_msg, max_tokens=200):
         return response.choices[0].message["content"].strip()
     except Exception as e:
         return f"Error: {str(e)}"
-
 @app.route("/assistant/captions", methods=["POST"])
 def assistant_captions():
     data = request.json
