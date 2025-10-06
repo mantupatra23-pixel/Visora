@@ -1,23 +1,28 @@
+# Core build tools
 pip>=25.0
 setuptools>=75.1.0
 wheel>=0.44.0
 build>=1.2.2.post1
 
+# Web + API
 Flask==3.0.3
 gunicorn==21.2.0
-moviepy==1.0.3
-requests==2.32.3
-imageio==2.37.0
-imageio-ffmpeg==0.6.0
-numpy==1.23.5
-Pillow==9.5.0
 Werkzeug==3.0.4
 Jinja2==3.1.4
 MarkupSafe==3.0.2
 itsdangerous==2.2.0
+
+# AI + Media Tools
+moviepy==1.0.3
+imageio==2.37.0
+imageio-ffmpeg==0.6.0
+requests==2.32.3
+numpy==1.23.5
+Pillow==9.5.0
+
+# Utility
 certifi==2025.8.3
-urllib3==2.2.3
-chardet==5.2.0
-idna==3.10
 charset-normalizer==3.4.3
+idna==3.10
+urllib3==2.2.3
 typing_extensions==4.15.0
