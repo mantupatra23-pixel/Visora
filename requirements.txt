@@ -71,6 +71,7 @@ websockets==15.0.1
 Werkzeug==3.0.4
 wheel==0.45.1
 wrapt==1.17.3
+pip>=25.0
 setuptools>=70.0.0
 wheel>=0.43.0
 build>=1.2.2.post1
