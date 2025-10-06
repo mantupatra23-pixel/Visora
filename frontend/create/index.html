@@ -3,47 +3,81 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create Video - Visora</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Create Video • Visora</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="app">
     <aside class="sidebar">
-      <h1>Visora</h1>
+      <h1 class="brand">Visora</h1>
       <nav>
-        <a href="/">Dashboard</a>
-        <a class="active" href="/create-video">Create Video</a>
+        <a href="/dashboard">Dashboard</a>
+        <a class="active" href="/create">Create Video</a>
         <a href="/assistant">Assistant</a>
         <a href="/profile">Profile</a>
       </nav>
     </aside>
 
     <main class="main">
-      <h2>🎬 Create Video</h2>
+      <header class="header">
+        <h2>Create Video</h2>
+        <div class="small">Make short, creative videos automatically</div>
+      </header>
 
-      <div class="card">
+      <section class="panel">
         <label>Video Title</label>
-        <input id="title" placeholder="Enter video title" />
+        <input id="title" placeholder="Enter a title (e.g. Never Give Up)" />
 
         <label>Script / Prompt</label>
-        <textarea id="prompt" placeholder="Describe what video to make..." rows="6"></textarea>
+        <textarea id="script" rows="6" placeholder="Write your script here or use AI to generate it..."></textarea>
 
-        <label>Voice</label>
-        <select id="voice">
-          <option value="female_1">Female Voice 1</option>
-          <option value="male_1">Male Voice 1</option>
-        </select>
+        <div class="row">
+          <div>
+            <label>Voice</label>
+            <select id="voice">
+              <option value="female-1">Female Voice 1</option>
+              <option value="male-1">Male Voice 1</option>
+              <option value="neutral">Neutral</option>
+            </select>
+          </div>
 
-        <button id="createBtn">🚀 Create Video</button>
-      </div>
+          <div>
+            <label>Template</label>
+            <select id="template">
+              <option value="clean">Clean Promo</option>
+              <option value="cinematic">Cinematic</option>
+              <option value="social">Social Shorts</option>
+            </select>
+          </div>
 
-      <div class="card" id="statusCard" style="display:none;">
-        <h3>Status</h3>
-        <pre id="statusText">Waiting...</pre>
-      </div>
+          <div>
+            <label>Music</label>
+            <select id="music">
+              <option value="none">None</option>
+              <option value="uplifting">Uplifting</option>
+              <option value="calm">Calm</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="genScriptBtn" class="btn secondary">🎯 Generate Script (AI)</button>
+          <button id="createBtn" class="btn primary">🚀 Create Video</button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <hr/>
+
+        <div class="preview">
+          <h3>Preview</h3>
+          <div id="previewBox" class="preview-box">No preview yet.</div>
+          <audio id="previewAudio" controls style="display:none;"></audio>
+        </div>
+      </section>
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
