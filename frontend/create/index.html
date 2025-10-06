@@ -1,55 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Visora - Create Video</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visora — Create Video</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="container">
-    <h1>Visora — Create Video</h1>
+  <div class="container">
+    <h1>🎬 Visora AI — Create Video</h1>
 
-    <label>Script / Prompt</label>
-    <textarea id="script" rows="6" placeholder="Write or generate script..."></textarea>
+    <textarea id="script" placeholder="Enter your topic or script..."></textarea>
 
-    <div class="row">
-      <div class="col">
-        <label>Voice</label>
-        <select id="voice">
-          <option>Female Voice 1</option>
-          <option>Male Voice 1</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>Template</label>
-        <select id="template">
-          <option>Modern</option>
-          <option>Promo</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>Background Music</label>
-        <select id="bg">
-          <option>Soft</option>
-          <option>Energetic</option>
-        </select>
-      </div>
+    <div class="options">
+      <label>🎤 Voice</label>
+      <select id="voice">
+        <option>Female Voice 1</option>
+        <option>Male Voice 1</option>
+      </select>
+
+      <label>🎨 Template</label>
+      <select id="template">
+        <option>Modern</option>
+        <option>Classic</option>
+        <option>Minimal</option>
+      </select>
+
+      <label>🎵 Background Music</label>
+      <select id="music">
+        <option>Soft</option>
+        <option>Inspiring</option>
+        <option>Energetic</option>
+      </select>
     </div>
 
     <div class="buttons">
-      <button id="genScript" class="btn yellow">✨ Generate Script (AI)</button>
-      <button id="createVideo" class="btn">🚀 Create Video</button>
+      <button id="generate">✨ Generate Script (AI)</button>
+      <button id="create">🚀 Create Video</button>
     </div>
 
-    <div id="status" class="status">Status: idle</div>
+    <p id="status">Status: idle</p>
+  </div>
 
-    <div id="result" class="result" style="display:none">
-      <h3>Result</h3>
-      <div id="resultContent"></div>
-    </div>
-  </main>
-
-  <script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
