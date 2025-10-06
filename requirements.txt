@@ -26,3 +26,6 @@ charset-normalizer==3.4.3
 idna==3.10
 urllib3==2.2.3
 typing_extensions==4.15.0
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.25
+psycopg2-binary==2.9.9
