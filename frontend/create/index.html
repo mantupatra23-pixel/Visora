@@ -1,93 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create Video • Visora</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Video - Visora</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h1 class="brand">Visora</h1>
-      <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a class="active" href="/create">Create Video</a>
-        <a href="/assistant">Assistant</a>
-        <a href="/profile">Profile</a>
-      </nav>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main">
-      <header class="header">
-        <h2>🎬 Create Video</h2>
-        <p>Write your script, choose style, and generate creative videos instantly!</p>
-      </header>
+  <div class="container">
+    <h1>🎬 Create Your Video</h1>
+    <p class="subtitle">Write your video script, choose options, and generate your video automatically.</p>
 
-      <!-- Big Script Box -->
-      <section class="script-section">
-        <label for="script" class="main-label">✍️ Write Your Script</label>
-        <textarea id="script" rows="12" placeholder="Start writing your video script here..."></textarea>
+    <!-- Script Box -->
+    <label for="scriptBox" class="label">📝 Write Your Script</label>
+    <textarea id="scriptBox" placeholder="Start writing your video script here..."></textarea>
 
-        <div class="action-row">
-          <button id="genScriptBtn" class="btn secondary">💡 Generate Script (AI)</button>
-          <button id="clearBtn" class="btn danger">🧹 Clear</button>
-        </div>
-      </section>
+    <!-- Options Section -->
+    <div class="options">
+      <div>
+        <label>🎤 Voice</label>
+        <select id="voiceSelect">
+          <option>Female Voice 1</option>
+          <option>Male Voice 1</option>
+          <option>Female Voice 2</option>
+        </select>
+      </div>
 
-      <!-- Options Section -->
-      <section class="options">
-        <div class="option-group">
-          <label>🎤 Voice</label>
-          <select id="voice">
-            <option value="female-1">Female Voice 1</option>
-            <option value="male-1">Male Voice 1</option>
-            <option value="neutral">Neutral</option>
-          </select>
-        </div>
+      <div>
+        <label>🎨 Template</label>
+        <select id="templateSelect">
+          <option>Modern</option>
+          <option>Motivational</option>
+          <option>Funny</option>
+        </select>
+      </div>
 
-        <div class="option-group">
-          <label>🎨 Template</label>
-          <select id="template">
-            <option value="clean">Clean Promo</option>
-            <option value="cinematic">Cinematic</option>
-            <option value="social">Social Shorts</option>
-          </select>
-        </div>
+      <div>
+        <label>🎵 Background Music</label>
+        <select id="musicSelect">
+          <option>Soft</option>
+          <option>Energetic</option>
+          <option>Emotional</option>
+        </select>
+      </div>
+    </div>
 
-        <div class="option-group">
-          <label>🎵 Music</label>
-          <select id="music">
-            <option value="none">None</option>
-            <option value="uplifting">Uplifting</option>
-            <option value="calm">Calm</option>
-          </select>
-        </div>
+    <!-- Action Buttons -->
+    <div class="buttons">
+      <button id="generateScriptBtn">✨ Generate Script (AI)</button>
+      <button id="createVideoBtn">🚀 Create Video</button>
+    </div>
 
-        <div class="option-group">
-          <label>🎬 Video Title</label>
-          <input id="title" placeholder="Enter your video title..." />
-        </div>
+    <!-- Status Box -->
+    <div id="statusBox">
+      <p>Status: <span id="statusText">Waiting for input...</span></p>
+    </div>
 
-        <div class="action-row">
-          <button id="createBtn" class="btn primary">🚀 Create Video</button>
-        </div>
-      </section>
-
-      <!-- Status & Preview -->
-      <section class="status-box">
-        <div id="status">🟡 Waiting for input...</div>
-        <div class="preview">
-          <h3>Preview</h3>
-          <div id="previewBox" class="preview-box">Your video preview will appear here</div>
-          <audio id="previewAudio" controls style="display:none;"></audio>
-        </div>
-      </section>
-    </main>
+    <!-- Video Preview -->
+    <div id="videoBox" class="hidden">
+      <h3>🎥 Generated Video</h3>
+      <video id="previewVideo" controls></video>
+    </div>
   </div>
 
-  <script src="./script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
