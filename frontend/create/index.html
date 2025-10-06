@@ -8,6 +8,7 @@
 </head>
 <body>
   <div class="app">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <h1 class="brand">Visora</h1>
       <nav>
@@ -18,60 +19,69 @@
       </nav>
     </aside>
 
+    <!-- Main Content -->
     <main class="main">
       <header class="header">
-        <h2>Create Video</h2>
-        <div class="small">Make short, creative videos automatically</div>
+        <h2>🎬 Create Video</h2>
+        <p>Write your script, choose style, and generate creative videos instantly!</p>
       </header>
 
-      <section class="panel">
-        <label>Video Title</label>
-        <input id="title" placeholder="Enter a title (e.g. Never Give Up)" />
+      <!-- Big Script Box -->
+      <section class="script-section">
+        <label for="script" class="main-label">✍️ Write Your Script</label>
+        <textarea id="script" rows="12" placeholder="Start writing your video script here..."></textarea>
 
-        <label>Script / Prompt</label>
-        <textarea id="script" rows="6" placeholder="Write your script here or use AI to generate it..."></textarea>
+        <div class="action-row">
+          <button id="genScriptBtn" class="btn secondary">💡 Generate Script (AI)</button>
+          <button id="clearBtn" class="btn danger">🧹 Clear</button>
+        </div>
+      </section>
 
-        <div class="row">
-          <div>
-            <label>Voice</label>
-            <select id="voice">
-              <option value="female-1">Female Voice 1</option>
-              <option value="male-1">Male Voice 1</option>
-              <option value="neutral">Neutral</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Template</label>
-            <select id="template">
-              <option value="clean">Clean Promo</option>
-              <option value="cinematic">Cinematic</option>
-              <option value="social">Social Shorts</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Music</label>
-            <select id="music">
-              <option value="none">None</option>
-              <option value="uplifting">Uplifting</option>
-              <option value="calm">Calm</option>
-            </select>
-          </div>
+      <!-- Options Section -->
+      <section class="options">
+        <div class="option-group">
+          <label>🎤 Voice</label>
+          <select id="voice">
+            <option value="female-1">Female Voice 1</option>
+            <option value="male-1">Male Voice 1</option>
+            <option value="neutral">Neutral</option>
+          </select>
         </div>
 
-        <div class="actions">
-          <button id="genScriptBtn" class="btn secondary">🎯 Generate Script (AI)</button>
+        <div class="option-group">
+          <label>🎨 Template</label>
+          <select id="template">
+            <option value="clean">Clean Promo</option>
+            <option value="cinematic">Cinematic</option>
+            <option value="social">Social Shorts</option>
+          </select>
+        </div>
+
+        <div class="option-group">
+          <label>🎵 Music</label>
+          <select id="music">
+            <option value="none">None</option>
+            <option value="uplifting">Uplifting</option>
+            <option value="calm">Calm</option>
+          </select>
+        </div>
+
+        <div class="option-group">
+          <label>🎬 Video Title</label>
+          <input id="title" placeholder="Enter your video title..." />
+        </div>
+
+        <div class="action-row">
           <button id="createBtn" class="btn primary">🚀 Create Video</button>
         </div>
+      </section>
 
-        <div id="status" class="status"></div>
-
-        <hr/>
-
+      <!-- Status & Preview -->
+      <section class="status-box">
+        <div id="status">🟡 Waiting for input...</div>
         <div class="preview">
           <h3>Preview</h3>
-          <div id="previewBox" class="preview-box">No preview yet.</div>
+          <div id="previewBox" class="preview-box">Your video preview will appear here</div>
           <audio id="previewAudio" controls style="display:none;"></audio>
         </div>
       </section>
