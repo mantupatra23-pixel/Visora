@@ -884,14 +884,23 @@ def upload_file():
         return jsonify({"status": "ok", "file": file.filename})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
-# === Import and Initialize OpenAI Client ===
-from openai import OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# === Import All Dependencies ===
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import openai
+import os
 
-# === AI Reply Function (Universal for All Features) ===
+# === Initialize Flask App ===
+app = Flask(__name__)
+CORS(app)
+
+# === Set OpenAI API Key ===
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# === Function to Generate AI Replies ===
 def get_ai_reply(system_msg, user_msg, max_tokens=200):
     try:
-        response = client.chat.completions.create(
+        response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_msg},
@@ -902,7 +911,48 @@ def get_ai_reply(system_msg, user_msg, max_tokens=200):
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"Error: {str(e)}"
-# === Run Server ===
+
+# === Routes ===
+
+# Generate Captions for Videos
+@app.route("/assistant/captions", methods=["POST"])
+def assistant_captions():
+    data = request.json
+    idea = data.get("idea", "")
+    system_msg = "You generate catchy captions and hooks for videos."
+    reply = get_ai_reply(system_msg, f"Generate captions for: {idea}")
+    return jsonify({"reply": reply})
+
+# SEO Generator
+@app.route("/assistant/seo", methods=["POST"])
+def assistant_seo():
+    data = request.json
+    subject = data.get("subject", "")
+    system_msg = "You generate SEO titles, tags, and descriptions for YouTube videos."
+    reply = get_ai_reply(system_msg, f"Generate SEO for: {subject}")
+    return jsonify({"reply": reply})
+
+# Thumbnail Ideas
+@app.route("/assistant/thumbnail", methods=["POST"])
+def assistant_thumbnail():
+    data = request.json
+    subject = data.get("subject", "")
+    system_msg = "You generate 5 creative YouTube thumbnail ideas."
+    reply = get_ai_reply(system_msg, f"Suggest thumbnails for: {subject}")
+    return jsonify({"reply": reply})
+
+# Upload (Voice or Video)
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    try:
+        file = request.files["file"]
+        os.makedirs("uploads", exist_ok=True)
+        file.save(os.path.join("uploads", file.filename))
+        return jsonify({"status": "ok", "file": file.filename})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+# === Run Server (Render Compatible) ===
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
