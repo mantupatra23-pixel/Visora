@@ -818,7 +818,7 @@ def upload_file():
         return jsonify({"status": "ok", "file": file.filename})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
-# === Import AI & dependencies ===
+# Import all dependencies
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from openai import OpenAI
@@ -830,6 +830,7 @@ CORS(app)
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# Function
 def get_ai_reply(system_msg, user_msg, max_tokens=200):
     try:
         response = client.chat.completions.create(
@@ -844,9 +845,11 @@ def get_ai_reply(system_msg, user_msg, max_tokens=200):
     except Exception as e:
         return f"Error: {str(e)}"
 
-# ✅ Run server
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))  # Render auto port assign karta hai
-    app.run(host="0.0.0.0", port=port)
+# Your other routes here...
+# ...
+# Upload route, etc.
 
+# Run server
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)

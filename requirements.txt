@@ -1,8 +1,9 @@
+--extra-index-url https://pypi.org/simple
+
 # === Core build tools ===
 pip==25.0
 setuptools==75.1.0
 wheel==0.44.0
-build==1.2.1
 
 # === Web + API ===
 Flask==3.0.3
@@ -11,8 +12,8 @@ Werkzeug==3.0.4
 Flask-Cors==4.0.0
 
 # === AI + Media Tools ===
-openai==1.37.1
-gtts==2.5.4
+openai==0.28.1
+gTTS==2.5.4
 moviepy==1.0.3
 imageio==2.37.0
 imageio-ffmpeg==0.6.0
@@ -21,5 +22,8 @@ numpy==1.26.4
 Pillow==9.5.0
 
 # === Database ===
-Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.25
 psycopg2-binary==2.9.9
+
+# === Typing / Utility ===
+typing-extensions==4.12.2
