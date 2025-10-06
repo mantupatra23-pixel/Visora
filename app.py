@@ -884,7 +884,24 @@ def upload_file():
         return jsonify({"status": "ok", "file": file.filename})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+# === Import and Initialize OpenAI Client ===
+from openai import OpenAI
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# === AI Reply Function (Universal for All Features) ===
+def get_ai_reply(system_msg, user_msg, max_tokens=200):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg}
+            ],
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error: {str(e)}"
 # === Run Server ===
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
