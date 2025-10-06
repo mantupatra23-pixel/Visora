@@ -818,7 +818,31 @@ def upload_file():
         return jsonify({"status": "ok", "file": file.filename})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+# === Import AI & dependencies ===
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from openai import OpenAI
+import os
 
+app = Flask(__name__)
+CORS(app)
+
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def get_ai_reply(system_msg, user_msg, max_tokens=200):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg}
+            ],
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 # ✅ Run server
 if __name__ == "__main__":
