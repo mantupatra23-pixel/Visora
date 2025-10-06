@@ -1,69 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Video - Visora</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora - Create Video</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="container">
+    <h1>Visora — Create Video</h1>
 
-  <div class="container">
-    <h1>🎬 Create Your Video</h1>
-    <p class="subtitle">Write your video script, choose options, and generate your video automatically.</p>
+    <label>Script / Prompt</label>
+    <textarea id="script" rows="6" placeholder="Write or generate script..."></textarea>
 
-    <!-- Script Box -->
-    <label for="scriptBox" class="label">📝 Write Your Script</label>
-    <textarea id="scriptBox" placeholder="Start writing your video script here..."></textarea>
-
-    <!-- Options Section -->
-    <div class="options">
-      <div>
-        <label>🎤 Voice</label>
-        <select id="voiceSelect">
+    <div class="row">
+      <div class="col">
+        <label>Voice</label>
+        <select id="voice">
           <option>Female Voice 1</option>
           <option>Male Voice 1</option>
-          <option>Female Voice 2</option>
         </select>
       </div>
-
-      <div>
-        <label>🎨 Template</label>
-        <select id="templateSelect">
+      <div class="col">
+        <label>Template</label>
+        <select id="template">
           <option>Modern</option>
-          <option>Motivational</option>
-          <option>Funny</option>
+          <option>Promo</option>
         </select>
       </div>
-
-      <div>
-        <label>🎵 Background Music</label>
-        <select id="musicSelect">
+      <div class="col">
+        <label>Background Music</label>
+        <select id="bg">
           <option>Soft</option>
           <option>Energetic</option>
-          <option>Emotional</option>
         </select>
       </div>
     </div>
 
-    <!-- Action Buttons -->
     <div class="buttons">
-      <button id="generateScriptBtn">✨ Generate Script (AI)</button>
-      <button id="createVideoBtn">🚀 Create Video</button>
+      <button id="genScript" class="btn yellow">✨ Generate Script (AI)</button>
+      <button id="createVideo" class="btn">🚀 Create Video</button>
     </div>
 
-    <!-- Status Box -->
-    <div id="statusBox">
-      <p>Status: <span id="statusText">Waiting for input...</span></p>
-    </div>
+    <div id="status" class="status">Status: idle</div>
 
-    <!-- Video Preview -->
-    <div id="videoBox" class="hidden">
-      <h3>🎥 Generated Video</h3>
-      <video id="previewVideo" controls></video>
+    <div id="result" class="result" style="display:none">
+      <h3>Result</h3>
+      <div id="resultContent"></div>
     </div>
-  </div>
+  </main>
 
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
