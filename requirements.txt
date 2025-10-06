@@ -1,33 +1,31 @@
-# Run auto fix before deploy
--e .gtts==2.5.4
-openai==1.52.2# Core build tools
-pip>=25.0
-setuptools>=75.1.0
-wheel>=0.44.0
-build>=1.2.2.post1
+# ===== Core Build Tools =====
+pip==25.0
+setuptools==75.1.0
+wheel==0.44.0
+build==1.2.2.post1
 
-# Web + API
+# ===== Web + API =====
 Flask==3.0.3
-gunicorn==21.2.0
+gunicorn==22.0.0
 Werkzeug==3.0.4
 Jinja2==3.1.4
 MarkupSafe==3.0.2
 itsdangerous==2.2.0
+Flask-SQLAlchemy==3.1.1
+psycopg2-binary==2.9.9
 
-# AI + Media Tools
+# ===== AI + Media Tools =====
+gtts==2.5.4
+openai==1.52.2
 moviepy==1.0.3
 imageio==2.37.0
 imageio-ffmpeg==0.6.0
 requests==2.32.3
-numpy==1.23.5
+numpy==2.3.3
 Pillow==9.5.0
 
-# Utility
+# ===== Utility =====
 certifi==2025.8.3
 charset-normalizer==3.4.3
 idna==3.10
-urllib3==2.2.3
 typing_extensions==4.15.0
-Flask-SQLAlchemy==3.1.1
-SQLAlchemy==2.0.25
-psycopg2-binary==2.9.9
