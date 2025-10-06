@@ -26,11 +26,11 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
 # ---------- AI Integration (OpenAI 0.28 compatible) ----------
-import openai
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
 def get_ai_reply(system_msg, user_msg, max_tokens=200):
     try:
+        import openai
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -39,7 +39,10 @@ def get_ai_reply(system_msg, user_msg, max_tokens=200):
             ],
             max_tokens=max_tokens
         )
+
+        # Extract content safely
         return response["choices"][0]["message"]["content"].strip()
+
     except Exception as e:
         log.error(f"AI error: {e}")
         return f"Error: {str(e)}"
