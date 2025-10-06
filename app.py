@@ -891,14 +891,11 @@ from flask_cors import CORS
 import openai
 import os
 
-# === Flask App ===
 app = Flask(__name__)
 CORS(app)
 
-# === Set OpenAI API Key ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# === AI Reply Function ===
 def get_ai_reply(system_msg, user_msg, max_tokens=200):
     try:
         response = openai.ChatCompletion.create(
@@ -913,10 +910,6 @@ def get_ai_reply(system_msg, user_msg, max_tokens=200):
     except Exception as e:
         return f"Error: {str(e)}"
 
-
-# === Routes ===
-
-# Generate video captions
 @app.route("/assistant/captions", methods=["POST"])
 def assistant_captions():
     data = request.json
@@ -925,8 +918,6 @@ def assistant_captions():
     reply = get_ai_reply(system_msg, f"Generate captions for: {idea}")
     return jsonify({"reply": reply})
 
-
-# SEO generator
 @app.route("/assistant/seo", methods=["POST"])
 def assistant_seo():
     data = request.json
@@ -935,8 +926,6 @@ def assistant_seo():
     reply = get_ai_reply(system_msg, f"Generate SEO for: {subject}")
     return jsonify({"reply": reply})
 
-
-# Thumbnail ideas generator
 @app.route("/assistant/thumbnail", methods=["POST"])
 def assistant_thumbnail():
     data = request.json
@@ -945,8 +934,6 @@ def assistant_thumbnail():
     reply = get_ai_reply(system_msg, f"Suggest thumbnails for: {subject}")
     return jsonify({"reply": reply})
 
-
-# File upload (for voice or video)
 @app.route("/upload", methods=["POST"])
 def upload_file():
     try:
@@ -957,8 +944,6 @@ def upload_file():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
-
-# === Run Server ===
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
