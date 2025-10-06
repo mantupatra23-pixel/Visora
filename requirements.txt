@@ -1,4 +1,5 @@
-gtts==2.5.4
+# Run auto fix before deploy
+-e .gtts==2.5.4
 openai==1.52.2# Core build tools
 pip>=25.0
 setuptools>=75.1.0
