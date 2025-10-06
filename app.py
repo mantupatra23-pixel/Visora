@@ -612,7 +612,56 @@ def edit_video(video_id):
     # For production implement: fetch existing meta, accept replace voice/bg music/apply cinematic, enqueue new job
     return jsonify({"error":"not implemented","note":"Implement per project needs"}), 501
 import openai
+@app.route("/generate/video", methods=["POST"])
+def generate_creative_video():
+    try:
+        data = request.get_json(force=True)
+        script = data.get("script", "Hello from Visora!")
+        lang = data.get("lang", "hi")
 
+        from gtts import gTTS
+        import uuid, shutil, os
+        from moviepy.editor import TextClip, concatenate_videoclips, AudioFileClip
+
+        tmp = f"tmp_{uuid.uuid4().hex}"
+        os.makedirs(tmp, exist_ok=True)
+
+        # 1️⃣ Generate audio from script
+        tts = gTTS(script, lang=lang)
+        audio_path = f"{tmp}/voice.mp3"
+        tts.save(audio_path)
+
+        # 2️⃣ Create text slides
+        lines = script.split(".")
+        clips = []
+        for line in lines:
+            if not line.strip():
+                continue
+            text_clip = TextClip(
+                line.strip(),
+                fontsize=60,
+                color="white",
+                size=(1280, 720),
+                bg_color="black"
+            ).set_duration(3)
+            clips.append(text_clip)
+
+        final_video = concatenate_videoclips(clips, method="compose")
+
+        # 3️⃣ Add background voice
+        audio_clip = AudioFileClip(audio_path)
+        final_video = final_video.set_audio(audio_clip)
+
+        # 4️⃣ Save output video
+        os.makedirs("static", exist_ok=True)
+        out_path = f"static/output_{uuid.uuid4().hex}.mp4"
+        final_video.write_videofile(out_path, fps=24)
+
+        shutil.rmtree(tmp)
+        return jsonify({"status": "success", "video_url": f"/{out_path}"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 # ChatGPT API key (Render/Env mein set karo)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
