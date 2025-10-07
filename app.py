@@ -508,12 +508,11 @@ def generate_video():
     })
 
     return jsonify({"status":"ok","job_id": job_id, "video_id": video.id})
-
-# --------- Enable CORS for frontend connectio
-n ---------
+# --------- Enable CORS for frontend connection ---------
 from flask_cors import CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
-# ---------- Run server ----------
+
+# --------- Run server ---------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     # In production, Render will run gunicorn; this is for local dev
