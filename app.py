@@ -510,7 +510,14 @@ def generate_video():
     return jsonify({"status":"ok","job_id": job_id, "video_id": video.id})
 # -------- Enable Full CORS Access for Frontend --------
 from flask_cors import CORS
-CORS(app, resources={r"/*": {"origins": ["https://visora-fronted.onrender.com", "*"]}})
+
+CORS(
+    app,
+    resources={r"/*": {"origins": ["https://visora-fronted.onrender.com", "*"]}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "OPTIONS"]
+)
 
 # -------- Run server --------
 if __name__ == "__main__":
