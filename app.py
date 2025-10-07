@@ -509,6 +509,10 @@ def generate_video():
 
     return jsonify({"status":"ok","job_id": job_id, "video_id": video.id})
 
+# --------- Enable CORS for frontend connectio
+n ---------
+from flask_cors import CORS
+CORS(app, resources={r"/*": {"origins": "*"}})
 # ---------- Run server ----------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
