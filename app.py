@@ -518,7 +518,6 @@ CORS(
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "OPTIONS"]
 )
-
 # -------- Run server --------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
