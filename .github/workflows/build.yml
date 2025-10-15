@@ -1,4 +1,4 @@
-name: Build Visora Flutter App 🚀
+name: Build Visora AI Video Creator 🚀
 
 on:
   push:
@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
+      # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       # Step 2: Setup Flutter
       - name: Setup Flutter
@@ -25,62 +23,51 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      # Step 3: Enable Flutter Platforms
+      # Step 3: Enable Platforms
       - name: Enable Flutter Platforms
         run: |
-          flutter config --enable-web
           flutter config --enable-android
+          flutter config --enable-web
+          flutter doctor -v
 
-      # Step 4: Move into project folder (important fix 🔥)
-      - name: Move into project directory
+      # Step 4: Clean Old Android Folder
+      - name: Clean old Android folder
         run: |
-          echo "📂 Current directory: $(pwd)"
-          if [ -d "Visora" ]; then
-            cd Visora
-            echo "✅ Changed into Visora folder"
-          fi
-          ls -la
+          echo "🧹 Removing old Android folder..."
+          rm -rf android
+          echo "✅ Old folder cleaned."
 
-      # Step 5: Verify pubspec.yaml
-      - name: Verify pubspec.yaml
+      # Step 5: Recreate Android Folder (V2 embedding)
+      - name: Recreate Android folder
         run: |
-          if [ ! -f "pubspec.yaml" ]; then
-            echo "❌ pubspec.yaml not found — check your repo root!"
-            exit 1
-          else
-            echo "✅ pubspec.yaml found."
-          fi
+          echo "📱 Creating new Android folder (V2)..."
+          flutter create --platforms android .
+          echo "✅ Android folder created successfully."
 
       # Step 6: Install Dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Step 7: Flutter Doctor
-      - name: Flutter Doctor
-        run: flutter doctor -v
-
-      # Step 8: Build Android APK
+      # Step 7: Build Android APK
       - name: Build Android APK
         run: |
           echo "🏗️ Building Android APK..."
           flutter build apk --release
 
-      # Step 9: Build Web Version
+      # Step 8: Build Web Version
       - name: Build Web Version
-        run: |
-          echo "🌐 Building Flutter Web..."
-          flutter build web --release
+        run: flutter build web --release
 
-      # Step 10: Upload Android APK
+      # Step 9: Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-apk
+          name: visora-ai-video-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # Step 11: Upload Web Build
+      # Step 10: Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-web
+          name: visora-web-version
           path: build/web
