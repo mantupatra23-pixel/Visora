@@ -36,6 +36,7 @@ jobs:
           echo "🧹 Removing old Android folder..."
           rm -rf android
           echo "✅ Old folder cleaned."
+        working-directory: ./
 
       # Step 5: Recreate Android Folder (V2 embedding)
       - name: Recreate Android folder
@@ -43,31 +44,33 @@ jobs:
           echo "📱 Creating new Android folder (V2)..."
           flutter create --platforms android .
           echo "✅ Android folder created successfully."
+        working-directory: ./
 
       # Step 6: Install Dependencies
       - name: Install Dependencies
         run: flutter pub get
+        working-directory: ./
 
       # Step 7: Build Android APK
       - name: Build Android APK
-        run: |
-          echo "🏗️ Building Android APK..."
-          flutter build apk --release
+        run: flutter build apk --release
+        working-directory: ./
 
       # Step 8: Build Web Version
       - name: Build Web Version
         run: flutter build web --release
+        working-directory: ./
 
       # Step 9: Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-ai-video-apk
+          name: visora-ai-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
       # Step 10: Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-web-version
+          name: visora-ai-web
           path: build/web
