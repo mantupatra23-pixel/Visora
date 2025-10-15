@@ -34,15 +34,15 @@ jobs:
 
       - name: fix android embedding
         run: |
-          echo "Migrating Android v1 embedding to v2..."
-          sed -i 's/FlutterActivity\.createDefaultIntent(this)/FlutterActivity.createDefaultIntent(this)/g' android/app/src/main/java/**/MainActivity.java 2>/dev/null || true
-          sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/java/**/MainActivity.java 2>/dev/null || true
+          echo "migrating android v1 embedding to v2..."
+          find . -type f -name "*.java" -exec sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' {} +
+          echo "embedding migration complete ✅"
 
       - name: install dependencies
         run: flutter pub get
 
       - name: build android apk
-        run: flutter build apk --release --verbose || flutter build apk --release --ignore-deprecation
+        run: flutter build apk --release --verbose || flutter build apk --release
 
       - name: build web version
         run: flutter build web --release
