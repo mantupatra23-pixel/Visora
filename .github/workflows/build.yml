@@ -1,4 +1,4 @@
-name: build visora flutter app
+name: Build Visora Flutter App 🚀
 
 on:
   push:
@@ -12,48 +12,64 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout repository
+      # Step 1: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: setup flutter
+      # Step 2: Setup Flutter Environment
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: enable platforms
+      # Step 3: Enable Platforms
+      - name: Enable Flutter Platforms
         run: |
           flutter config --enable-web
           flutter config --enable-android
 
-      - name: clean and upgrade flutter
+      # Step 4: Clean, Upgrade, and Repair Flutter Cache
+      - name: Clean & Upgrade Flutter
         run: |
           flutter upgrade
-          flutter pub cache repair
+          flutter pub cache repair || true
           flutter clean
 
-      - name: fix android embedding
+      # Step 5: Ensure Android V2 Embedding (Auto-fix)
+      - name: Fix Android Embedding (V2 Migration)
         run: |
-          echo "migrating android v1 embedding to v2..."
-          find . -type f -name "*.java" -exec sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' {} +
-          echo "embedding migration complete ✅"
+          echo "🔄 Checking for Android V1 embedding..."
+          rm -rf android
+          flutter create --platforms=android --project-name visora .
+          echo "✅ Android folder recreated with V2 embedding"
 
-      - name: install dependencies
+      # Step 6: Install Dependencies
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: build android apk
-        run: flutter build apk --release --verbose || flutter build apk --release
+      # Step 7: Build Android APK
+      - name: Build Android APK
+        run: |
+          echo "🏗️ Building Android APK..."
+          flutter build apk --release --verbose
+        continue-on-error: false
 
-      - name: build web version
-        run: flutter build web --release
+      # Step 8: Build Web Version
+      - name: Build Web Version
+        run: |
+          echo "🌐 Building Flutter Web..."
+          flutter build web --release
 
-      - name: upload android apk
+      # Step 9: Upload Android APK Artifact
+      - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      - name: upload web build
+      # Step 10: Upload Web Build Artifact
+      - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
