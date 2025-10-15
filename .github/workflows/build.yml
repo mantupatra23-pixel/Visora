@@ -12,26 +12,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # ensures full repo fetched
+          fetch-depth: 0
 
-      # Step 2: Setup Flutter SDK
+      # Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      # Step 3: Enable Android & Web
+      # Step 3: Enable Flutter Platforms
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-web
           flutter config --enable-android
 
-      # Step 4: Fix possible submodule issue
+      # Step 4: Clean Git Submodules
       - name: Clean Git Submodules
         run: |
           echo "Cleaning submodules..."
@@ -39,44 +39,50 @@ jobs:
           rm -f .gitmodules || true
           echo "✅ Submodules cleaned"
 
-      # Step 5: Ensure Android folder with v2 embedding
+      # Step 5: Move to correct directory before Android recreation
       - name: Recreate Android Folder (V2)
+        working-directory: ./
         run: |
           echo "📱 Recreating Android folder..."
           if [ ! -f "pubspec.yaml" ]; then
-            echo "❌ pubspec.yaml not found. Exiting."
+            echo "❌ pubspec.yaml not found in $(pwd)"
+            ls -la
             exit 1
           fi
           rm -rf android
           flutter create --platforms=android --project-name visora_video .
           echo "✅ Android folder created successfully."
 
-      # Step 6: Get dependencies
+      # Step 6: Install Dependencies
       - name: Install Dependencies
+        working-directory: ./
         run: flutter pub get
 
-      # Step 7: Doctor check (for debugging)
+      # Step 7: Doctor check (debug info)
       - name: Flutter Doctor
         run: flutter doctor -v
 
-      # Step 8: Build APK
+      # Step 8: Build Android APK
       - name: Build Android APK
-        run: flutter build apk --release
+        working-directory: ./
+        run: |
+          echo "🏗️ Building Android APK..."
+          flutter build apk --release
 
-      # Step 9: Build Web version
+      # Step 9: Build Web Version
       - name: Build Web Version
+        working-directory: ./
         run: flutter build web --release
 
-      # Step 10: Upload APK artifact
+      # Step 10: Upload APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-video-apk
+          name: visora-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # Step 11: Upload Web Build artifact
-      - name: Upload Web Build
+      # Step 11: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-video-web
+          name: visora-web
           path: build/web
