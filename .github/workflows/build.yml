@@ -26,7 +26,10 @@ jobs:
       - name: 🧩 ensure project structure
         run: |
           if [ ! -d "android" ] || [ ! -d "ios" ] || [ ! -d "web" ]; then
+            echo "missing folders detected, recreating..."
             flutter create .
+          else
+            echo "project structure already valid."
           fi
 
       - name: 📦 get dependencies
