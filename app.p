@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return jsonify({
-        "msg": "Visora backend running 🚀",
+        "msg": "visora backend running 🚀",
         "status": "ok"
     })
 

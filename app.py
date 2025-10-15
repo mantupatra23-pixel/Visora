@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return jsonify({"msg": "Visora backend running", "status": "ok"})
+    return jsonify({"msg": "visora backend running", "status": "ok"})
 
 @app.route("/health")
 def health():

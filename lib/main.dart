@@ -1,5 +1,5 @@
 // main.dart
-// Visora — Single-file Flutter frontend (DartPad compatible for web).
+// visora — Single-file Flutter frontend (DartPad compatible for web).
 // Paste into https://dartpad.dev (Flutter) and Run.
 // Change API_BASE if needed.
 
@@ -9,7 +9,7 @@ import 'dart:html' as html; // for web fetch in DartPad
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(VisoraApp());
+  runApp(visoraApp());
 }
 
 // --------- Config ----------
@@ -51,11 +51,11 @@ class _FetchResult {
 }
 
 // --------- App ----------
-class VisoraApp extends StatelessWidget {
+class visoraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Visora — Create Video',
+      title: 'visora — Create Video',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Color(0xFF0F1115),
         primaryColor: Colors.blueAccent,
@@ -103,7 +103,7 @@ class _MainShellState extends State<MainShell> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Visora AI — Create Video'),
+        title: Text('visora AI — Create Video'),
         centerTitle: true,
         elevation: 2,
       ),

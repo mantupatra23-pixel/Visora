@@ -1,5 +1,5 @@
 #!/bin/bash
-# Auto nano + git push script for Visora frontend
+# Auto nano + git push script for visora frontend
 
 FOLDER="lib"
 FILE="lib/main.dart"
