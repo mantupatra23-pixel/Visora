@@ -23,13 +23,11 @@ jobs:
       - name: 🧹 clean old cache
         run: flutter clean
 
-      - name: 🧩 fix dart sdk path
+      - name: 🧩 ensure project structure
         run: |
-          mkdir -p flutter/bin/cache/dart-sdk/bin
-          if ! command -v dart &> /dev/null; then
-            sudo apt update && sudo apt install dart -y
+          if [ ! -d "android" ] || [ ! -d "ios" ] || [ ! -d "web" ]; then
+            flutter create .
           fi
-          ln -sf $(which dart) flutter/bin/cache/dart-sdk/bin/dart || true
 
       - name: 📦 get dependencies
         run: flutter pub get
