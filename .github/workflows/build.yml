@@ -1,4 +1,4 @@
-name: Build Visora AI Video Creator 🚀
+name: build visora flutter app
 
 on:
   push:
@@ -8,69 +8,53 @@ on:
 
 jobs:
   build:
-    name: Build APK & Web
+    name: build
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Setup Flutter
-      - name: Setup Flutter
+      - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.3'
+          flutter-version: '3.24.0'
           channel: 'stable'
 
-      # Step 3: Enable Platforms
-      - name: Enable Flutter Platforms
+      - name: enable platforms
         run: |
-          flutter config --enable-android
           flutter config --enable-web
-          flutter doctor -v
+          flutter config --enable-android
 
-      # Step 4: Clean Old Android Folder
-      - name: Clean old Android folder
+      - name: clean and upgrade flutter
         run: |
-          echo "🧹 Removing old Android folder..."
-          rm -rf android
-          echo "✅ Old folder cleaned."
-        working-directory: ./
+          flutter upgrade
+          flutter pub cache repair
+          flutter clean
 
-      # Step 5: Recreate Android Folder (V2 embedding)
-      - name: Recreate Android folder
+      - name: fix android embedding
         run: |
-          echo "📱 Creating new Android folder (V2)..."
-          flutter create --platforms android .
-          echo "✅ Android folder created successfully."
-        working-directory: ./
+          echo "migrating android v1 embedding to v2..."
+          find . -type f -name "*.java" -exec sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' {} +
+          echo "embedding migration complete ✅"
 
-      # Step 6: Install Dependencies
-      - name: Install Dependencies
+      - name: install dependencies
         run: flutter pub get
-        working-directory: ./
 
-      # Step 7: Build Android APK
-      - name: Build Android APK
-        run: flutter build apk --release
-        working-directory: ./
+      - name: build android apk
+        run: flutter build apk --release --verbose || flutter build apk --release
 
-      # Step 8: Build Web Version
-      - name: Build Web Version
+      - name: build web version
         run: flutter build web --release
-        working-directory: ./
 
-      # Step 9: Upload Android APK
-      - name: Upload Android APK
+      - name: upload android apk
         uses: actions/upload-artifact@v4
         with:
-          name: visora-ai-apk
+          name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # Step 10: Upload Web Build
-      - name: Upload Web Build
+      - name: upload web build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-ai-web
+          name: visora-web-build
           path: build/web
