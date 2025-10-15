@@ -1,0 +1,55 @@
+name: 🚀 Visora Auto Flutter Build (Android + Web)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+
+      - name: Recreate complete Flutter structure (fix Gradle issue)
+        run: |
+          rm -rf android ios web
+          flutter create .
+          echo "✅ Flutter structure recreated successfully!"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Fix Gradle Wrapper
+        run: |
+          mkdir -p android/gradle/wrapper
+          echo "distributionBase=GRADLE_USER_HOME" > android/gradle/wrapper/gradle-wrapper.properties
+          echo "distributionPath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
+          echo "zipStoreBase=GRADLE_USER_HOME" >> android/gradle/wrapper/gradle-wrapper.properties
+          echo "zipStorePath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
+          echo "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.3-all.zip" >> android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Visora-Release-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Build Web Version
+        run: flutter build web
+
+      - name: Upload Web Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Visora-Web
+          path: build/web/
