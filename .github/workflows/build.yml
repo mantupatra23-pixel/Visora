@@ -1,4 +1,4 @@
-name: Build Visora Flutter App
+name: build visora flutter app
 
 on:
   push:
@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 Checkout repository
+      - name: 🧾 checkout repository
         uses: actions/checkout@v3
 
-      - name: ⚙️ Setup Flutter
+      - name: ⚙️ setup flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.3"
           channel: "stable"
 
-      - name: 🧹 Clean old cache
+      - name: 🧹 clean old cache
         run: flutter clean
 
-      - name: 🧩 Fix Dart SDK path (Termux/ARM safe)
+      - name: 🧩 fix dart sdk path
         run: |
           mkdir -p flutter/bin/cache/dart-sdk/bin
           if ! command -v dart &> /dev/null; then
@@ -31,19 +31,19 @@ jobs:
           fi
           ln -sf $(which dart) flutter/bin/cache/dart-sdk/bin/dart || true
 
-      - name: 📦 Get dependencies
+      - name: 📦 get dependencies
         run: flutter pub get
 
-      - name: 🔍 Analyze
+      - name: 🔍 analyze
         run: flutter analyze || true
 
-      - name: 🏗️ Build Android APK
+      - name: 🏗️ build android apk
         run: flutter build apk --debug
 
-      - name: 🌐 Build Web Version
+      - name: 🌐 build web version
         run: flutter build web --release
 
-      - name: 📤 Upload Build Artifacts
+      - name: 📤 upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: visora-builds
