@@ -39,7 +39,7 @@ jobs:
           rm -f .gitmodules || true
           echo "✅ Submodules cleaned"
 
-      # Step 5: Move to correct directory before Android recreation
+      # Step 5: Recreate Android Folder (V2)
       - name: Recreate Android Folder (V2)
         working-directory: ./
         run: |
@@ -55,33 +55,33 @@ jobs:
 
       # Step 6: Install Dependencies
       - name: Install Dependencies
-        working-directory: ./
         run: flutter pub get
 
-      # Step 7: Doctor check (debug info)
+      # Step 7: Flutter Doctor
       - name: Flutter Doctor
         run: flutter doctor -v
 
       # Step 8: Build Android APK
       - name: Build Android APK
-        working-directory: ./
         run: |
           echo "🏗️ Building Android APK..."
           flutter build apk --release
 
       # Step 9: Build Web Version
       - name: Build Web Version
-        working-directory: ./
-        run: flutter build web --release
+        run: |
+          echo "🌐 Building Flutter Web..."
+          flutter build web --release
 
-      # Step 10: Upload APK
+      # Step 10: Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # Step 11: Upload Web Build
+      # ✅ Step 11: Upload Web Build (Fixed)
+      - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: visora-web
