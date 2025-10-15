@@ -31,27 +31,25 @@ jobs:
           flutter config --enable-web
           flutter config --enable-android
 
-      # Step 4: Clean Git Submodules
-      - name: Clean Git Submodules
+      # Step 4: Move into project folder (important fix 🔥)
+      - name: Move into project directory
         run: |
-          echo "Cleaning submodules..."
-          git rm --cached flutter || true
-          rm -f .gitmodules || true
-          echo "✅ Submodules cleaned"
-
-      # Step 5: Recreate Android Folder (V2)
-      - name: Recreate Android Folder (V2)
-        working-directory: ./
-        run: |
-          echo "📱 Recreating Android folder..."
-          if [ ! -f "pubspec.yaml" ]; then
-            echo "❌ pubspec.yaml not found in $(pwd)"
-            ls -la
-            exit 1
+          echo "📂 Current directory: $(pwd)"
+          if [ -d "Visora" ]; then
+            cd Visora
+            echo "✅ Changed into Visora folder"
           fi
-          rm -rf android
-          flutter create --platforms=android --project-name visora_video .
-          echo "✅ Android folder created successfully."
+          ls -la
+
+      # Step 5: Verify pubspec.yaml
+      - name: Verify pubspec.yaml
+        run: |
+          if [ ! -f "pubspec.yaml" ]; then
+            echo "❌ pubspec.yaml not found — check your repo root!"
+            exit 1
+          else
+            echo "✅ pubspec.yaml found."
+          fi
 
       # Step 6: Install Dependencies
       - name: Install Dependencies
@@ -80,7 +78,7 @@ jobs:
           name: visora-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # ✅ Step 11: Upload Web Build (Fixed)
+      # Step 11: Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
