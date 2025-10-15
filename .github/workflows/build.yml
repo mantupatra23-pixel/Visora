@@ -8,46 +8,36 @@ on:
 
 jobs:
   build:
+    name: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 checkout repository
-        uses: actions/checkout@v3
+      - name: checkout repository
+        uses: actions/checkout@v4
 
-      - name: ⚙️ setup flutter
+      - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.3"
-          channel: "stable"
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      - name: 🧹 clean old cache
-        run: flutter clean
-
-      - name: 🧩 ensure project structure
-        run: |
-          if [ ! -d "android" ] || [ ! -d "ios" ] || [ ! -d "web" ]; then
-            echo "missing folders detected, recreating..."
-            flutter create .
-          else
-            echo "project structure already valid."
-          fi
-
-      - name: 📦 get dependencies
+      - name: install dependencies
         run: flutter pub get
 
-      - name: 🔍 analyze
-        run: flutter analyze || true
+      - name: build android apk
+        run: flutter build apk --release
 
-      - name: 🏗️ build android apk
-        run: flutter build apk --debug
-
-      - name: 🌐 build web version
+      - name: build web version
         run: flutter build web --release
 
-      - name: 📤 upload build artifacts
-        uses: actions/upload-artifact@v3
+      - name: upload android apk
+        uses: actions/upload-artifact@v4
         with:
-          name: visora-builds
-          path: |
-            build/app/outputs/flutter-apk/app-debug.apk
-            build/web/
+          name: visora-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: visora-web-build
+          path: build/web
