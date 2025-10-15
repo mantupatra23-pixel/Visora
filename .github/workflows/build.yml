@@ -21,11 +21,25 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
+      - name: enable web and android
+        run: |
+          flutter config --enable-web
+          flutter config --enable-android
+
+      - name: upgrade flutter and clean cache
+        run: |
+          flutter upgrade
+          flutter pub cache repair
+          flutter clean
+
       - name: install dependencies
         run: flutter pub get
 
+      - name: fix dependencies (safe upgrade)
+        run: flutter pub upgrade --major-versions || true
+
       - name: build android apk
-        run: flutter build apk --release
+        run: flutter build apk --release --verbose
 
       - name: build web version
         run: flutter build web --release
