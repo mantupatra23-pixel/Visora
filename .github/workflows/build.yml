@@ -24,15 +24,25 @@ jobs:
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
           echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
-      # ✅ Give Gradle Permission
-      - name: Give Gradlew Permission
-        run: chmod +x android/gradlew
+      - name: Ensure Android folder exists (auto create if missing)
+        run: |
+          if [ ! -d "android" ]; then
+            echo "⚙️ Android folder missing! Recreating..."
+            flutter create .
+          fi
 
-      # ✅ Clean Gradle cache before every build
-      - name: Clean Gradle Cache
+      - name: Give Gradlew Permission
+        run: |
+          if [ ! -f "android/gradlew" ]; then
+            echo "⚙️ Gradlew missing, generating..."
+            cd android && gradle wrapper && cd ..
+          fi
+          chmod +x android/gradlew
+
+      - name: Clean Gradle Cache before every build
         run: |
           rm -rf ~/.gradle/caches
-          rm -rf ~/.gradle/wrapper
+          rm -rf .gradle
           flutter clean
 
       - name: Sync dependencies
@@ -51,7 +61,7 @@ jobs:
           echo "include ':app'" >> android/settings.gradle
 
       - name: Build Android APK
-        run: flutter build apk --release --verbose
+        run: flutter build apk --release --verbose || flutter build apk --release
 
       - name: Build Web Version
         run: flutter build web --release
