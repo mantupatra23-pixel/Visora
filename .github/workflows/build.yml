@@ -1,4 +1,5 @@
 name: Build Visora Flutter App
+name: Build Visora Flutter App
 
 on:
   push:
@@ -39,13 +40,14 @@ jobs:
       - name: Ensure Android folder exists (auto create if missing)
         run: |
           if [ ! -d "android" ]; then
-            echo "⚙️ Android folder missing! Recreating..."
+            echo "⚙️ Android folder missing! Auto-generating..."
             flutter create .
+            echo "✅ Android folder created successfully!"
           fi
 
       - name: Auto migrate to Flutter V2 embedding
         run: |
-          echo "🚀 Checking Android embedding..."
+          echo "🔄 Checking Android embedding..."
           find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
           find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
           echo "✅ Migration done! Verified for V2 embedding."
