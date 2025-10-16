@@ -1,4 +1,3 @@
-
 name: Build Visora Flutter App
 
 on:
@@ -21,19 +20,11 @@ jobs:
           channel: "stable"
 
       - name: Clean and get dependencies
-        run: |
-          flutter clean
-          flutter pub get
+        run: flutter clean && flutter pub get
 
       - name: Fix Android embedding
         run: |
-          mkdir -p android/app/src/main/java/com/visora/app
-          echo "package com.visora.app;
-
-import io.flutter.embedding.android.FlutterActivity;
-
-public class MainActivity extends FlutterActivity {
-}" > android/app/src/main/java/com/visora/app/MainActivity.java
+          mkdir -p android/app/src/main/java/com/visora/app && echo "package com.visora.app; import io.flutter.embedding.android.FlutterActivity; public class MainActivity extends FlutterActivity {}" > android/app/src/main/java/com/visora/app/MainActivity.java
 
       - name: Build Android APK
         run: flutter build apk --release
@@ -56,15 +47,9 @@ public class MainActivity extends FlutterActivity {
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/web/**
+          files: build/app/outputs/flutter-apk/app-release.apk, build/web/**
           tag_name: v${{ github.run_number }}
           name: Visora Auto Release v${{ github.run_number }}
-          body: |
-            Automatic Build for Visora
-            Android APK Ready
-            Web Build Complete
-            Build ID: ${{ github.run_id }}
+          body: "Automatic Build for Visora | Android APK Ready | Web Build Complete | Build ID: ${{ github.run_id }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
