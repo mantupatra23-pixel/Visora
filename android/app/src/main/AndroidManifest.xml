@@ -2,6 +2,7 @@
     package="com.visora.app">
 
     <application
+        android:name="${applicationName}"
         android:label="Visora"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -16,5 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 </manifest>
