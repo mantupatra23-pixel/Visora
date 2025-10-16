@@ -22,9 +22,15 @@ jobs:
       - name: Clean and get dependencies
         run: flutter clean && flutter pub get
 
-      - name: Fix Android embedding
+      - name: Fix Android embedding (V2)
         run: |
-          mkdir -p android/app/src/main/java/com/visora/app && echo "package com.visora.app; import io.flutter.embedding.android.FlutterActivity; public class MainActivity extends FlutterActivity {}" > android/app/src/main/java/com/visora/app/MainActivity.java
+          mkdir -p android/app/src/main/java/com/visora/app
+          echo "package com.visora.app;
+
+          import io.flutter.embedding.android.FlutterActivity;
+
+          public class MainActivity extends FlutterActivity {
+          }" > android/app/src/main/java/com/visora/app/MainActivity.java
 
       - name: Build Android APK
         run: flutter build apk --release
