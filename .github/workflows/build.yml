@@ -1,8 +1,9 @@
-name: Build visora Flutter App
+name: Build Visora Flutter App
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -19,35 +20,33 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
-      - name: Ensure gradlew exists
+      - name: Create Android structure if missing
         run: |
-          if [ ! -f "android/gradlew" ]; then
-            echo "gradlew missing... generating via flutter create ."
+          if [ ! -d "android" ]; then
             flutter create .
           fi
 
-      - name: Give Gradlew Permission
-        run: chmod +x android/gradlew
-
-      - name: Clean & Get Dependencies
+      - name: Verify package name
         run: |
-          flutter clean
-          flutter pub get
+          grep -i "name: visora" pubspec.yaml || (echo "❌ Name not lowercase" && exit 1)
+
+      - name: Get dependencies
+        run: flutter pub get
 
       - name: Build Android APK
         run: flutter build apk --release
 
-      - name: Build Web Version
+      - name: Build Web version
         run: flutter build web --release
 
-      - name: Upload Android APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-release-apk
+          name: visora-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-web-build
+          name: visora-web
           path: build/web
