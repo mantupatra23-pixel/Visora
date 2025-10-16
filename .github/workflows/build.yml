@@ -17,8 +17,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
-          git clone https://github.com/flutter/flutter.git -b stable
-          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          git clone https://github.com/flutter/flutter.git -b stable /opt/flutter
+          echo "export PATH=\$PATH:/opt/flutter/bin" >> $GITHUB_ENV
+          export PATH=$PATH:/opt/flutter/bin
           flutter doctor -v
 
       - name: Verify Flutter CLI
@@ -28,7 +29,7 @@ jobs:
         run: |
           mkdir -p $HOME/.gradle
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
-          echo "flutter.sdk=$PWD/flutter" >> android/local.properties
+          echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
       - name: Ensure Android folder exists (auto create if missing)
         run: |
