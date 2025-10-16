@@ -33,7 +33,7 @@ jobs:
           echo "🔧 Searching for MainActivity.java or .kt ..."
           MAIN_JAVA=$(find android -type f -name "MainActivity.java" | head -n 1 || true)
           MAIN_KOTLIN=$(find android -type f -name "MainActivity.kt" | head -n 1 || true)
-          
+
           if [ -n "$MAIN_JAVA" ]; then
             echo "📁 Found Java MainActivity: $MAIN_JAVA"
             sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' "$MAIN_JAVA" || true
@@ -69,7 +69,9 @@ EOF
           flutter doctor -v
 
       - name: Accept Android Licenses
-        run: yes | flutter doctor --android-licenses || true
+        run: |
+          yes | flutter doctor --android-licenses || true
+          echo "✅ Android licenses accepted!"
 
       - name: Upgrade Flutter and Get Dependencies
         run: |
