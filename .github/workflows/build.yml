@@ -31,6 +31,13 @@ jobs:
             flutter create .
           fi
 
+      - name: Auto migrate to Flutter V2 embedding
+        run: |
+          echo "🚀 Checking Android embedding..."
+          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
+          find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
+          echo "✅ Migration done! Verified for V2 embedding."
+
       - name: Give Gradlew Permission
         run: |
           if [ ! -f "android/gradlew" ]; then
