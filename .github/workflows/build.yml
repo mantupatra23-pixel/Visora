@@ -8,21 +8,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/cirruslabs/flutter:3.24.0
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Flutter installation
-        run: flutter doctor -v
+      - name: Install Flutter CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
+          git clone https://github.com/flutter/flutter.git -b stable
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          flutter doctor -v
+
+      - name: Verify Flutter CLI
+        run: flutter --version
 
       - name: Prepare Android environment
         run: |
           mkdir -p $HOME/.gradle
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
-          echo "flutter.sdk=/opt/flutter" >> android/local.properties
+          echo "flutter.sdk=$PWD/flutter" >> android/local.properties
 
       - name: Ensure Android folder exists (auto create if missing)
         run: |
@@ -38,7 +44,7 @@ jobs:
           find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
           echo "✅ Migration done! Verified for V2 embedding."
 
-      - name: Give Gradlew Permission
+      - name: Generate Gradlew (if missing)
         run: |
           if [ ! -f "android/gradlew" ]; then
             echo "⚙️ Gradlew missing, generating..."
@@ -46,16 +52,16 @@ jobs:
           fi
           chmod +x android/gradlew
 
-      - name: Clean Gradle Cache before every build
+      - name: Clean Gradle Cache
         run: |
           rm -rf ~/.gradle/caches
           rm -rf .gradle
           flutter clean
 
-      - name: Sync dependencies
+      - name: Get Flutter Dependencies
         run: flutter pub get
 
-      - name: Fix Gradle plugin path
+      - name: Fix Gradle Plugin Path
         run: |
           echo "pluginManagement {" > android/settings.gradle
           echo "  repositories {" >> android/settings.gradle
