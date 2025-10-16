@@ -1,4 +1,4 @@
-// Apply Flutter build logic
+// Apply Flutter Gradle tools
 apply from: "../../packages/flutter_tools/gradle/flutter.gradle"
 
 plugins {
