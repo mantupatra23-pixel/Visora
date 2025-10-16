@@ -8,8 +8,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:8.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // ✅ This line ensures GitHub runner can access Flutter Gradle plugin
-        classpath "dev.flutter:flutter-gradle-plugin:1.0.0"
+        classpath "dev.flutter:flutter-gradle-plugin"
     }
 }
 
