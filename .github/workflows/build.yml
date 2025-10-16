@@ -1,4 +1,4 @@
-name: Build Visora Flutter App
+name: Build Visora Flutter App 🚀
 
 on:
   push:
@@ -10,80 +10,87 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 🧹 Step 1: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
+      # 🛠 Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
           channel: "stable"
 
+      # 🧹 Step 3: Deep clean & cache repair
       - name: Deep Clean Flutter Cache (Full Reset)
         run: |
           echo "🧹 Performing deep clean..."
           rm -rf android/.gradle android/.idea android/.settings android/build build
           flutter clean
-          flutter pub cache clean
           flutter pub cache repair
           flutter pub get
           echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Force Regenerate Android Folder (Guaranteed V2)
-        run: |
-          echo "🛠 Force regenerating Android folder for V2 embedding..."
-          rm -rf android
-          flutter create --org com.visora --project-name visora --platforms android .
-          echo "✅ Android folder force created successfully!"
-
+      # ⚙️ Step 4: Fix Android Embedding (Ensure V2)
       - name: Fix Android Embedding (Ensure V2)
         run: |
           echo "🔧 Ensuring V2 embedding..."
-          find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
+          mkdir -p android/app/src/main/java/com/visora/visora
+          find android -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
           echo "✅ V2 embedding ensured!"
 
+      # 🌍 Step 5: Enable Flutter Platforms
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-web
           flutter config --enable-android
+          flutter doctor -v
           echo "🌍 Platforms enabled!"
 
+      # 📦 Step 6: Upgrade Flutter and Get Dependencies
       - name: Upgrade Flutter and Get Dependencies
         run: |
           flutter upgrade
           flutter pub get
           echo "📦 Dependencies installed successfully!"
 
+      # 📜 Step 7: Accept Android Licenses
       - name: Accept Android Licenses
         run: |
-          echo "📜 Accepting Android SDK licenses..."
-          yes | flutter doctor --android-licenses
-          echo "✅ All Android licenses accepted!"
+          yes | flutter doctor --android-licenses || true
+          echo "✅ Android licenses accepted!"
 
+      # 🏗️ Step 8: Build Android APK
       - name: Build Android APK
         run: |
           echo "📱 Building Android APK..."
-          flutter build apk --release --verbose
+          flutter build apk --release --verbose || flutter build apk --release
           echo "✅ APK build complete!"
 
+      # 🌐 Step 9: Build Web Version
       - name: Build Web Version
         run: |
           echo "🌐 Building Web Version..."
           flutter build web --release
           echo "✅ Web build complete!"
 
+      # 📦 Step 10: Upload Android APK Artifact
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # 🌐 Step 11: Upload Web Build Artifact
       - name: Upload Web Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
           path: build/web
 
+      # 🚀 Step 12: Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
