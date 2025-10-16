@@ -1,3 +1,5 @@
+apply from: "../../packages/flutter_tools/gradle/flutter.gradle"
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
