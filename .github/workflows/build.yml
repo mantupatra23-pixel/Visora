@@ -9,24 +9,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/cirruslabs/flutter:3.24.0  # ✅ Preconfigured Flutter + Gradle image
+      image: ghcr.io/cirruslabs/flutter:3.24.0
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Flutter setup
-        run: flutter --version
+      - name: Verify Flutter installation
+        run: flutter doctor -v
 
-      - name: Get dependencies
+      - name: Prepare Android environment
+        run: |
+          mkdir -p $HOME/.gradle
+          echo "sdk.dir=/opt/android-sdk" > android/local.properties
+          echo "flutter.sdk=/opt/flutter" >> android/local.properties
+          echo "REPOSITORIES_SEARCH_PATHS=/opt/flutter/bin/cache/artifacts/engine" >> android/local.properties
+
+      - name: Sync dependencies
         run: |
           flutter clean
           flutter pub get
 
-      - name: Build Android APK
-        run: flutter build apk --release --verbose
+      - name: Fix Gradle plugin path
+        run: |
+          echo "pluginManagement {" > android/settings.gradle
+          echo "  repositories {" >> android/settings.gradle
+          echo "    google()" >> android/settings.gradle
+          echo "    mavenCentral()" >> android/settings.gradle
+          echo "    gradlePluginPortal()" >> android/settings.gradle
+          echo "    maven { url 'https://storage.googleapis.com/download.flutter.io' }" >> android/settings.gradle
+          echo "  }" >> android/settings.gradle
+          echo "}" >> android/settings.gradle
+          echo "" >> android/settings.gradle
+          echo "include ':app'" >> android/settings.gradle
 
-      - name: Build Web version
+      - name: Build Android APK
+        run: |
+          flutter build apk --release --verbose
+
+      - name: Build Web Version
         run: flutter build web --release
 
       - name: Upload Android APK
