@@ -24,7 +24,10 @@ jobs:
       - name: Deep Clean Flutter Cache (Full Reset)
         run: |
           echo "🧹 Performing deep clean..."
-          rm -rf android/.gradle android/.idea android/.settings android/build build
+          rm -rf android/.gradle
+          rm -rf android/.idea
+          rm -rf android/.settings
+          rm -rf android/build
           flutter clean
           flutter pub cache clean
           flutter pub cache repair
@@ -36,7 +39,7 @@ jobs:
           echo "🔁 Regenerating Android folder for V2 embedding..."
           if [ ! -f "pubspec.yaml" ]; then
             echo "⚙️ pubspec.yaml not found — creating temporary one..."
-            cat <<EOF > pubspec.yaml
+            cat > pubspec.yaml << 'EOF'
 name: visora
 description: Auto-generated Flutter project
 version: 1.0.0+1
