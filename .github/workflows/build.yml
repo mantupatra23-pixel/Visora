@@ -38,9 +38,52 @@ jobs:
       - name: Regenerate Android Folder (V2 Embedding)
         run: |
           echo "🔁 Regenerating Android folder for V2 embedding..."
-          rm -rf android
+name: Build Visora Flutter App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.0"
+          channel: "stable"
+
+      - name: Deep Clean Flutter Cache (Full Reset)
+        run: |
+          echo "🧹 Performing deep clean..."
+          rm -rf android/.gradle
+          rm -rf android/.idea
+          rm -rf android/.settings
+          rm -rf android/build
+          rm -rf build
+          flutter clean
+          flutter pub cache clean
+          flutter pub cache repair
+          flutter pub get
+          echo "✅ Flutter cache and old Android files cleared successfully!"
+
+      - name: Regenerate Android Folder (Safe Mode V2 Embedding)
+        run: |
+          echo "🔁 Regenerating Android folder for V2 embedding (Safe Mode)..."
+          if [ -d "android" ]; then
+            echo "⚠️ Old android folder found — renaming instead of deleting..."
+            mv android android_old_$(date +%s)
+          fi
           flutter create .
-          echo "✅ Android folder regenerated successfully!"
+          echo "✅ Android folder successfully recreated with V2 embedding!"
 
       - name: Fix Android Embedding (Ensure V2)
         run: |
@@ -52,6 +95,8 @@ jobs:
         run: |
           flutter config --enable-web
           flutter config --enable-android
+          flutter config --enable-ios
+          echo "🌍 Flutter platforms enabled!"
 
       - name: Upgrade Flutter and Get Dependencies
         run: |
@@ -70,6 +115,13 @@ jobs:
           echo "🌐 Building Web Version..."
           flutter build web --release
           echo "✅ Web build complete!"
+
+      - name: Build iOS (Optional - Skips if not on macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "🍏 Building iOS Version..."
+          flutter build ios --release --no-codesign
+          echo "✅ iOS build complete!"
 
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
