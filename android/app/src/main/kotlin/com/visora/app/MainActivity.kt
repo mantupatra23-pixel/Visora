@@ -1,4 +1,4 @@
-package com.visora.app
+package com.example.visora
 
 import io.flutter.embedding.android.FlutterActivity
 
