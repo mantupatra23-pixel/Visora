@@ -3,11 +3,13 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:8.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "dev.flutter:flutter-gradle-plugin"
+        // ✅ This line ensures GitHub runner can access Flutter Gradle plugin
+        classpath "dev.flutter:flutter-gradle-plugin:1.0.0"
     }
 }
 
@@ -15,6 +17,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
     }
 }
 
@@ -22,7 +25,6 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-
 subprojects {
     project.evaluationDependsOn(":app")
 }
