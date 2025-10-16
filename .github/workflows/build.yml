@@ -24,20 +24,28 @@ jobs:
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
           echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
-      # ✅ Give Gradle Permission
-      - name: Give Gradlew Permission
-        run: chmod +x android/gradlew
+      # ✅ Force create android folder if missing
+      - name: Ensure Android folder exists
+        run: |
+          if [ ! -d "android" ]; then
+            echo "⚙️ Creating android folder..."
+            flutter create --platforms android .
+          fi
+          chmod +x android/gradlew
+          echo "✅ Android folder ready with gradlew permission."
 
       # ✅ Clean Gradle cache before every build
       - name: Clean Gradle Cache
         run: |
           rm -rf ~/.gradle/caches
-          rm -rf ~/.gradle/wrapper
+          rm -rf .gradle/wrapper
           flutter clean
 
+      # ✅ Sync dependencies
       - name: Sync dependencies
         run: flutter pub get
 
+      # ✅ Fix Gradle plugin path
       - name: Fix Gradle plugin path
         run: |
           echo "pluginManagement {" > android/settings.gradle
@@ -50,18 +58,34 @@ jobs:
           echo "}" >> android/settings.gradle
           echo "include ':app'" >> android/settings.gradle
 
+      # ✅ Accept Android Licenses
+      - name: Accept Android Licenses
+        run: |
+          yes | flutter doctor --android-licenses
+          echo "✅ All Android SDK licenses accepted!"
+
+      # ✅ Build Android APK
       - name: Build Android APK
-        run: flutter build apk --release --verbose
+        run: |
+          echo "📱 Building Android APK..."
+          flutter build apk --release --verbose
+          echo "✅ APK build complete!"
 
+      # ✅ Build Web Version
       - name: Build Web Version
-        run: flutter build web --release
+        run: |
+          echo "🌐 Building Web Version..."
+          flutter build web --release
+          echo "✅ Web build complete!"
 
+      # ✅ Upload Android APK Artifact
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # ✅ Upload Web Build Artifact
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
