@@ -24,10 +24,7 @@ jobs:
       - name: Deep Clean Flutter Cache (Full Reset)
         run: |
           echo "🧹 Performing deep clean..."
-          rm -rf android/.gradle
-          rm -rf android/.idea
-          rm -rf android/.settings
-          rm -rf android/build
+          rm -rf android/.gradle android/.idea android/.settings android/build build
           flutter clean
           flutter pub cache clean
           flutter pub cache repair
