@@ -2,13 +2,13 @@ name: Build Visora Flutter App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,27 +16,26 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.0"
-          channel: "stable"
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
       - name: Clean and get dependencies
-        run: flutter clean && flutter pub get
-
-      - name: Fix Android embedding (V2)
         run: |
-          mkdir -p android/app/src/main/java/com/visora/app
-          echo "package com.visora.app;
+          flutter clean
+          flutter pub get
 
-          import io.flutter.embedding.android.FlutterActivity;
+      - name: Enable Android and Web
+        run: |
+          flutter config --enable-web
+          flutter config --enable-android
 
-          public class MainActivity extends FlutterActivity {
-          }" > android/app/src/main/java/com/visora/app/MainActivity.java
+      - name: Build Android APK using Flutter CLI
+        run: |
+          flutter build apk --release --verbose
 
-      - name: Build Android APK
-        run: flutter build apk --release
-
-      - name: Build Web version
-        run: flutter build web --release
+      - name: Build Web Version
+        run: |
+          flutter build web --release
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
@@ -49,13 +48,3 @@ jobs:
         with:
           name: visora-web-build
           path: build/web
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk, build/web/**
-          tag_name: v${{ github.run_number }}
-          name: Visora Auto Release v${{ github.run_number }}
-          body: "Automatic Build for Visora | Android APK Ready | Web Build Complete | Build ID: ${{ github.run_id }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
