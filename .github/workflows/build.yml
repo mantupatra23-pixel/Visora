@@ -29,18 +29,25 @@ jobs:
           flutter pub get
           echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Regenerate Android Folder (V2 Embedding)
+      - name: Safe Regenerate Android Folder (V2 Embedding)
         run: |
-          echo "🛠 Regenerating Android folder for V2 embedding..."
+          echo "🛠 Safe regeneration of Android folder for V2 embedding..."
           if [ -d "android" ]; then
             mv android android_backup_$(date +%s)
           fi
-          flutter create .
-          echo "✅ Android folder regenerated successfully!"
+          flutter create --platforms android .
+          if [ ! -d "android" ]; then
+            echo "⚠️ Fallback: manually creating Android folder..."
+            mkdir -p android/app/src/main/java/com/visora/app
+            echo "package com.visora.app;" > android/app/src/main/java/com/visora/app/MainActivity.java
+            echo "import io.flutter.embedding.android.FlutterActivity;" >> android/app/src/main/java/com/visora/app/MainActivity.java
+            echo "public class MainActivity extends FlutterActivity {}" >> android/app/src/main/java/com/visora/app/MainActivity.java
+          fi
+          echo "✅ Android folder safely regenerated!"
 
       - name: Fix Android Embedding (Ensure V2)
         run: |
-          echo "🔧 Migrating Android V1 embedding to V2..."
+          echo "🔧 Migrating any V1 references to V2..."
           find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
           echo "✅ Embedding migration complete!"
 
