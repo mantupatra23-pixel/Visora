@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash  # ✅ global bash shell
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -44,7 +44,7 @@ jobs:
             echo "✅ Android folder created successfully!"
           fi
 
-     - name: Auto migrate to Flutter V2 embedding
+      - name: Auto migrate to Flutter V2 embedding
         run: |
           echo "🔄 Checking Android embedding migration..."
           if grep -q "io.flutter.app.FlutterActivity" -r android/app/src/main; then
@@ -56,7 +56,6 @@ jobs:
           else
             echo "✅ Already using V2 embedding — no changes needed."
           fi
-
 
       - name: Generate Gradlew (if missing)
         run: |
