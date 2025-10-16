@@ -18,12 +18,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
           git clone https://github.com/flutter/flutter.git -b stable /opt/flutter
-          echo "export PATH=\$PATH:/opt/flutter/bin" >> $GITHUB_ENV
-          export PATH=$PATH:/opt/flutter/bin
-          flutter doctor -v
+          echo "/opt/flutter/bin" >> $GITHUB_PATH
+          echo "PATH=\$PATH:/opt/flutter/bin" >> $GITHUB_ENV
 
       - name: Verify Flutter CLI
-        run: flutter --version
+        run: |
+          source $GITHUB_ENV
+          flutter doctor -v
+          flutter --version
 
       - name: Prepare Android environment
         run: |
@@ -75,10 +77,14 @@ jobs:
           echo "include ':app'" >> android/settings.gradle
 
       - name: Build Android APK
-        run: flutter build apk --release --verbose || flutter build apk --release
+        run: |
+          source $GITHUB_ENV
+          flutter build apk --release --verbose || flutter build apk --release
 
       - name: Build Web Version
-        run: flutter build web --release
+        run: |
+          source $GITHUB_ENV
+          flutter build web --release
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
