@@ -9,8 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      # 🧹 Step 1: Checkout repository
+      # ✅ Step 1: Checkout Clean Repo
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -23,74 +24,76 @@ jobs:
           flutter-version: "3.24.0"
           channel: "stable"
 
-      # 🧹 Step 3: Deep clean & cache repair
-      - name: Deep Clean Flutter Cache (Full Reset)
+      # 🧹 Step 3: Full Clean
+      - name: Clean Flutter Project
         run: |
-          echo "🧹 Performing deep clean..."
-          rm -rf android/.gradle android/.idea android/.settings android/build build
+          echo "🧹 Cleaning Flutter project..."
+          rm -rf android .dart_tool build
           flutter clean
           flutter pub cache repair
           flutter pub get
-          echo "✅ Flutter cache and old Android files cleared successfully!"
+          echo "✅ Cleaned project and dependencies"
 
-      # ⚙️ Step 4: Fix Android Embedding (Ensure V2)
-      - name: Fix Android Embedding (Ensure V2)
+      # ⚙️ Step 4: Recreate Android Folder (Guaranteed V2)
+      - name: Recreate Android Folder (V2)
         run: |
-          echo "🔧 Ensuring V2 embedding..."
-          mkdir -p android/app/src/main/java/com/visora/visora
-          find android -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
+          echo "📁 Recreating Android folder with V2 embedding..."
+          rm -rf android
+          flutter create --platforms android .
+          echo "✅ Android folder created successfully with V2 embedding."
+
+      # 🧩 Step 5: Ensure Correct Embedding in MainActivity
+      - name: Fix MainActivity Embedding
+        run: |
+          echo "🔧 Ensuring MainActivity uses V2 embedding..."
+          find android/app/src/main/java -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \; || true
           echo "✅ V2 embedding ensured!"
 
-      # 🌍 Step 5: Enable Flutter Platforms
+      # 🌍 Step 6: Enable Platforms & Verify Flutter Doctor
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-web
           flutter config --enable-android
           flutter doctor -v
-          echo "🌍 Platforms enabled!"
+          echo "🌍 Platforms verified"
 
-      # 📦 Step 6: Upgrade Flutter and Get Dependencies
-      - name: Upgrade Flutter and Get Dependencies
-        run: |
-          flutter upgrade
-          flutter pub get
-          echo "📦 Dependencies installed successfully!"
+      # 📦 Step 7: Install Dependencies
+      - name: Install Dependencies
+        run: flutter pub get
 
-      # 📜 Step 7: Accept Android Licenses
+      # 📜 Step 8: Accept Android Licenses
       - name: Accept Android Licenses
-        run: |
-          yes | flutter doctor --android-licenses || true
-          echo "✅ Android licenses accepted!"
+        run: yes | flutter doctor --android-licenses || true
 
-      # 🏗️ Step 8: Build Android APK
+      # 🏗 Step 9: Build Android APK
       - name: Build Android APK
         run: |
-          echo "📱 Building Android APK..."
-          flutter build apk --release --verbose || flutter build apk --release
+          echo "📱 Building release APK..."
+          flutter build apk --release
           echo "✅ APK build complete!"
 
-      # 🌐 Step 9: Build Web Version
+      # 🌐 Step 10: Build Web Version
       - name: Build Web Version
         run: |
-          echo "🌐 Building Web Version..."
+          echo "🌐 Building web version..."
           flutter build web --release
           echo "✅ Web build complete!"
 
-      # 📦 Step 10: Upload Android APK Artifact
-      - name: Upload Android APK Artifact
+      # 📤 Step 11: Upload Android APK Artifact
+      - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # 🌐 Step 11: Upload Web Build Artifact
-      - name: Upload Web Build Artifact
+      # 📤 Step 12: Upload Web Build Artifact
+      - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
           path: build/web
 
-      # 🚀 Step 12: Create GitHub Release
+      # 🚀 Step 13: Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
