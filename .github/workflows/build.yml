@@ -1,4 +1,4 @@
-name: Build Visora Flutter App 🚀
+name: Build Visora Flutter App
 
 on:
   push:
@@ -22,30 +22,21 @@ jobs:
 
       - name: Clean Flutter Project
         run: |
-          echo "🧹 Cleaning Flutter project..."
           flutter clean
           flutter pub cache repair
           flutter pub get
-          echo "✅ Flutter project cleaned and dependencies restored!"
 
-      - name: Fix Android Embedding (Auto Path Detect)
+      - name: Fix Android Embedding
         run: |
-          echo "🔧 Searching for MainActivity.java or .kt ..."
           MAIN_JAVA=$(find android -type f -name "MainActivity.java" | head -n 1 || true)
           MAIN_KOTLIN=$(find android -type f -name "MainActivity.kt" | head -n 1 || true)
-
           if [ -n "$MAIN_JAVA" ]; then
-            echo "📁 Found Java MainActivity: $MAIN_JAVA"
             sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' "$MAIN_JAVA" || true
             sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' "$MAIN_JAVA" || true
-            echo "✅ Migrated Java MainActivity to V2."
           elif [ -n "$MAIN_KOTLIN" ]; then
-            echo "📁 Found Kotlin MainActivity: $MAIN_KOTLIN"
             sed -i 's/import io.flutter.app.FlutterActivity/import io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
             sed -i 's/: FlutterActivity/: io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
-            echo "✅ Migrated Kotlin MainActivity to V2."
           else
-            echo "⚠️ No MainActivity found. Creating new one..."
             mkdir -p android/app/src/main/java/com/visora/app
             cat <<'EOF' > android/app/src/main/java/com/visora/app/MainActivity.java
 package com.visora.app;
@@ -55,42 +46,19 @@ import io.flutter.embedding.android.FlutterActivity;
 public class MainActivity extends FlutterActivity {
 }
 EOF
-            echo "✅ New MainActivity created with V2 embedding!"
           fi
-
-          echo "🔍 Verifying embedding..."
-          grep -R "io.flutter.embedding.android.FlutterActivity" android/app/src/main/java || true
-          echo "✅ V2 embedding verification complete!"
 
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-android
           flutter config --enable-web
           flutter doctor -v
-          echo "🌍 Platforms enabled!"
-
-      - name: Accept Android Licenses
-        run: |
-          yes | flutter doctor --android-licenses || true
-          echo "✅ Android licenses accepted!"
-
-      - name: Upgrade Flutter and Get Dependencies
-        run: |
-          flutter upgrade
-          flutter pub get
-          echo "📦 Dependencies installed successfully!"
 
       - name: Build Android APK
-        run: |
-          echo "📱 Building release APK..."
-          flutter build apk --release --verbose || flutter build apk --release
-          echo "✅ APK build complete!"
+        run: flutter build apk --release --verbose || flutter build apk --release
 
       - name: Build Web Version
-        run: |
-          echo "🌐 Building web version..."
-          flutter build web --release
-          echo "✅ Web build complete!"
+        run: flutter build web --release
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
@@ -113,9 +81,9 @@ EOF
           tag_name: v${{ github.run_number }}
           name: "Visora Auto Release v${{ github.run_number }}"
           body: |
-            🚀 **Automatic Build for Visora**
-            ✅ Android APK ready 
-            🌐 Web Build Complete
-            🕒 Build ID: ${{ github.run_id }}
+            Automatic Build for Visora
+            Android APK Ready
+            Web Build Complete
+            Build ID: ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
