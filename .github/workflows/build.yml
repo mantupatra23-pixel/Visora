@@ -29,27 +29,18 @@ jobs:
           flutter pub get
           echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Safe Regenerate Android Folder (V2 Embedding)
+      - name: Force Regenerate Android Folder (Guaranteed V2)
         run: |
-          echo "🛠 Safe regeneration of Android folder for V2 embedding..."
-          if [ -d "android" ]; then
-            mv android android_backup_$(date +%s)
-          fi
-          flutter create --platforms android .
-          if [ ! -d "android" ]; then
-            echo "⚠️ Fallback: manually creating Android folder..."
-            mkdir -p android/app/src/main/java/com/visora/app
-            echo "package com.visora.app;" > android/app/src/main/java/com/visora/app/MainActivity.java
-            echo "import io.flutter.embedding.android.FlutterActivity;" >> android/app/src/main/java/com/visora/app/MainActivity.java
-            echo "public class MainActivity extends FlutterActivity {}" >> android/app/src/main/java/com/visora/app/MainActivity.java
-          fi
-          echo "✅ Android folder safely regenerated!"
+          echo "🛠 Force regenerating Android folder for V2 embedding..."
+          rm -rf android
+          flutter create --org com.visora --project-name visora --platforms android .
+          echo "✅ Android folder force created successfully!"
 
       - name: Fix Android Embedding (Ensure V2)
         run: |
-          echo "🔧 Migrating any V1 references to V2..."
+          echo "🔧 Ensuring V2 embedding..."
           find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
-          echo "✅ Embedding migration complete!"
+          echo "✅ V2 embedding ensured!"
 
       - name: Enable Flutter Platforms
         run: |
