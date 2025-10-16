@@ -1,0 +1,8 @@
+include ':app'
+rootProject.name = "Visora"
+
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+    settingsDir.parentFile,
+    'flutter_settings.gradle'
+))
