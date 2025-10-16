@@ -8,84 +8,44 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/cirruslabs/flutter:3.24.0
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Flutter installation
-        run: flutter doctor -v
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      - name: Prepare Android environment
+      - name: Ensure gradlew exists
         run: |
-          mkdir -p $HOME/.gradle
-          echo "sdk.dir=/opt/android-sdk" > android/local.properties
-          echo "flutter.sdk=/opt/flutter" >> android/local.properties
-
-      # ✅ Force create android folder if missing
-      - name: Ensure Android folder exists
-        run: |
-          if [ ! -d "android" ]; then
-            echo "⚙️ Creating android folder..."
-            flutter create --platforms android .
+          if [ ! -f "android/gradlew" ]; then
+            echo "gradlew missing... generating via flutter create ."
+            flutter create .
           fi
-          chmod +x android/gradlew
-          echo "✅ Android folder ready with gradlew permission."
 
-      # ✅ Clean Gradle cache before every build
-      - name: Clean Gradle Cache
+      - name: Give Gradlew Permission
+        run: chmod +x android/gradlew
+
+      - name: Clean & Get Dependencies
         run: |
-          rm -rf ~/.gradle/caches
-          rm -rf .gradle/wrapper
           flutter clean
+          flutter pub get
 
-      # ✅ Sync dependencies
-      - name: Sync dependencies
-        run: flutter pub get
-
-      # ✅ Fix Gradle plugin path
-      - name: Fix Gradle plugin path
-        run: |
-          echo "pluginManagement {" > android/settings.gradle
-          echo "  repositories {" >> android/settings.gradle
-          echo "    google()" >> android/settings.gradle
-          echo "    mavenCentral()" >> android/settings.gradle
-          echo "    gradlePluginPortal()" >> android/settings.gradle
-          echo "    maven { url 'https://storage.googleapis.com/download.flutter.io' }" >> android/settings.gradle
-          echo "  }" >> android/settings.gradle
-          echo "}" >> android/settings.gradle
-          echo "include ':app'" >> android/settings.gradle
-
-      # ✅ Accept Android Licenses
-      - name: Accept Android Licenses
-        run: |
-          yes | flutter doctor --android-licenses
-          echo "✅ All Android SDK licenses accepted!"
-
-      # ✅ Build Android APK
       - name: Build Android APK
-        run: |
-          echo "📱 Building Android APK..."
-          flutter build apk --release --verbose
-          echo "✅ APK build complete!"
+        run: flutter build apk --release
 
-      # ✅ Build Web Version
       - name: Build Web Version
-        run: |
-          echo "🌐 Building Web Version..."
-          flutter build web --release
-          echo "✅ Web build complete!"
+        run: flutter build web --release
 
-      # ✅ Upload Android APK Artifact
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # ✅ Upload Web Build Artifact
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
