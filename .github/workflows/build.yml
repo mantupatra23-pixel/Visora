@@ -33,21 +33,24 @@ jobs:
 
       - name: Regenerate Android Folder (Safe Mode V2 Embedding)
         run: |
-          echo "🔁 Regenerating Android folder for V2 embedding..."
+          echo "🔁 Regenerating Android folder for V2 embedding (Safe Mode)..."
           if [ ! -f "pubspec.yaml" ]; then
             echo "⚙️ pubspec.yaml not found — creating temporary one..."
-            cat <<EOF > pubspec.yaml
-            name: visora
-            description: Auto-generated Flutter project
-            version: 1.0.0+1
-            environment:
-              sdk: ">=3.0.0 <4.0.0"
-            dependencies:
-              flutter:
-                sdk: flutter
-            flutter:
-              uses-material-design: true
-            EOF
+            cat > pubspec.yaml << 'EOF'
+name: visora
+description: Auto-generated Flutter project
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+EOF
           fi
 
           if [ -d "android" ]; then
