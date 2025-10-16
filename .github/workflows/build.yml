@@ -8,13 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash  # ✅ global shell set to bash
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Flutter CLI
-        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
@@ -23,7 +25,6 @@ jobs:
           echo "PATH=\$PATH:/opt/flutter/bin" >> $GITHUB_ENV
 
       - name: Verify Flutter CLI
-        shell: bash
         run: |
           source $GITHUB_ENV
           export PATH=$PATH:/opt/flutter/bin
@@ -31,14 +32,12 @@ jobs:
           flutter --version
 
       - name: Prepare Android environment
-        shell: bash
         run: |
           mkdir -p $HOME/.gradle
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
           echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
       - name: Ensure Android folder exists (auto create if missing)
-        shell: bash
         run: |
           if [ ! -d "android" ]; then
             echo "⚙️ Android folder missing! Recreating..."
@@ -46,7 +45,6 @@ jobs:
           fi
 
       - name: Auto migrate to Flutter V2 embedding
-        shell: bash
         run: |
           echo "🚀 Checking Android embedding..."
           find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
@@ -54,7 +52,6 @@ jobs:
           echo "✅ Migration done! Verified for V2 embedding."
 
       - name: Generate Gradlew (if missing)
-        shell: bash
         run: |
           if [ ! -f "android/gradlew" ]; then
             echo "⚙️ Gradlew missing, generating..."
@@ -63,18 +60,15 @@ jobs:
           chmod +x android/gradlew
 
       - name: Clean Gradle Cache
-        shell: bash
         run: |
           rm -rf ~/.gradle/caches
           rm -rf .gradle
           flutter clean
 
       - name: Get Flutter Dependencies
-        shell: bash
         run: flutter pub get
 
       - name: Fix Gradle Plugin Path
-        shell: bash
         run: |
           echo "pluginManagement {" > android/settings.gradle
           echo "  repositories {" >> android/settings.gradle
@@ -87,13 +81,11 @@ jobs:
           echo "include ':app'" >> android/settings.gradle
 
       - name: Build Android APK
-        shell: bash
         run: |
           source $GITHUB_ENV
           flutter build apk --release --verbose || flutter build apk --release
 
       - name: Build Web Version
-        shell: bash
         run: |
           source $GITHUB_ENV
           flutter build web --release
