@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'dev.flutter.flutter-gradle-plugin'
 }
-
-apply from: "../../packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.visora.app"
@@ -21,12 +20,23 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
 flutter {
-    source "../.."
+    source '../..'
 }
 
 dependencies {
