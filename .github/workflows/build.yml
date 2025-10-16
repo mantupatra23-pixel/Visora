@@ -18,8 +18,17 @@ jobs:
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+          flutter-version: "3.24.0"
+          channel: "stable"
+
+      - name: Clear Flutter cache completely
+        run: |
+          echo "🧹 Clearing Flutter cache..."
+          flutter clean
+          flutter pub cache repair
+          rm -rf ~/.pub-cache
+          rm -rf /opt/hostedtoolcache/flutter
+          echo "✅ Flutter cache cleared successfully!"
 
       - name: enable platforms
         run: |
@@ -34,18 +43,24 @@ jobs:
 
       - name: fix android embedding
         run: |
-          echo "migrating android v1 embedding to v2..."
-          find . -type f -name "*.java" -exec sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' {} +
-          echo "embedding migration complete ✅"
+          echo "🚀 Migrating Android v1 embedding to v2..."
+          find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
+          echo "✅ Embedding migration complete!"
 
       - name: install dependencies
         run: flutter pub get
 
       - name: build android apk
-        run: flutter build apk --release --verbose || flutter build apk --release
+        run: |
+          echo "🏗️ Building Android APK..."
+          flutter build apk --release --verbose || flutter build apk --release
+          echo "✅ APK build complete!"
 
       - name: build web version
-        run: flutter build web --release
+        run: |
+          echo "🌐 Building Web Version..."
+          flutter build web --release
+          echo "✅ Web build complete!"
 
       - name: upload android apk
         uses: actions/upload-artifact@v4
