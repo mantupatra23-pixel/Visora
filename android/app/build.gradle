@@ -1,10 +1,9 @@
-// Apply Flutter Gradle tools
+// Apply Flutter build logic
 apply from: "../../packages/flutter_tools/gradle/flutter.gradle"
 
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
@@ -20,9 +19,18 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file(System.getenv("HOME") + "/.android/debug.keystore")
+            storePassword 'android'
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
