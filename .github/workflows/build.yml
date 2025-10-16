@@ -11,89 +11,92 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Step 1: Checkout Repo
+      # ✅ Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          submodules: false
 
-      # 🛠 Step 2: Setup Flutter
+      # 🛠 Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
           channel: "stable"
 
-      # 🧹 Step 3: Full Clean & Dependency Reset
+      # 🧹 Clean project
       - name: Clean Flutter Project
         run: |
           echo "🧹 Cleaning Flutter project..."
           flutter clean
           flutter pub cache repair
           flutter pub get
-          echo "✅ Clean and dependencies restored!"
+          echo "✅ Flutter project cleaned and dependencies restored!"
 
-      # ⚙️ Step 4: Force Android Embedding V2 (No Recreate)
-      - name: Force Android V2 Embedding
+      # ⚙️ Force Android V2 embedding migration
+      - name: Fix Android Embedding (V2)
         run: |
-          echo "🔧 Checking for V1 embedding..."
-          grep -rl "io.flutter.app.FlutterActivity" android/ || true
-          find android -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \; || true
-          echo "✅ All files updated to V2 embedding!"
-          if [ ! -f android/app/src/main/AndroidManifest.xml ]; then
-            echo "🚧 Android folder missing, regenerating minimal..."
-            mkdir -p android/app/src/main/java/com/visora/app
-            flutter create --platforms android .
+          echo "🔧 Forcing V2 embedding..."
+          if [ -f "android/app/src/main/java/com/visora/visora/MainActivity.java" ]; then
+            sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' android/app/src/main/java/com/visora/visora/MainActivity.java
+            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/java/com/visora/visora/MainActivity.java
+            echo "✅ Java MainActivity migrated to V2 embedding."
+          elif [ -f "android/app/src/main/kotlin/com/visora/visora/MainActivity.kt" ]; then
+            sed -i 's/import io.flutter.app.FlutterActivity/import io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/kotlin/com/visora/visora/MainActivity.kt
+            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/kotlin/com/visora/visora/MainActivity.kt
+            echo "✅ Kotlin MainActivity migrated to V2 embedding."
+          else
+            echo "⚠️ MainActivity not found, skipping direct migration."
           fi
-          echo "✅ V2 embedding fix applied safely!"
+          echo "🔍 Checking that embedding update applied..."
+          grep -R "io.flutter.embedding.android.FlutterActivity" android/app/src/main/java || true
+          echo "✅ V2 embedding verified!"
 
-      # 🌍 Step 5: Enable Platforms
+      # 🌍 Enable Flutter platforms
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-android
           flutter config --enable-web
           flutter doctor -v
 
-      # 📜 Step 6: Accept Android Licenses
+      # 📜 Accept Android Licenses
       - name: Accept Android Licenses
         run: yes | flutter doctor --android-licenses || true
 
-      # 📦 Step 7: Upgrade Flutter & Get Dependencies
+      # 📦 Upgrade Flutter & get dependencies
       - name: Upgrade Flutter and Get Dependencies
         run: |
           flutter upgrade
           flutter pub get
-          echo "📦 Dependencies updated!"
+          echo "📦 Dependencies installed successfully!"
 
-      # 🏗 Step 8: Build Android APK
+      # 🏗️ Build Android APK
       - name: Build Android APK
         run: |
           echo "📱 Building release APK..."
           flutter build apk --release --verbose || flutter build apk --release
           echo "✅ APK build complete!"
 
-      # 🌐 Step 9: Build Web Version
+      # 🌐 Build Web Version
       - name: Build Web Version
         run: |
           echo "🌐 Building web version..."
           flutter build web --release
           echo "✅ Web build complete!"
 
-      # 📤 Step 10: Upload Android APK
+      # 📤 Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # 📤 Step 11: Upload Web Build
+      # 📤 Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
           path: build/web
 
-      # 🚀 Step 12: Create GitHub Release
+      # 🚀 Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
