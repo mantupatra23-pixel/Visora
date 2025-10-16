@@ -1,3 +1,4 @@
+
 name: Build Visora Flutter App
 
 on:
@@ -28,20 +29,18 @@ jobs:
       - name: Fix Android embedding
         run: |
           mkdir -p android/app/src/main/java/com/visora/app
-          echo 'package com.visora.app;
+          echo "package com.visora.app;
 
 import io.flutter.embedding.android.FlutterActivity;
 
 public class MainActivity extends FlutterActivity {
-}' > android/app/src/main/java/com/visora/app/MainActivity.java
+}" > android/app/src/main/java/com/visora/app/MainActivity.java
 
       - name: Build Android APK
-        run: |
-          flutter build apk --release
+        run: flutter build apk --release
 
       - name: Build Web version
-        run: |
-          flutter build web --release
+        run: flutter build web --release
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
