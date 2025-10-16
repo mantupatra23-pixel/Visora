@@ -1,5 +1,5 @@
 name: visora
-description: Visora AI Video Creator
+description: visora ai video creator
 publish_to: "none"
 version: 1.0.0+1
 
@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.0
   google_fonts: ^6.0.0
   url_launcher: ^6.2.5
   provider: ^6.1.2
