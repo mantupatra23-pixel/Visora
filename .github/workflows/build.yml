@@ -24,6 +24,10 @@ jobs:
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
           echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
+      # ✅ Give Gradle Permission
+      - name: Give Gradlew Permission
+        run: chmod +x android/gradlew
+
       # ✅ Clean Gradle cache before every build
       - name: Clean Gradle Cache
         run: |
@@ -32,8 +36,7 @@ jobs:
           flutter clean
 
       - name: Sync dependencies
-        run: |
-          flutter pub get
+        run: flutter pub get
 
       - name: Fix Gradle plugin path
         run: |
