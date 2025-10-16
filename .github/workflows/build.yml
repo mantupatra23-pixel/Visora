@@ -1,4 +1,4 @@
-name: Build Visora Flutter App
+name: Build visora Flutter App
 
 on:
   push:

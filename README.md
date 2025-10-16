@@ -1,4 +1,4 @@
-# Visora Template
+# visora Template
 
 This is a Flutter template with:
 - Auto build & release on GitHub  

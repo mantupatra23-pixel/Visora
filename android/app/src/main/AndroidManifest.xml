@@ -3,7 +3,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="Visora"
+        android:label="visora"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

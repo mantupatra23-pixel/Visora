@@ -1,6 +1,6 @@
 [submodule "visora"]
     path = visora
-    url = https://github.com/mantupatra23-pixel/Visora.git
+    url = https://github.com/mantupatra23-pixel/visora.git
 
 [submodule "flutter"]
     path = flutter
