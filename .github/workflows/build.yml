@@ -1,4 +1,4 @@
-name: Build and Release Visora Flutter App
+name: Build Visora Flutter App
 
 on:
   push:
@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build Flutter App and Create GitHub Release
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,35 +29,14 @@ jobs:
           flutter pub get
           echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Regenerate Android Folder (Safe Mode V2 Embedding)
+      - name: Regenerate Android Folder (V2 Embedding)
         run: |
           echo "🔁 Regenerating Android folder for V2 embedding..."
-          if [ ! -f "pubspec.yaml" ]; then
-            echo "⚙️ pubspec.yaml not found — creating temporary one..."
-            cat > pubspec.yaml << 'EOF'
-name: visora
-description: Auto-generated Flutter project
-version: 1.0.0+1
-
-environment:
-  sdk: ">=3.0.0 <4.0.0"
-
-dependencies:
-  flutter:
-    sdk: flutter
-
-flutter:
-  uses-material-design: true
-EOF
-          fi
-
           if [ -d "android" ]; then
-            echo "⚠️ Old android folder found — renaming instead of deleting..."
-            mv android android_old_$(date +%s)
+            mv android android_backup_$(date +%s)
           fi
-
           flutter create .
-          echo "✅ Android folder successfully recreated with V2 embedding!"
+          echo "✅ Android folder regenerated successfully!"
 
       - name: Fix Android Embedding (Ensure V2)
         run: |
@@ -71,8 +48,7 @@ EOF
         run: |
           flutter config --enable-web
           flutter config --enable-android
-          flutter config --enable-ios
-          echo "🌍 Flutter platforms enabled!"
+          echo "🌍 Platforms enabled!"
 
       - name: Upgrade Flutter and Get Dependencies
         run: |
@@ -111,10 +87,9 @@ EOF
           tag_name: v${{ github.run_number }}
           name: "Visora Auto Release v${{ github.run_number }}"
           body: |
-            🚀 **Automatic Release Generated for Visora**
-            ✅ Android APK build successful
-            🌐 Web build included
-            📅 Build Run ID: ${{ github.run_id }}
-            🏷️ Tag: v${{ github.run_number }}
+            🚀 **Automatic Build for Visora**
+            ✅ Android APK Ready
+            🌐 Web Build Complete
+            🕒 Build ID: ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
