@@ -30,6 +30,13 @@ jobs:
           rm -rf /opt/hostedtoolcache/flutter
           echo "✅ Flutter cache cleared successfully!"
 
+      - name: Reload Flutter Path
+        run: |
+          echo "🔁 Reloading Flutter PATH..."
+          export PATH="$PATH:$HOME/.pub-cache/bin:/opt/hostedtoolcache/flutter/bin"
+          flutter --version
+          echo "✅ Flutter reloaded and verified!"
+
       - name: enable platforms
         run: |
           flutter config --enable-web
