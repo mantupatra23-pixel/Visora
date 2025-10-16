@@ -33,10 +33,10 @@ jobs:
 
       - name: Regenerate Android Folder (Safe Mode V2 Embedding)
         run: |
-          echo "🔁 Regenerating Android folder for V2 embedding (Safe Mode)..."
+          echo "🔁 Regenerating Android folder for V2 embedding..."
           if [ ! -f "pubspec.yaml" ]; then
             echo "⚙️ pubspec.yaml not found — creating temporary one..."
-            cat > pubspec.yaml << 'EOF'
+            cat <<EOF > pubspec.yaml
 name: visora
 description: Auto-generated Flutter project
 version: 1.0.0+1
@@ -112,9 +112,9 @@ EOF
           name: "Visora Auto Release v${{ github.run_number }}"
           body: |
             🚀 **Automatic Release Generated for Visora**
-            - ✅ Android APK build successful
-            - 🌐 Web build included
-            - 📅 Build Run ID: ${{ github.run_id }}
-            - 🏷️ Tag: v${{ github.run_number }}
+            ✅ Android APK build successful
+            🌐 Web build included
+            📅 Build Run ID: ${{ github.run_id }}
+            🏷️ Tag: v${{ github.run_number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
