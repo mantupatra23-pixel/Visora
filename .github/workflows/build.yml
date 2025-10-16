@@ -1,48 +1,69 @@
-name: Build Visora App
+name: Build Visora Flutter App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.24.0
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+      - name: Verify Flutter installation
+        run: flutter doctor -v
 
-      - name: Verify lowercase name
+      - name: Prepare Android environment
         run: |
-          grep -i "name: visora" pubspec.yaml || (echo "❌ Invalid name" && exit 1)
+          mkdir -p $HOME/.gradle
+          echo "sdk.dir=/opt/android-sdk" > android/local.properties
+          echo "flutter.sdk=/opt/flutter" >> android/local.properties
 
-      - name: Clean and Get Dependencies
+      # ✅ Give Gradle Permission
+      - name: Give Gradlew Permission
+        run: chmod +x android/gradlew
+
+      # ✅ Clean Gradle cache before every build
+      - name: Clean Gradle Cache
         run: |
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/wrapper
           flutter clean
-          flutter pub get
+
+      - name: Sync dependencies
+        run: flutter pub get
+
+      - name: Fix Gradle plugin path
+        run: |
+          echo "pluginManagement {" > android/settings.gradle
+          echo "  repositories {" >> android/settings.gradle
+          echo "    google()" >> android/settings.gradle
+          echo "    mavenCentral()" >> android/settings.gradle
+          echo "    gradlePluginPortal()" >> android/settings.gradle
+          echo "    maven { url 'https://storage.googleapis.com/download.flutter.io' }" >> android/settings.gradle
+          echo "  }" >> android/settings.gradle
+          echo "}" >> android/settings.gradle
+          echo "include ':app'" >> android/settings.gradle
 
       - name: Build Android APK
-        run: flutter build apk --release
+        run: flutter build apk --release --verbose
 
       - name: Build Web Version
         run: flutter build web --release
 
-      - name: Upload APK
+      - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-apk
+          name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: visora-web
+          name: visora-web-build
           path: build/web
