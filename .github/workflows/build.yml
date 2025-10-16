@@ -8,34 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.24.0  # ✅ Preconfigured Flutter + Gradle image
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+      - name: Verify Flutter setup
+        run: flutter --version
 
-      - name: Clean and get dependencies
+      - name: Get dependencies
         run: |
           flutter clean
           flutter pub get
 
-      - name: Enable Android and Web
-        run: |
-          flutter config --enable-web
-          flutter config --enable-android
+      - name: Build Android APK
+        run: flutter build apk --release --verbose
 
-      - name: Build Android APK using Flutter CLI
-        run: |
-          flutter build apk --release --verbose
-
-      - name: Build Web Version
-        run: |
-          flutter build web --release
+      - name: Build Web version
+        run: flutter build web --release
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
