@@ -23,11 +23,16 @@ jobs:
           mkdir -p $HOME/.gradle
           echo "sdk.dir=/opt/android-sdk" > android/local.properties
           echo "flutter.sdk=/opt/flutter" >> android/local.properties
-          echo "REPOSITORIES_SEARCH_PATHS=/opt/flutter/bin/cache/artifacts/engine" >> android/local.properties
+
+      # ✅ Clean Gradle cache before every build
+      - name: Clean Gradle Cache
+        run: |
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/wrapper
+          flutter clean
 
       - name: Sync dependencies
         run: |
-          flutter clean
           flutter pub get
 
       - name: Fix Gradle plugin path
@@ -40,12 +45,10 @@ jobs:
           echo "    maven { url 'https://storage.googleapis.com/download.flutter.io' }" >> android/settings.gradle
           echo "  }" >> android/settings.gradle
           echo "}" >> android/settings.gradle
-          echo "" >> android/settings.gradle
           echo "include ':app'" >> android/settings.gradle
 
       - name: Build Android APK
-        run: |
-          flutter build apk --release --verbose
+        run: flutter build apk --release --verbose
 
       - name: Build Web Version
         run: flutter build web --release

@@ -4,6 +4,8 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+apply from: "../../packages/flutter_tools/gradle/flutter.gradle" // ✅ add this line below plugins
+
 android {
     namespace "com.visora.app"
     compileSdk 34
