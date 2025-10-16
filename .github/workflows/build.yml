@@ -29,20 +29,11 @@ jobs:
           flutter pub get
           echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Regenerate Android Folder (V2 Embedding)
+      - name: Ensure Android V2 Embedding
         run: |
-          echo "🔁 Regenerating Android folder for V2 embedding..."
-          if [ -d "android" ]; then
-            mv android android_backup_$(date +%s)
-          fi
-          flutter create .
-          echo "✅ Android folder regenerated successfully!"
-
-      - name: Fix Android Embedding (Ensure V2)
-        run: |
-          echo "🔧 Migrating Android V1 embedding to V2..."
+          echo "🔧 Checking and fixing Android embedding..."
           find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
-          echo "✅ Embedding migration complete!"
+          echo "✅ Android V2 embedding ensured!"
 
       - name: Enable Flutter Platforms
         run: |
