@@ -2,14 +2,11 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://maven.pkg.jetbrains.space/public/p/gradle-plugins/maven" } // ✅ Kotlin plugin mirror
-        maven { url "https://jitpack.io" } // ✅ Fallback mirror
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
-        // ✅ Replace flutter plugin with manual import workaround
-        classpath "org.gradle:gradle-tooling-api:8.1.2"
     }
 }
 
@@ -19,4 +16,16 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
 }
