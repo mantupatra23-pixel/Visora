@@ -11,53 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.0"
-          channel: "stable"
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      - name: Clean Flutter Project
+      - name: Clean and get dependencies
         run: |
           flutter clean
-          flutter pub cache repair
           flutter pub get
 
-      - name: Fix Android Embedding
+      - name: Fix Android embedding
         run: |
-          MAIN_JAVA=$(find android -type f -name "MainActivity.java" | head -n 1 || true)
-          MAIN_KOTLIN=$(find android -type f -name "MainActivity.kt" | head -n 1 || true)
-          if [ -n "$MAIN_JAVA" ]; then
-            sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' "$MAIN_JAVA" || true
-            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' "$MAIN_JAVA" || true
-          elif [ -n "$MAIN_KOTLIN" ]; then
-            sed -i 's/import io.flutter.app.FlutterActivity/import io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
-            sed -i 's/: FlutterActivity/: io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
-          else
-            mkdir -p android/app/src/main/java/com/visora/app
-            cat <<'EOF' > android/app/src/main/java/com/visora/app/MainActivity.java
-package com.visora.app;
+          mkdir -p android/app/src/main/java/com/visora/app
+          echo 'package com.visora.app;
 
 import io.flutter.embedding.android.FlutterActivity;
 
 public class MainActivity extends FlutterActivity {
-}
-EOF
-          fi
-
-      - name: Enable Flutter Platforms
-        run: |
-          flutter config --enable-android
-          flutter config --enable-web
-          flutter doctor -v
+}' > android/app/src/main/java/com/visora/app/MainActivity.java
 
       - name: Build Android APK
-        run: flutter build apk --release --verbose || flutter build apk --release
+        run: flutter build apk --release
 
-      - name: Build Web Version
+      - name: Build Web version
         run: flutter build web --release
 
       - name: Upload Android APK
