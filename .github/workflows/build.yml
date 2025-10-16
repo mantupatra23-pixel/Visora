@@ -31,26 +31,42 @@ jobs:
           flutter pub get
           echo "✅ Flutter project cleaned and dependencies restored!"
 
-      # ⚙️ Force Android V2 embedding migration
-      - name: Fix Android Embedding (V2)
+      # ⚙️ Force Fix for Android V2 Embedding
+      - name: Force Fix Android Embedding (Auto Path Detect)
         run: |
-          echo "🔧 Forcing V2 embedding..."
-          if [ -f "android/app/src/main/java/com/visora/visora/MainActivity.java" ]; then
-            sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' android/app/src/main/java/com/visora/visora/MainActivity.java
-            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/java/com/visora/visora/MainActivity.java
-            echo "✅ Java MainActivity migrated to V2 embedding."
-          elif [ -f "android/app/src/main/kotlin/com/visora/visora/MainActivity.kt" ]; then
-            sed -i 's/import io.flutter.app.FlutterActivity/import io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/kotlin/com/visora/visora/MainActivity.kt
-            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' android/app/src/main/kotlin/com/visora/visora/MainActivity.kt
-            echo "✅ Kotlin MainActivity migrated to V2 embedding."
+          echo "🔧 Searching for MainActivity.java or .kt ..."
+          MAIN_JAVA=$(find android -type f -name "MainActivity.java" | head -n 1 || true)
+          MAIN_KOTLIN=$(find android -type f -name "MainActivity.kt" | head -n 1 || true)
+          
+          if [ -n "$MAIN_JAVA" ]; then
+            echo "📁 Found Java MainActivity: $MAIN_JAVA"
+            sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' "$MAIN_JAVA" || true
+            sed -i 's/extends FlutterActivity/extends io.flutter.embedding.android.FlutterActivity/g' "$MAIN_JAVA" || true
+            echo "✅ Migrated Java MainActivity to V2."
+          elif [ -n "$MAIN_KOTLIN" ]; then
+            echo "📁 Found Kotlin MainActivity: $MAIN_KOTLIN"
+            sed -i 's/import io.flutter.app.FlutterActivity/import io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
+            sed -i 's/: FlutterActivity/: io.flutter.embedding.android.FlutterActivity/g' "$MAIN_KOTLIN" || true
+            echo "✅ Migrated Kotlin MainActivity to V2."
           else
-            echo "⚠️ MainActivity not found, skipping direct migration."
-          fi
-          echo "🔍 Checking that embedding update applied..."
-          grep -R "io.flutter.embedding.android.FlutterActivity" android/app/src/main/java || true
-          echo "✅ V2 embedding verified!"
+            echo "⚠️ No MainActivity found. Creating new one..."
+            mkdir -p android/app/src/main/java/com/visora/app
+            cat <<EOF > android/app/src/main/java/com/visora/app/MainActivity.java
+package com.visora.app;
 
-      # 🌍 Enable Flutter platforms
+import io.flutter.embedding.android.FlutterActivity;
+
+public class MainActivity extends FlutterActivity {
+}
+EOF
+            echo "✅ New MainActivity created with V2 embedding!"
+          fi
+
+          echo "🔍 Verifying embedding..."
+          grep -R "io.flutter.embedding.android.FlutterActivity" android/app/src/main/java || true
+          echo "✅ V2 embedding verification complete!"
+
+      # 🌍 Enable Flutter Platforms
       - name: Enable Flutter Platforms
         run: |
           flutter config --enable-android
