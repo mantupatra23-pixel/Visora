@@ -1,4 +1,4 @@
-name: build visora flutter app
+name: Build Visora Flutter App
 
 on:
   push:
@@ -12,72 +12,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: setup flutter
-        id: flutter-setup
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
           channel: "stable"
 
-      - name: Clear Flutter cache completely
+      - name: Deep Clean Flutter Cache (Full Reset)
         run: |
-          echo "🧹 Clearing Flutter cache..."
+          echo "🧹 Performing deep clean..."
+          rm -rf android/.gradle
+          rm -rf android/.idea
+          rm -rf android/.settings
+          rm -rf android/build
+          rm -rf build
           flutter clean
+          flutter pub cache clean
           flutter pub cache repair
-          echo "✅ Flutter cache cleared successfully!"
+          flutter pub get
+          echo "✅ Flutter cache and old Android files cleared successfully!"
 
-      - name: Reinitialize Flutter Binary Path (FINAL FIX)
+      - name: Regenerate Android Folder (V2 Embedding)
         run: |
-          echo "🔁 Reinitializing Flutter binary path..."
-          export PATH="$PATH:$HOME/flutter/bin:/opt/hostedtoolcache/flutter/3.24.0-stable/x64/flutter/bin"
-          which flutter || echo "⚠️ Flutter binary not yet found"
-          source $HOME/.bashrc || true
-          flutter --version || true
-          echo "✅ Flutter path reloaded successfully!"
+          echo "🔁 Regenerating Android folder for V2 embedding..."
+          rm -rf android
+          flutter create .
+          echo "✅ Android folder regenerated successfully!"
 
-      - name: enable platforms
+      - name: Fix Android Embedding (Ensure V2)
         run: |
-          export PATH="$PATH:$HOME/flutter/bin:/opt/hostedtoolcache/flutter/3.24.0-stable/x64/flutter/bin"
-          flutter config --enable-web
-          flutter config --enable-android
-
-      - name: clean and upgrade flutter
-        run: |
-          flutter upgrade
-          flutter pub cache repair
-          flutter clean
-
-      - name: fix android embedding
-        run: |
-          echo "🚀 Migrating Android v1 embedding to v2..."
+          echo "🔧 Migrating Android V1 embedding to V2..."
           find . -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} \;
           echo "✅ Embedding migration complete!"
 
-      - name: install dependencies
-        run: flutter pub get
-
-      - name: build android apk
+      - name: Enable Flutter Platforms
         run: |
-          echo "🏗️ Building Android APK..."
-          flutter build apk --release --verbose || flutter build apk --release
+          flutter config --enable-web
+          flutter config --enable-android
+
+      - name: Upgrade Flutter and Get Dependencies
+        run: |
+          flutter upgrade
+          flutter pub get
+          echo "📦 Dependencies installed successfully!"
+
+      - name: Build Android APK
+        run: |
+          echo "📱 Building Android APK..."
+          flutter build apk --release --verbose
           echo "✅ APK build complete!"
 
-      - name: build web version
+      - name: Build Web Version
         run: |
           echo "🌐 Building Web Version..."
           flutter build web --release
           echo "✅ Web build complete!"
 
-      - name: upload android apk
+      - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      - name: upload web build
+      - name: Upload Web Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
