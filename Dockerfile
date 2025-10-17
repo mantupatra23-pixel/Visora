@@ -1,33 +1,28 @@
-# ✅ Flutter + Render Compatible Dockerfile
-FROM debian:stable-slim
+# Use official Flutter image
+FROM cirrusci/flutter:3.24.0
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl git unzip xz-utils zip python3 sudo
+# Set environment variables
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
-# Non-root user for Flutter
-RUN useradd -m flutteruser && adduser flutteruser sudo
-USER flutteruser
-WORKDIR /home/flutteruser
+# Install Android SDK (for APK build)
+RUN apt-get update -y && apt-get install -y wget unzip && \
+    mkdir -p $ANDROID_HOME && \
+    cd /opt && \
+    wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdtools.zip && \
+    unzip cmdtools.zip -d $ANDROID_HOME && \
+    yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-# Install Flutter SDK
-RUN git clone https://github.com/flutter/flutter.git -b stable
-ENV PATH="/home/flutteruser/flutter/bin:/home/flutteruser/.pub-cache/bin:${PATH}"
+# Copy project files
+WORKDIR /app
+COPY . .
 
-# Copy project
-WORKDIR /home/flutteruser/app
-COPY --chown=flutteruser:flutteruser . .
-
-# Enable Flutter web
-RUN flutter config --enable-web
-
-# Fix SDK version
-RUN flutter upgrade
+# Get dependencies
 RUN flutter pub get
 
 # Build APK and Web
 RUN flutter build apk --release
 RUN flutter build web --release
 
-# Serve Web build
-CMD ["python3", "-m", "http.server", "8080", "--directory", "build/web"]
+# Serve web build
+CMD ["bash", "-c", "python3 -m http.server 8080 --directory build/web"]
