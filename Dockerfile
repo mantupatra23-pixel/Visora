@@ -1,11 +1,11 @@
-# Use official Flutter image
-FROM cirrusci/flutter:3.24.0
+# ✅ Use latest working Flutter image
+FROM ghcr.io/cirruslabs/flutter:3.24.0
 
-# Set environment variables
+# ✅ Set Android SDK environment
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
-# Install Android SDK (for APK build)
+# ✅ Install Android SDK
 RUN apt-get update -y && apt-get install -y wget unzip && \
     mkdir -p $ANDROID_HOME && \
     cd /opt && \
@@ -13,16 +13,16 @@ RUN apt-get update -y && apt-get install -y wget unzip && \
     unzip cmdtools.zip -d $ANDROID_HOME && \
     yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-# Copy project files
+# ✅ Copy project files
 WORKDIR /app
 COPY . .
 
-# Get dependencies
+# ✅ Install dependencies
 RUN flutter pub get
 
-# Build APK and Web
+# ✅ Build APK & Web
 RUN flutter build apk --release
 RUN flutter build web --release
 
-# Serve web build
+# ✅ Serve the web build
 CMD ["bash", "-c", "python3 -m http.server 8080 --directory build/web"]
