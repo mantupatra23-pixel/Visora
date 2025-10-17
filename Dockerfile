@@ -1,15 +1,15 @@
 # ✅ Flutter Base Image
 FROM ghcr.io/cirruslabs/flutter:3.24.0
 
-# ✅ Install Java (JDK) for Android build
-RUN apt-get update -y && apt-get install -y openjdk-17-jdk wget unzip && \
-    apt-get clean
+# ✅ Install JDK + Tools
+RUN apt-get update -y && apt-get install -y openjdk-17-jdk wget unzip python3 && apt-get clean
 
-# ✅ Set Environment Variables
+# ✅ Environment Setup
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
-# ✅ Install Android SDK & Accept Licenses
+# ✅ Install Android SDK
 RUN mkdir -p $ANDROID_HOME/cmdline-tools/latest && \
     cd $ANDROID_HOME/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip && \
@@ -22,12 +22,18 @@ RUN mkdir -p $ANDROID_HOME/cmdline-tools/latest && \
 WORKDIR /app
 COPY . .
 
-# ✅ Get Flutter Dependencies
+# ✅ Get Flutter packages
 RUN flutter pub get
 
-# ✅ Build APK and Web
-RUN flutter build apk --release || (echo "⚠️ Release failed, building debug APK..." && flutter build apk --debug)
+# ✅ Set SDK root explicitly for build
+ENV ANDROID_SDK_ROOT=$ANDROID_HOME
+
+# ✅ Build APK (with proper environment)
+RUN flutter config --android-sdk $ANDROID_HOME && flutter doctor && \
+    flutter build apk --release || (echo "⚠️ Release failed, building debug..." && flutter build apk --debug)
+
+# ✅ Build Web version
 RUN flutter build web --release
 
-# ✅ Serve Web Build
+# ✅ Serve Web version on port 8080
 CMD ["bash", "-c", "python3 -m http.server 8080 --directory build/web"]
