@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: visora4
+    env: docker
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: "flutter pub get && flutter build apk --release"
+    startCommand: "echo '✅ Build Complete - APK available at /app/output/visora-release.apk'"
+    envVars:
+      - key: GITHUB_TOKEN
+        sync: false
+    autoDeploy: true
+    artifactPaths:
+      - /app/output/visora-release.apk
