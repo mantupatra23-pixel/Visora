@@ -1,13 +1,16 @@
 # ✅ Flutter Base Image
 FROM ghcr.io/cirruslabs/flutter:3.24.0
 
-# ✅ Android SDK Environment Setup
+# ✅ Install Java (JDK) for Android build
+RUN apt-get update -y && apt-get install -y openjdk-17-jdk wget unzip && \
+    apt-get clean
+
+# ✅ Set Environment Variables
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin
 
 # ✅ Install Android SDK & Accept Licenses
-RUN apt-get update -y && apt-get install -y wget unzip && \
-    mkdir -p $ANDROID_HOME/cmdline-tools/latest && \
+RUN mkdir -p $ANDROID_HOME/cmdline-tools/latest && \
     cd $ANDROID_HOME/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip && \
     unzip tools.zip && rm tools.zip && \
@@ -19,10 +22,10 @@ RUN apt-get update -y && apt-get install -y wget unzip && \
 WORKDIR /app
 COPY . .
 
-# ✅ Flutter Dependencies
+# ✅ Get Flutter Dependencies
 RUN flutter pub get
 
-# ✅ Build APK & Web
+# ✅ Build APK and Web
 RUN flutter build apk --release || (echo "⚠️ Release failed, building debug APK..." && flutter build apk --debug)
 RUN flutter build web --release
 
