@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Voices</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html" class="active">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+    <header>
+      <h2>🎤 Voices & Characters</h2>
+      <p class="muted">Choose from 1000+ AI voices or upload your own.</p>
+    </header>
+
+    <!-- Upload Voice -->
+    <section class="card">
+      <h3>Upload Your Voice (Cloning)</h3>
+      <input id="user_voice" type="file" accept="audio/*" />
+      <button class="btn primary" onclick="uploadVoice()">Upload</button>
+      <div id="uv_resp" class="mt small muted"></div>
+    </section>
+
+    <!-- Voice Library -->
+    <section class="card mt">
+      <h3>Voice Library</h3>
+      <div class="filters">
+        <select id="voice_gender">
+          <option value="">All</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="child">Child</option>
+          <option value="celebrity">Celebrity</option>
+        </select>
+        <select id="voice_lang">
+          <option value="">All Languages</option>
+          <option value="hi">Hindi</option>
+          <option value="en">English</option>
+          <option value="ta">Tamil</option>
+          <option value="bn">Bengali</option>
+          <option value="mr">Marathi</option>
+        </select>
+        <button class="btn" onclick="loadVoices()">Filter</button>
+      </div>
+
+      <ul id="voicesList" class="voice-list"></ul>
+    </section>
+  </main>
+</body>
+</html>

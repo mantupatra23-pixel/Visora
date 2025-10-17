@@ -1,0 +1,15 @@
+{
+  "routes": [
+    { "src": "/dashboard", "dest": "/frontend/dashboard/index.html" },
+    { "src": "/templates", "dest": "/frontend/templates/index.html" },
+    { "src": "/voices", "dest": "/frontend/voices/index.html" },
+    { "src": "/gallery", "dest": "/frontend/gallery/index.html" },
+    { "src": "/profile", "dest": "/frontend/profile/index.html" },
+    { "src": "/payments", "dest": "/frontend/payments/index.html" },
+    { "src": "/editor", "dest": "/frontend/editor/index.html" },
+    { "src": "/assistant", "dest": "/frontend/assistant/index.html" },
+
+    { "src": "/", "dest": "/frontend/dashboard/index.html" },
+    { "src": "/.*", "dest": "/frontend/dashboard/index.html" }
+  ]
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Profile</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
+    <a href="./index.html" class="active">👤 Profile</a>
+    <a href="../payments/index.html">💳 Payments</a>
+  </aside>
+
+  <main class="content">
+    <header>
+      <h2>👤 Profile</h2>
+      <p class="muted small">Manage your profile, plan & settings</p>
+    </header>
+
+    <div class="card">
+      <img id="profile_photo" src="https://via.placeholder.com/100" alt="profile" class="avatar">
+      <h3 id="profile_name">Loading...</h3>
+      <p id="profile_email" class="muted"></p>
+      <p><strong>Plan:</strong> <span id="profile_plan">Free</span></p>
+      <p><strong>Credits:</strong> <span id="profile_credits">0</span></p>
+
+      <button id="profile_edit" class="btn primary">Edit Profile</button>
+      <button id="profile_refresh" class="btn">Refresh</button>
+    </div>
+
+    <div id="edit_form" class="card hidden">
+      <h3>Edit Profile</h3>
+      <input id="edit_name" placeholder="Name" />
+      <input id="edit_email" placeholder="Email" />
+      <input id="edit_photo" type="file" accept="image/*" />
+      <button id="save_profile" class="btn primary">Save</button>
+    </div>
+  </main>
+</body>
+</html>

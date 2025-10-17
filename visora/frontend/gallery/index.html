@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Gallery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">Dashboard</a>
+    <a href="../templates/index.html">Templates</a>
+    <a href="../voices/index.html">Voices</a>
+    <a href="index.html" class="active">Gallery</a>
+    <a href="../profile/index.html">Profile</a>
+  </div>
+
+  <div class="main">
+    <h1>My Gallery</h1>
+    <div id="gallery-grid" class="grid"></div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <span class="close">&times;</span>
+    <video id="previewVideo" controls></video>
+    <p id="previewTitle"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

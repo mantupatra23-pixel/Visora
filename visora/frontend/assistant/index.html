@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="./index.html" class="active">🤖 Assistant</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+    <header>
+      <h2>🤖 Script Assistant</h2>
+      <p class="muted">Get hooks, script polish, captions & ideas using ChatGPT.</p>
+    </header>
+
+    <section class="card">
+      <h3>Ask Assistant</h3>
+      <textarea id="as_input" placeholder="Write your idea, script or request..."></textarea>
+
+      <div class="row gap mt">
+        <label for="as_tone">Tone:</label>
+        <select id="as_tone">
+          <option value="helpful">Helpful</option>
+          <option value="funny">Funny</option>
+          <option value="friendly">Friendly</option>
+          <option value="motivational">Motivational</option>
+          <option value="cinematic">Cinematic</option>
+        </select>
+        <button id="as_submit" class="btn primary">Ask</button>
+      </div>
+
+      <div id="as_reply" class="mt card muted small">No response yet</div>
+    </section>
+
+    <section class="card">
+      <h3>Quick Prompts</h3>
+      <div class="row gap wrap">
+        <button class="btn" onclick="quickPrompt('Give me a catchy YouTube short intro')">🎬 Hook</button>
+        <button class="btn" onclick="quickPrompt('Write a motivational script in Hindi')">💪 Hindi Motivation</button>
+        <button class="btn" onclick="quickPrompt('Make a funny reel script about exams')">😂 Funny Exam</button>
+        <button class="btn" onclick="quickPrompt('Suggest 5 trending Instagram reel ideas')">🔥 Trending Ideas</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

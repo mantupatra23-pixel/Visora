@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="./index.html" class="active">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+    <header>
+      <h2>📊 Dashboard</h2>
+      <p class="muted">Welcome back to your AI Studio</p>
+    </header>
+
+    <!-- User Info -->
+    <section class="card profile">
+      <img id="profilePic" src="../assets/user.png" alt="Profile" />
+      <div>
+        <h3 id="userName">Loading...</h3>
+        <p id="userPlan" class="muted">Plan: —</p>
+        <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+      </div>
+      <div class="credits">
+        <span class="muted">Credits Left</span>
+        <h2 id="credits">—</h2>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="card">
+      <h3>🔔 Notifications</h3>
+      <ul id="notifications">
+        <li>Loading...</li>
+      </ul>
+    </section>
+
+    <!-- Recent Jobs -->
+    <section class="card">
+      <h3>🎬 Recent Jobs</h3>
+      <ul id="recentJobs">
+        <li>Loading...</li>
+      </ul>
+    </section>
+
+    <!-- Trending Templates -->
+    <section class="card">
+      <h3>🔥 Trending Templates</h3>
+      <div id="trendingGrid" class="grid"></div>
+    </section>
+  </main>
+</body>
+</html>

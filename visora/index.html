@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="./index.html" class="active">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main content -->
+  <main class="content">
+    <header>
+      <div class="user-info">
+        <img id="profilePhoto" src="../assets/default-avatar.png" alt="Profile">
+        <div>
+          <h2 id="userName">User</h2>
+          <p id="userPlan">Plan: Free</p>
+        </div>
+      </div>
+      <button id="upgradeBtn" class="btn primary">Upgrade Plan</button>
+    </header>
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="card">
+        <p class="muted">Credits Left</p>
+        <h2 id="credits">—</h2>
+      </div>
+      <div class="card">
+        <p class="muted">Videos Created</p>
+        <h2 id="videosCount">—</h2>
+      </div>
+      <div class="card">
+        <p class="muted">Storage Used</p>
+        <h2 id="storage">—</h2>
+      </div>
+    </section>
+
+    <!-- Trending Templates -->
+    <section class="card">
+      <h3>🔥 Trending Templates</h3>
+      <div id="trendingGrid" class="grid"></div>
+    </section>
+
+    <!-- Recent Jobs -->
+    <section class="card">
+      <h3>🕑 Recent Jobs</h3>
+      <div id="recentJobs">Loading...</div>
+    </section>
+  </main>
+</body>
+</html>

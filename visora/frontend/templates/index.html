@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Templates</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="./index.html" class="active">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+    <header>
+      <h2>📂 Templates</h2>
+      <p class="muted">Choose from 500+ templates (auto updated from cloud)</p>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters card">
+      <label>Category:</label>
+      <select id="filterCategory">
+        <option value="all">All</option>
+        <option value="cinematic">Cinematic</option>
+        <option value="promo">Promo</option>
+        <option value="education">Education</option>
+        <option value="meme">Meme</option>
+        <option value="festival">Festival</option>
+        <option value="business">Business</option>
+        <option value="travel">Travel</option>
+        <option value="fitness">Fitness</option>
+      </select>
+    </section>
+
+    <!-- Templates Grid -->
+    <section id="templateGrid" class="grid"></section>
+  </main>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h3 id="modalTitle"></h3>
+      <video id="modalVideo" controls width="100%"></video>
+      <button id="useTemplate" class="btn primary">Use This Template</button>
+    </div>
+  </div>
+</body>
+</html>

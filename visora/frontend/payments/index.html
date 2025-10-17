@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Profile</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="../voices/index.html">🎤 Voices</a>
+    <a href="../editor/index.html">✂️ Editor</a>
+    <a href="../assistant/index.html">🤖 Assistant</a>
+    <a href="./index.html" class="active">👤 Profile</a>
+  </aside>
+
+  <main class="content">
+    <header>
+      <h2>👤 Profile & Subscription</h2>
+      <p class="muted small">Manage your profile, credits and upgrade plans</p>
+    </header>
+
+    <!-- Profile -->
+    <div class="card">
+      <h3>Profile</h3>
+      <div class="profile-box">
+        <img id="profile_pic" src="../assets/default-user.png" class="avatar"/>
+        <div>
+          <p><b>Name:</b> <span id="profile_name">Loading...</span></p>
+          <p><b>Email:</b> <span id="profile_email">Loading...</span></p>
+          <p><b>Plan:</b> <span id="profile_plan">Loading...</span></p>
+          <p><b>Credits Left:</b> <span id="profile_credits">Loading...</span></p>
+        </div>
+      </div>
+      <div class="row gap mt">
+        <input type="file" id="upload_pic" accept="image/*" />
+        <button id="btn_update_pic" class="btn">Update Picture</button>
+        <button id="btn_refresh" class="btn primary">Refresh Profile</button>
+      </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="card">
+      <h3>💳 Upgrade Plan</h3>
+      <p>Select a subscription plan and pay securely.</p>
+      <select id="plan_select">
+        <option value="free">Free (0 INR)</option>
+        <option value="pro">Pro (499 INR / month)</option>
+        <option value="enterprise">Enterprise (1999 INR / month)</option>
+      </select>
+      <div class="row gap mt">
+        <button id="btn_pay_razor" class="btn primary">Pay with Razorpay</button>
+        <button id="btn_pay_paypal" class="btn">Pay with PayPal</button>
+      </div>
+      <div id="pay_resp" class="mt small muted"></div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora Templates</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">🏠 Dashboard</a>
+    <a href="templates.html" class="active">📂 Templates</a>
+    <a href="../voices/voices.html">🎙 Voices</a>
+    <a href="../editor/editor.html">✂️ Editor</a>
+    <a href="../assistant/assistant.html">🤖 Assistant</a>
+    <a href="../gallery/gallery.html">🖼 Gallery</a>
+    <a href="../payments/payments.html">💳 Payments</a>
+    <a href="../profile/profile.html">👤 Profile</a>
+  </div>
+
+  <div class="main">
+    <h1>📂 Templates Library</h1>
+
+    <div class="grid" id="templates-grid">
+      <!-- Templates load here -->
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="templateTitle"></h2>
+      <img id="templateImage" src="" alt="Template Preview">
+      <button onclick="useTemplate()">Use This Template</button>
+    </div>
+  </div>
+</body>
+</html>

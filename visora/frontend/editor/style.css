@@ -1,0 +1,12 @@
+body { margin:0; font-family:Arial,sans-serif; display:flex; background:#121212; color:#fff; }
+.sidebar { width:220px; background:#1e1e1e; padding:20px; height:100vh; }
+.sidebar a { display:block; padding:10px; margin:5px 0; color:#ddd; text-decoration:none; border-radius:6px; }
+.sidebar a.active, .sidebar a:hover { background:#ffcc00; color:#000; }
+.content { flex:1; padding:30px; }
+header { margin-bottom:20px; }
+.muted { color:#aaa; }
+input[type="file"] { margin:10px 0; }
+video { width:100%; max-height:300px; margin:10px 0; border-radius:8px; }
+.tools { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:20px; }
+.btn { padding:10px; border:none; border-radius:6px; cursor:pointer; background:#333; color:#fff; }
+.btn:hover { background:#555; }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visora - Editor</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Visora</h2>
+    <a href="../dashboard/index.html">📊 Dashboard</a>
+    <a href="../create/index.html">🎬 Create Video</a>
+    <a href="../templates/index.html">📂 Templates</a>
+    <a href="./index.html" class="active">✂️ Editor</a>
+    <a href="../profile/index.html">👤 Profile</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+    <header>
+      <h2>✂️ Video Editor</h2>
+      <p class="muted">Trim, merge, add subtitles, filters, bg music & more.</p>
+    </header>
+
+    <section class="editor-panel">
+      <label>Upload Video</label>
+      <input id="videoFile" type="file" accept="video/*" />
+      <video id="videoPreview" controls></video>
+
+      <div class="tools">
+        <button onclick="trimVideo()" class="btn">✂️ Trim</button>
+        <button onclick="mergeVideos()" class="btn">➕ Merge</button>
+        <button onclick="addSubtitles()" class="btn">💬 Subtitles</button>
+        <button onclick="translateSubtitles()" class="btn">🌍 Translate Subs</button>
+        <button onclick="addBackgroundMusic()" class="btn">🎶 Background Music</button>
+        <button onclick="applyFilter()" class="btn">🎨 Filters</button>
+        <button onclick="addWatermark()" class="btn">© Watermark</button>
+        <button onclick="changeAspectRatio()" class="btn">📱 Aspect Ratio</button>
+      </div>
+
+      <div id="editor_resp" class="muted small mt"></div>
+    </section>
+  </main>
+</body>
+</html>

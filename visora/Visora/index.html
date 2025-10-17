@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visora — Dualite Frontend</title>
+  <style>
+    :root{
+      --bg:#14151B; --panel:#18191F; --muted:#9aa0a6; --accent:#FFC107; --card:#21222A;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#fff}
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--panel);border-bottom:1px solid #222}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#ffce56,#ff8a00);display:flex;align-items:center;justify-content:center;color:#111;font-weight:700}
+    h1{font-size:16px;margin:0}
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
+    .ghost{background:transparent;border:1px solid #2a2a2a;padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+    .container{display:flex;gap:18px;padding:18px}
+    .left{flex:1;min-width:320px}
+    .right{width:360px;min-width:260px}
+    .card{background:var(--card);padding:14px;border-radius:12px;margin-bottom:14px;border:1px solid #232427}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="text"], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #2a2a2a;background:#0f1113;color:#fff;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .small{font-size:12px;color:var(--muted)}
+    .file-list{font-size:13px;color:var(--muted);margin-top:8px}
+    .center{display:flex;justify-content:center;align-items:center}
+    .bottom-fixed{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;background:linear-gradient(0deg, rgba(20,21,27,0.95), transparent)}
+    .link{color:var(--accent);cursor:pointer;text-decoration:underline}
+    .gallery-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;background:#101214;margin-bottom:8px}
+    .thumb{width:94px;height:56px;border-radius:6px;background:#222}
+    .muted{color:var(--muted)}
+    @media (max-width:900px){
+      .container{flex-direction:column}
+      .right{width:auto}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">V</div>
+      <div>
+        <h1>Visora</h1>
+        <div class="small muted">AI video studio — Dualite frontend</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="openAssistant">Assistant</button>
+      <button class="btn" id="openCreate">Create Video</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="left">
+      <!-- Create card -->
+      <div class="card" id="createCard">
+        <h3 style="margin-top:0">Create Video</h3>
+        <div style="margin-bottom:10px" class="small muted">Script likho ya assistant se help lo — multi-language support</div>
+
+        <label>Title</label>
+        <input type="text" id="title" placeholder="Video title (optional)" />
+
+        <label style="margin-top:10px">Script / Dialogue</label>
+        <textarea id="script" placeholder="Type script here..."></textarea>
+
+        <div class="row" style="margin-top:10px">
+          <div style="flex:1">
+            <label>Template</label>
+            <select id="template">
+              <option>Motivation</option>
+              <option>Promo</option>
+              <option>Explainer</option>
+              <option>Cinematic</option>
+            </select>
+          </div>
+          <div style="width:120px">
+            <label>Quality</label>
+            <select id="quality">
+              <option>HD</option>
+              <option>FULLHD</option>
+              <option>4K</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div style="flex:1">
+            <label>Language</label>
+            <select id="lang">
+              <option value="hi">Hindi (hi)</option>
+              <option value="en">English (en)</option>
+              <option value="bn">Bengali (bn)</option>
+              <option value="ta">Tamil (ta)</option>
+            </select>
+          </div>
+          <div style="width:120px">
+            <label>Length</label>
+            <select id="length_type">
+              <option value="short">Short</option>
+              <option value="long">Long</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label>Upload Character Images (multi)</label>
+          <input id="characters" type="file" accept="image/*" multiple />
+          <div id="charFiles" class="file-list">No images selected</div>
+        </div>
+
+        <div style="margin-top:8px">
+          <label>Upload Character Voice Files (optional)</label>
+          <input id="charVoices" type="file" accept="audio/*" multiple />
+          <div id="voiceFiles" class="file-list">No voice files</div>
+        </div>
+
+        <div style="margin-top:8px">
+          <label>Upload Background Music (optional)</label>
+          <input id="bgMusic" type="file" accept="audio/*" />
+          <div id="bgFile" class="file-list">No BG music</div>
+        </div>
+
+        <div style="margin-top:12px" class="row">
+          <button class="btn" id="submitRender">Render & Generate</button>
+          <button class="ghost" id="preview10s">Preview 10s</button>
+          <button class="ghost" id="clearForm">Clear</button>
+        </div>
+
+        <div style="margin-top:10px" id="renderStatus" class="small muted">Status: idle</div>
+      </div>
+
+      <!-- Gallery -->
+      <div class="card" id="galleryCard">
+        <h3 style="margin-top:0">My Gallery</h3>
+        <div id="galleryList" style="margin-top:8px">
+          <div class="muted small">Loading gallery...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right">
+      <!-- Assistant / Preview -->
+      <div class="card">
+        <h4 style="margin:0">Assistant</h4>
+        <div class="small muted" style="margin-top:6px">Get script suggestions or auto-fill</div>
+        <div style="margin-top:10px">
+          <input type="text" id="assistantQuery" placeholder="Ask the assistant e.g. 'Make a 20s promo script'" />
+        </div>
+        <div style="margin-top:8px" class="row">
+          <select id="assistantTone" style="flex:1">
+            <option value="helpful">Helpful</option>
+            <option value="friendly">Friendly</option>
+            <option value="funny">Funny</option>
+          </select>
+          <button class="btn" id="callAssistant">Ask</button>
+        </div>
+        <div id="assistantReply" style="margin-top:10px" class="small muted"></div>
+        <div style="margin-top:10px">
+          <button class="ghost" id="previewVoiceBtn">Preview voice (TTS)</button>
+          <div id="previewVoiceUrl" class="file-list"></div>
+        </div>
+      </div>
+
+      <!-- Templates / Trending -->
+      <div class="card">
+        <h4 style="margin:0">Trending Templates</h4>
+        <div id="templatesList" style="margin-top:10px">
+          <div class="muted small">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Quick upload -->
+      <div class="card">
+        <h4 style="margin:0">Quick Upload</h4>
+        <div style="margin-top:8px">
+          <input id="quickFile" type="file" />
+        </div>
+        <div style="margin-top:8px" class="row">
+          <button class="btn" id="uploadQuick">Upload</button>
+          <button class="ghost" id="fetchGalleryBtn">Refresh Gallery</button>
+        </div>
+        <div id="quickResult" class="file-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="bottom-fixed center">
+    <div style="max-width:980px;width:100%;display:flex;justify-content:space-between;align-items:center">
+      <div class="small muted">Visora — Dualite frontend • Make sure backend CORS is enabled</div>
+      <div>
+        <span class="small muted">Demo user: </span><strong class="small">demo@visora.com</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ CONFIG ============
+    const BASE_URL = "https://visora.onrender.com"; // <<< CHANGE TO YOUR BACKEND URL (no trailing slash)
+    const DEMO_EMAIL = "demo@visora.com";
+
+    // ============ UI refs ============
+    const characters = document.getElementById('characters');
+    const charFiles = document.getElementById('charFiles');
+    const charVoices = document.getElementById('charVoices');
+    const voiceFiles = document.getElementById('voiceFiles');
+    const bgMusic = document.getElementById('bgMusic');
+    const bgFile = document.getElementById('bgFile');
+    const submitRender = document.getElementById('submitRender');
+    const renderStatus = document.getElementById('renderStatus');
+    const galleryList = document.getElementById('galleryList');
+    const previewVoiceBtn = document.getElementById('previewVoiceBtn');
+    const previewVoiceUrl = document.getElementById('previewVoiceUrl');
+    const assistantQuery = document.getElementById('assistantQuery');
+    const callAssistant = document.getElementById('callAssistant');
+    const assistantReply = document.getElementById('assistantReply');
+    const templatesList = document.getElementById('templatesList');
+    const quickFile = document.getElementById('quickFile');
+    const uploadQuick = document.getElementById('uploadQuick');
+    const quickResult = document.getElementById('quickResult');
+    const fetchGalleryBtn = document.getElementById('fetchGalleryBtn');
+    const openAssistant = document.getElementById('openAssistant');
+    const openCreate = document.getElementById('openCreate');
+    const preview10s = document.getElementById('preview10s');
+    const clearForm = document.getElementById('clearForm');
+
+    // show selected files
+    characters.addEventListener('change', ()=> {
+      if (characters.files.length) {
+        charFiles.textContent = Array.from(characters.files).map(f=>f.name).join(', ');
+      } else charFiles.textContent = 'No images selected';
+    });
+    charVoices.addEventListener('change', ()=> {
+      if (charVoices.files.length) voiceFiles.textContent = Array.from(charVoices.files).map(f=>f.name).join(', ');
+      else voiceFiles.textContent = 'No voice files';
+    });
+    bgMusic.addEventListener('change', ()=> {
+      if (bgMusic.files.length) bgFile.textContent = bgMusic.files[0].name; else bgFile.textContent = 'No BG music';
+    });
+
+    // fetch templates/trending
+    async function loadTemplates(){
+      templatesList.innerHTML = '<div class="small muted">Loading...</div>';
+      try {
+        const r = await fetch(BASE_URL + '/templates/trending');
+        if (!r.ok) throw r.status;
+        const j = await r.json();
+        templatesList.innerHTML = j.map(t=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:52px;height:36px;background:#111;border-radius:6px"></div><div><strong>${t.name}</strong><div class="small muted">${t.category}</div></div></div>`).join('');
+      } catch(e){
+        templatesList.innerHTML = '<div class="small muted">Failed to load templates</div>';
+        console.error('templates err', e);
+      }
+    }
+
+    // fetch gallery
+    async function loadGallery(){
+      galleryList.innerHTML = '<div class="small muted">Loading gallery...</div>';
+      try {
+        const r = await fetch(BASE_URL + '/gallery?user_email=' + encodeURIComponent(DEMO_EMAIL));
+        if (!r.ok) throw r.status;
+        const j = await r.json();
+        if (!j.length) {
+          galleryList.innerHTML = '<div class="small muted">No videos yet</div>';
+          return;
+        }
+        galleryList.innerHTML = j.map(v=>`
+          <div class="gallery-item">
+            <div class="thumb"></div>
+            <div style="flex:1">
+              <div style="font-weight:600">${v.title || 'Untitled'}</div>
+              <div class="small muted">${v.status} • ${new Date(v.created_at).toLocaleString()}</div>
+            </div>
+            <div>
+              ${v.file ? `<a href="${BASE_URL}/${v.file}" target="_blank" class="btn" style="padding:6px 8px">Play</a>` : `<button class="ghost" disabled>Processing</button>`}
+            </div>
+          </div>
+        `).join('');
+      } catch(e){
+        galleryList.innerHTML = '<div class="small muted">Gallery load failed</div>';
+        console.error('gallery err', e);
+      }
+    }
+
+    // quick upload
+    uploadQuick.addEventListener('click', async ()=>{
+      if (!quickFile.files.length) { quickResult.textContent = 'Choose a file first'; return; }
+      quickResult.textContent = 'Uploading...';
+      const f = quickFile.files[0];
+      const fd = new FormData(); fd.append('file', f); fd.append('kind','misc');
+      try {
+        const r = await fetch(BASE_URL + '/upload', {method:'POST', body:fd});
+        const j = await r.json();
+        if (r.ok) quickResult.innerHTML = 'Uploaded: <span class="link">' + j.url + '</span>';
+        else quickResult.textContent = 'Upload failed: ' + (j.error || r.status);
+      } catch(e){ quickResult.textContent = 'Upload error'; console.error(e); }
+    });
+
+    // assistant
+    callAssistant.addEventListener('click', async ()=> {
+      const q = assistantQuery.value.trim();
+      if (!q) { assistantReply.textContent = 'Type something first'; return; }
+      assistantReply.textContent = 'Thinking...';
+      try {
+        const r = await fetch(BASE_URL + '/assistant', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:q, tone: document.getElementById('assistantTone').value, lang: 'hi'})});
+        const j = await r.json();
+        assistantReply.textContent = j.reply || 'No reply';
+        if (j.audio_url) previewVoiceUrl.innerHTML = `<a href="${j.audio_url}" target="_blank" class="link">Assistant audio</a>`;
+      } catch(e){
+        assistantReply.textContent = 'Assistant error';
+        console.error(e);
+      }
+    });
+
+    // preview voice (TTS) using /preview_voice
+    previewVoiceBtn.addEventListener('click', async ()=>{
+      const text = document.getElementById('script').value.trim() || 'Preview from Visora';
+      previewVoiceUrl.textContent = 'Generating...';
+      try {
+        const fd = new FormData(); fd.append('text', text); fd.append('lang', document.getElementById('lang').value);
+        const r = await fetch(BASE_URL + '/preview_voice', {method:'POST', body: fd});
+        const j = await r.json();
+        if (r.ok) previewVoiceUrl.innerHTML = `<a href="${j.audio_url}" target="_blank" class="link">Play preview</a>`;
+        else previewVoiceUrl.textContent = 'Preview failed: ' + (j.error || r.status);
+      } catch(e){
+        previewVoiceUrl.textContent = 'Preview error'; console.error(e);
+      }
+    });
+
+    // submit render (multipart)
+    submitRender.addEventListener('click', async ()=>{
+      const title = document.getElementById('title').value;
+      const script = document.getElementById('script').value;
+      if (!script && !characters.files.length) { alert('Please provide script or character images'); return; }
+      renderStatus.textContent = 'Uploading files & starting render...';
+      const fd = new FormData();
+      fd.append('user_email', DEMO_EMAIL);
+      fd.append('title', title);
+      fd.append('script', script);
+      fd.append('template', document.getElementById('template').value);
+      fd.append('quality', document.getElementById('quality').value);
+      fd.append('lang', document.getElementById('lang').value);
+      fd.append('length_type', document.getElementById('length_type').value);
+      // characters
+      for (let f of characters.files) fd.append('characters', f, f.name);
+      // voice files
+      for (let f of charVoices.files) fd.append('character_voice_files', f, f.name);
+      // bg music
+      if (bgMusic.files.length) fd.append('bg_music_file', bgMusic.files[0], bgMusic.files[0].name);
+
+      try {
+        // Start request (may take time). Backend may return immediate job / or block until finished.
+        const r = await fetch(BASE_URL + '/generate_video', {method:'POST', body: fd});
+        const j = await r.json();
+        if (r.ok) {
+          renderStatus.textContent = 'Render started/completed: ' + (j.status || 'ok');
+          if (j.download_url) {
+            // show download link
+            const link = document.createElement('a'); link.href = j.download_url; link.target = '_blank'; link.textContent = 'Download video';
+            renderStatus.innerHTML = 'Done: '; renderStatus.appendChild(link);
+          }
+        } else {
+          renderStatus.textContent = 'Render error: ' + (j.message || j.error || r.status);
+        }
+      } catch(e){
+        renderStatus.textContent = 'Render request failed';
+        console.error(e);
+      }
+    });
+
+    // preview 10s (simple: call generate with preview flag if backend supports)
+    preview10s.addEventListener('click', async ()=>{
+      alert('Preview 10s will send request similar to render. Backend must support preview flag.');
+      // you can implement fd.append('preview','1') if backend handles
+    });
+
+    // clear
+    clearForm.addEventListener('click', ()=>{
+      document.getElementById('title').value='';
+      document.getElementById('script').value='';
+      characters.value = ''; charFiles.textContent='No images selected';
+      charVoices.value = ''; voiceFiles.textContent='No voice files';
+      bgMusic.value = ''; bgFile.textContent='No BG music';
+      renderStatus.textContent='Status: idle';
+    });
+
+    // quick initial load
+    loadTemplates();
+    loadGallery();
+
+    fetchGalleryBtn.addEventListener('click', loadGallery);
+    openAssistant.addEventListener('click', ()=>{ window.scrollTo({top:0,behavior:'smooth'}); assistantQuery.focus(); });
+    openCreate.addEventListener('click', ()=>{ window.scrollTo({top:200,behavior:'smooth'}); document.getElementById('title').focus(); });
+
+    // show helpful CORS note
+    (function checkCors(){
+      // try a HEAD to health
+      fetch(BASE_URL + '/health').then(r=>{
+        if (!r.ok) console.warn('Health endpoint not ok', r.status);
+      }).catch(e=>{
+        console.warn('Cannot reach backend. Ensure BASE_URL and CORS config are correct.', e);
+      });
+    })();
+  </script>
+</body>
+</html>

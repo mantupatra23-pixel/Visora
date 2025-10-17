@@ -1,0 +1,17 @@
+body { margin:0; font-family:Arial,sans-serif; display:flex; background:#121212; color:#fff; }
+.sidebar { width:220px; background:#1e1e1e; padding:20px; height:100vh; }
+.sidebar a { display:block; padding:10px; margin:5px 0; color:#ddd; text-decoration:none; border-radius:6px; }
+.sidebar a.active, .sidebar a:hover { background:#ffcc00; color:#000; }
+.content { flex:1; padding:30px; }
+header { margin-bottom:20px; }
+.card { background:#1e1e1e; padding:20px; border-radius:8px; margin-bottom:20px; }
+.muted { color:#aaa; }
+input[type="file"] { margin:10px 0; }
+.btn { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; background:#333; color:#fff; }
+.btn.primary { background:#ffcc00; color:#000; }
+.btn:hover { opacity:0.9; }
+.filters { display:flex; gap:10px; margin-bottom:15px; }
+.voice-list { list-style:none; padding:0; margin:0; }
+.voice-list li { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #333; }
+.voice-controls { display:flex; gap:8px; align-items:center; }
+input[type=range] { width:100px; }

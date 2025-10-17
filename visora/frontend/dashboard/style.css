@@ -1,0 +1,16 @@
+body { margin:0; font-family:Arial,sans-serif; display:flex; background:#121212; color:#fff; }
+.sidebar { width:220px; background:#1e1e1e; padding:20px; height:100vh; }
+.sidebar a { display:block; padding:10px; margin:5px 0; color:#ddd; text-decoration:none; border-radius:6px; }
+.sidebar a.active, .sidebar a:hover { background:#ffcc00; color:#000; }
+.content { flex:1; padding:30px; }
+header { margin-bottom:20px; }
+.card { background:#1e1e1e; padding:20px; border-radius:8px; margin-bottom:20px; }
+.profile { display:flex; align-items:center; gap:20px; }
+.profile img { width:60px; height:60px; border-radius:50%; }
+.credits { margin-left:auto; text-align:right; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; margin-top:15px; }
+.template-card { background:#2a2a2a; padding:10px; border-radius:6px; text-align:center; cursor:pointer; }
+.template-card:hover { background:#444; }
+.btn { padding:10px; border:none; border-radius:6px; cursor:pointer; background:#333; color:#fff; }
+.btn.primary { background:#ffcc00; color:#000; }
+.muted { color:#aaa; }
