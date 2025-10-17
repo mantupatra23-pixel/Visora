@@ -2,93 +2,42 @@ name: Build Visora Flutter App
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Flutter CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
-          git clone https://github.com/flutter/flutter.git -b stable /opt/flutter
-          echo "/opt/flutter/bin" >> $GITHUB_PATH
-          echo "PATH=$PATH:/opt/flutter/bin" >> $GITHUB_ENV
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      - name: Verify Flutter CLI
+      - name: Enable Platforms
         run: |
-          export PATH=$PATH:/opt/flutter/bin
-          flutter doctor -v
-          flutter --version
+          flutter config --enable-android
+          flutter config --enable-web
 
-      - name: Prepare Android environment
-        run: |
-          mkdir -p $HOME/.gradle
-          echo "sdk.dir=/opt/android-sdk" > android/local.properties
-          echo "flutter.sdk=/opt/flutter" >> android/local.properties
+      - name: Clean Project
+        run: flutter clean
 
-      - name: Ensure Android folder exists (auto create if missing)
-        run: |
-          if [ ! -d "android" ]; then
-            echo "⚙️ Android folder missing! Auto-generating..."
-            flutter create .
-            echo "✅ Android folder created successfully!"
-          fi
-
-      - name: Auto migrate to Flutter V2 embedding
-        run: |
-          echo "🔄 Checking Android embedding migration..."
-          if grep -q "io.flutter.app.FlutterActivity" -r android/app/src/main; then
-            echo "⚙️ Migrating old FlutterActivity to V2..."
-            find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
-            find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
-            find android/app/src/main -type f -name "*.java" -exec sed -i 's/import io.flutter.app.FlutterActivity;/import io.flutter.embedding.android.FlutterActivity;/g' {} +
-            echo "✅ Migration done — all files converted to V2 embedding."
-          else
-            echo "✅ Already using V2 embedding — no changes needed."
-          fi
-
-      - name: Generate Gradlew (if missing)
-        run: |
-          if [ ! -f "android/gradlew" ]; then
-            echo "⚙️ Gradlew missing, generating..."
-            cd android && gradle wrapper && cd ..
-          fi
-          chmod +x android/gradlew
-
-      - name: Clean Gradle Cache
-        run: |
-          rm -rf ~/.gradle/caches
-          rm -rf .gradle
-          flutter clean
-
-      - name: Get Flutter Dependencies
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: Fix Gradle Plugin Path
+      - name: Fix Embedding (Ensure V2)
         run: |
-          echo "pluginManagement {" > android/settings.gradle
-          echo "  repositories {" >> android/settings.gradle
-          echo "    google()" >> android/settings.gradle
-          echo "    mavenCentral()" >> android/settings.gradle
-          echo "    gradlePluginPortal()" >> android/settings.gradle
-          echo "    maven { url 'https://storage.googleapis.com/download.flutter.io' }" >> android/settings.gradle
-          echo "  }" >> android/settings.gradle
-          echo "}" >> android/settings.gradle
-          echo "include ':app'" >> android/settings.gradle
+          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
+          find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
 
       - name: Build Android APK
-        run: |
-          flutter build apk --release --verbose || flutter build apk --release
+        run: flutter build apk --release --verbose
 
       - name: Build Web Version
         run: flutter build web --release
