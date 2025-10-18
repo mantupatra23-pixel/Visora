@@ -11,43 +11,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.24.3'
           channel: 'stable'
 
+      # 3️⃣ Enable Platforms
       - name: Enable Platforms
         run: |
-          flutter config --enable-android
           flutter config --enable-web
+          flutter config --enable-android
 
-      - name: Clean Project
-        run: flutter clean
+      # 4️⃣ Clean cache & Gradle
+      - name: Clean Project & Gradle Cache
+        run: |
+          flutter clean
+          rm -rf ~/.gradle/caches/
+          rm -rf ~/.pub-cache/
 
+      # 5️⃣ Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Fix Embedding (Ensure V2)
-        run: |
-          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
-          find android/app/src/main -type f -name "*.java" -exec sed -i 's/io.flutter.app.FlutterActivity/io.flutter.embedding.android.FlutterActivity/g' {} +
+      # 6️⃣ Check Flutter doctor
+      - name: Doctor check
+        run: flutter doctor -v
 
+      # 7️⃣ Fix embedding if missing (safe fallback)
+      - name: Ensure Android Embedding V2
+        run: |
+          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/FlutterActivity/FlutterFragmentActivity/g' {} +
+
+      # 8️⃣ Build Android APK
       - name: Build Android APK
         run: flutter build apk --release --verbose
+        env:
+          GRADLE_OPTS: "-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError"
+          JAVA_TOOL_OPTIONS: "-Xmx4g"
 
+      # 9️⃣ Build Web version
       - name: Build Web Version
         run: flutter build web --release
 
+      # 🔟 Upload Android APK Artifact
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # 1️⃣1️⃣ Upload Web Build Artifact
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
