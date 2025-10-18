@@ -15,9 +15,11 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        // ✅ Add this line to link with flavor dimension
+        dimension "mode"
     }
 
-    // ✅ Fix flavor issue
+    // ✅ Fix: Add flavor dimensions
     flavorDimensions "mode"
     productFlavors {
         standard {
@@ -29,7 +31,7 @@ android {
 
     signingConfigs {
         release {
-            if (project.hasProperty("signingProperties")) {
+            if (file("signing.properties").exists()) {
                 def props = new Properties()
                 file("signing.properties").withInputStream { props.load(it) }
                 storeFile file(props['storeFile'])

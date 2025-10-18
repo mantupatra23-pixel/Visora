@@ -67,7 +67,7 @@ jobs:
 
       # 9️⃣ Build Android APK (signed)
       - name: Build Android APK (signed)
-        run: flutter build apk --release --flavor standard --verbose
+       run: flutter build apk --release --verbose
 
       # 🔟 Build Web Version
       - name: Build Web Version
