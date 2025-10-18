@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Flutter
+      # 2️⃣ Setup Flutter SDK
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -28,14 +28,14 @@ jobs:
           flutter config --enable-web
           flutter config --enable-android
 
-      # 4️⃣ Clean cache & Gradle
+      # 4️⃣ Clean Project & Gradle Cache
       - name: Clean Project & Gradle Cache
         run: |
           flutter clean
           rm -rf ~/.gradle/caches/
           rm -rf ~/.pub-cache/
 
-      # 5️⃣ Install dependencies
+      # 5️⃣ Install Dependencies
       - name: Install Dependencies
         run: flutter pub get
 
@@ -43,19 +43,16 @@ jobs:
       - name: Doctor check
         run: flutter doctor -v
 
-      # 7️⃣ Fix embedding if missing (safe fallback)
+      # 7️⃣ Ensure Android Embedding V2 (safe fallback)
       - name: Ensure Android Embedding V2
         run: |
-          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/FlutterActivity/FlutterFragmentActivity/g' {} +
+          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/FlutterActivity/FlutterActivity/g' {} \;
 
       # 8️⃣ Build Android APK
       - name: Build Android APK
-        run: flutter build apk --release --verbose
-        env:
-          GRADLE_OPTS: "-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError"
-          JAVA_TOOL_OPTIONS: "-Xmx4g"
+        run: flutter build apk --release --flavor standard --verbose
 
-      # 9️⃣ Build Web version
+      # 9️⃣ Build Web Version
       - name: Build Web Version
         run: flutter build web --release
 
@@ -64,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: visora-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-standard-release.apk
 
       # 1️⃣1️⃣ Upload Web Build Artifact
       - name: Upload Web Build
@@ -72,3 +69,12 @@ jobs:
         with:
           name: visora-web-build
           path: build/web
+
+      # 1️⃣2️⃣ Auto Create GitHub Release (Direct APK Download Link)
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: success()
+        with:
+          files: build/app/outputs/flutter-apk/app-standard-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
