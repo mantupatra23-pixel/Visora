@@ -67,7 +67,7 @@ jobs:
 
       # 9️⃣ Build Android APK (signed)
       - name: Build Android APK (signed)
-       run: flutter build apk --release --verbose
+        run: flutter build apk --release --verbose
 
       # 🔟 Build Web Version
       - name: Build Web Version
@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: visora-signed-apk
-          path: build/app/outputs/flutter-apk/app-standard-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
       # 1️⃣2️⃣ Upload Web Build
       - name: Upload Web Build
@@ -92,6 +92,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: success()
         with:
-          files: build/app/outputs/flutter-apk/app-standard-release.apk
+          files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
