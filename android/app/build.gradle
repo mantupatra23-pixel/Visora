@@ -17,7 +17,7 @@ android {
         multiDexEnabled true
     }
 
-    // ✅ Must include this to fix flavorUndefinedHandler
+    // ✅ Define flavorDimension properly
     flavorDimensions "default"
     productFlavors {
         standard {
@@ -27,13 +27,30 @@ android {
         }
     }
 
+    // ✅ Release + Debug config fixed
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+        release {
+            storeFile file("../debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
         }
         debug {
+            signingConfig signingConfigs.debug
             debuggable true
         }
     }
@@ -45,6 +62,12 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
 }
 
