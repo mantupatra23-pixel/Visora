@@ -1,4 +1,4 @@
-name: Build Visora Flutter App
+name: Build Visora Flutter App (Pro)
 
 on:
   push:
@@ -11,25 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout Repo
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Flutter SDK
+      # 2️⃣ Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      # 3️⃣ Enable Platforms
+      # 3️⃣ Enable Android + Web
       - name: Enable Platforms
         run: |
-          flutter config --enable-web
           flutter config --enable-android
+          flutter config --enable-web
 
-      # 4️⃣ Clean Project & Gradle Cache
-      - name: Clean Project & Gradle Cache
+      # 4️⃣ Clean Cache
+      - name: Clean Project
         run: |
           flutter clean
           rm -rf ~/.gradle/caches/
@@ -39,38 +39,55 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      # 6️⃣ Check Flutter doctor
-      - name: Doctor check
+      # 6️⃣ Doctor Check
+      - name: Doctor Check
         run: flutter doctor -v
 
-      # 7️⃣ Ensure Android Embedding V2 (safe fallback)
-      - name: Ensure Android Embedding V2
+      # 7️⃣ Auto Generate Keystore (if missing)
+      - name: Generate Keystore
         run: |
-          find android/app/src/main -type f -name "*.kt" -exec sed -i 's/FlutterActivity/FlutterActivity/g' {} \;
+          mkdir -p android
+          if [ ! -f "android/visora-key.jks" ]; then
+            keytool -genkeypair -v \
+              -keystore android/visora-key.jks \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+              -keypass ${{ secrets.KEY_PASSWORD }} \
+              -alias visora_key \
+              -dname "CN=Visora, OU=AI, O=Visora Labs, L=IN, S=IN, C=IN"
+          fi
 
-      # 8️⃣ Build Android APK
-      - name: Build Android APK
+      # 8️⃣ Create signing.properties dynamically
+      - name: Create signing.properties
+        run: |
+          echo "storeFile=visora-key.jks" > android/signing.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/signing.properties
+          echo "keyAlias=visora_key" >> android/signing.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/signing.properties
+
+      # 9️⃣ Build Android APK (signed)
+      - name: Build Android APK (signed)
         run: flutter build apk --release --flavor standard --verbose
 
-      # 9️⃣ Build Web Version
+      # 🔟 Build Web Version
       - name: Build Web Version
         run: flutter build web --release
 
-      # 🔟 Upload Android APK Artifact
+      # 1️⃣1️⃣ Upload APK Artifact
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: visora-release-apk
+          name: visora-signed-apk
           path: build/app/outputs/flutter-apk/app-standard-release.apk
 
-      # 1️⃣1️⃣ Upload Web Build Artifact
+      # 1️⃣2️⃣ Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: visora-web-build
           path: build/web
 
-      # 1️⃣2️⃣ Auto Create GitHub Release (Direct APK Download Link)
+      # 1️⃣3️⃣ Auto Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         if: success()
